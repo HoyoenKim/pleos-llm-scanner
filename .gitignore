@@ -1,0 +1,31 @@
+# Build artifacts and Python venv
+*.pyc
+__pycache__/
+.env
+.venv/
+*.egg-info/
+build/
+dist/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# PleOS APK binaries and decompiled sources — contractor IP protection
+data/apks/
+data/decompiled/
+
+# Reports — private until report-finalisation review
+data/reports/
+
+# PPT — private until report-finalisation review
+*.pptx
+*.pdf
+pptx/
+
+# Local-only logs / temp
+*.log
+.tmp/
