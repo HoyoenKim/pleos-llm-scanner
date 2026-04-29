@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.1",
+  "labeled_at": "2026-04-30",
+  "labeler": "external (OWASP MASTG official challenge — Bernhard Mueller / Vantage Point Security)",
+  "scope": "UnCrackable-Level1 stage-1 findings restricted to result_schema.json category enum (crypto/network/permission/intent/hardcoded/reflection_dynamic). Anti-tamper findings (root/debug detection) are out-of-scope at the current pipeline.",
+  "label_values": {
+    "is_real": "true | false | uncertain",
+    "true_severity": "high | medium | low | none (when is_real=false)"
+  },
+  "ground_truth_source": [
+    "OWASP MASTG official Crackme description",
+    "MASVS controls: MASVS-CRYPTO-1 (cryptographic key management), MASVS-STORAGE-2 (no sensitive data hardcoded), MASVS-STORAGE-3 (no sensitive data leaked via logs)"
+  ],
+  "labels": [
+    {
+      "id": "ucl1-1",
+      "apk": "UnCrackable-Level1",
+      "class": "sg.vantagepoint.uncrackable1.C0005a",
+      "line": 15,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "masvs": "MASVS-CRYPTO-1, MASVS-STORAGE-2",
+      "notes": "MASTG의 canonical hardcoded-key challenge. AES key (hex) + ciphertext (base64) 모두 verify 함수 안에 static literal로 박힘. APK reverse engineering으로 둘 다 추출 후 로컬에서 decrypt 시 secret 복원. Bernhard Mueller가 UnCrackable-Level1을 디자인할 때 의도한 1번 vulnerability."
+    },
+    {
+      "id": "ucl1-2",
+      "apk": "UnCrackable-Level1",
+      "class": "sg.vantagepoint.p000a.C0000a",
+      "line": 15,
+      "stage1_severity": "medium",
+      "stage1_category": "crypto",
+      "is_real": true,
+      "true_severity": "medium",
+      "masvs": "MASVS-CRYPTO-1",
+      "notes": "Cipher.getInstance(\"AES\") = ECB default. 우리 stage1 분석이 정확히 진단 (SecretKeySpec algorithm 인자가 실제 mode를 결정하지 않는 JCE 동작을 명시했음). MASTG 공식엔 hardcoded key가 1번 issue지만 ECB mode는 인접 finding으로 인정."
+    },
+    {
+      "id": "ucl1-3",
+      "apk": "UnCrackable-Level1",
+      "class": "sg.vantagepoint.uncrackable1.C0005a",
+      "line": 17,
+      "stage1_severity": "low",
+      "stage1_category": "crypto",
+      "is_real": true,
+      "true_severity": "low",
+      "masvs": "MASVS-STORAGE-3",
+      "notes": "Log.d crypto error message — production build이라면 logcat을 통해 정보 누설. MASTG의 secondary finding으로 인정하나 LOW. 실제 production app이 아닌 데모 challenge라 우선순위 낮음."
+    }
+  ],
+  "out_of_scope_known_issues": [
+    {
+      "issue": "Weak root detection (C0002c.m2a/m3b/m4c)",
+      "masvs": "MASVS-RESILIENCE-3",
+      "reason": "result_schema.json category enum에 anti-tamper 항목 없음. Future Work."
+    },
+    {
+      "issue": "Weak debugger detection (C0001b.m1a — only FLAG_DEBUGGABLE check, missing Debug.isDebuggerConnected at runtime)",
+      "masvs": "MASVS-RESILIENCE-2",
+      "reason": "위와 동일."
+    },
+    {
+      "issue": "No tamper detection / signature verification",
+      "masvs": "MASVS-RESILIENCE-3",
+      "reason": "위와 동일. 우리 stage1 negative confirmation으로 명시됨."
+    }
+  ],
+  "summary": {
+    "n_findings": 3,
+    "true_positive": 3,
+    "false_positive": 0,
+    "uncertain": 0,
+    "by_category_TP_only": {
+      "hardcoded": 1,
+      "crypto": 2
+    },
+    "expected_pipeline_metrics": {
+      "stage1_precision": "3/3 = 100%",
+      "stage1_false_positive_rate": "0/3 = 0%",
+      "stage1_recall": "3/3 = 100% (in-scope only)",
+      "note": "All in-scope findings are TP (UnCrackable was designed by OWASP to expose these exact vulnerabilities). Out-of-scope MASVS-RESILIENCE issues are tracked in `out_of_scope_known_issues` and contribute to the recall ceiling once anti-tamper category is added."
+    }
+  },
+  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level1_20260430.json"
+}

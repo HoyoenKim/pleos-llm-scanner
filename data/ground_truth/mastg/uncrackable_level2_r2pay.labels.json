@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1",
+  "labeled_at": "2026-04-30",
+  "labeler": "external (OWASP MASTG official challenges) — boundary case ground truth",
+  "scope": "UnCrackable-Level2 + r2pay-v1.0 — both designed so that secret/validation logic lives in native code (.so). Java-side static analysis pipeline is structurally unable to recover the planted vulnerability. GT labels reflect this: 0 in-scope findings. The known native vulnerabilities are tracked under `out_of_scope_known_issues` for future Phase C / native-analysis tooling.",
+  "label_values": {
+    "is_real": "true | false | uncertain",
+    "true_severity": "high | medium | low | none"
+  },
+  "ground_truth_source": [
+    "OWASP MASTG official Crackme descriptions (Level 2 + Level 4)",
+    "MASVS-CRYPTO-1 (cryptographic key management)",
+    "MASVS-RESILIENCE-2 (debugger detection)",
+    "MASVS-RESILIENCE-3 (root / tamper detection)",
+    "MASVS-CODE-2 (3rd-party libraries are kept up to date)"
+  ],
+  "labels": [],
+  "out_of_scope_known_issues": [
+    {
+      "apk": "UnCrackable-Level2",
+      "issue": "AES key + ciphertext stored as constants in libfoo.so (native lib). Recoverable via Ghidra/IDA disassembly.",
+      "masvs": "MASVS-CRYPTO-1",
+      "future_pipeline_extension": "Native-binary scanner (Ghidra headless + LLM + symbol enumeration)."
+    },
+    {
+      "apk": "UnCrackable-Level2",
+      "issue": "Weak root + runtime-debugger detection in Java (Debug.isDebuggerConnected polling, /system/* filesystem checks).",
+      "masvs": "MASVS-RESILIENCE-2/3",
+      "future_pipeline_extension": "result_schema.json category enum 확장 — anti_tamper 추가."
+    },
+    {
+      "apk": "r2pay-v1.0",
+      "issue": "PIN+amount validation logic entirely in libnative-lib.so → static binary analysis required (radare2/r2ai).",
+      "masvs": "MASVS-CRYPTO-1, MASVS-AUTH-2",
+      "future_pipeline_extension": "Native-binary scanner."
+    },
+    {
+      "apk": "r2pay-v1.0",
+      "issue": "Tamper response via ArithmeticException (1337/0) + bogus NullPointerException.notify(). Patchable with Frida hooks.",
+      "masvs": "MASVS-RESILIENCE-3",
+      "future_pipeline_extension": "anti_tamper category."
+    },
+    {
+      "apk": "r2pay-v1.0",
+      "issue": "RootBeer-based root detection — bypassable via MagiskHide / Zygisk root-cloaking.",
+      "masvs": "MASVS-RESILIENCE-3",
+      "future_pipeline_extension": "anti_tamper category + bypass-pattern matcher."
+    }
+  ],
+  "summary": {
+    "n_findings": 0,
+    "true_positive": 0,
+    "false_positive": 0,
+    "uncertain": 0,
+    "expected_pipeline_metrics": {
+      "stage1_precision": "n/a (no in-scope findings produced)",
+      "recall_within_pipeline_scope": "n/a (no in-scope vulnerabilities exist in either APK)",
+      "overall_recall_against_full_MASVS": "0% — both APKs' real challenges live in native code, which is structurally outside the current Java-only static pipeline. This is the planned boundary; future Phase C native-analysis work would address."
+    },
+    "value_for_baseline_comparison": "These two samples expose the **boundary** of the current pipeline: a Java-only static analyzer cannot recover MASVS-CRYPTO findings hidden in .so files. They serve as honest negative results in the baseline corpus and as reference cases for the limitations section in PPT/report."
+  },
+  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level2_20260430.json + r2pay-v1.0_20260430.json"
+}
