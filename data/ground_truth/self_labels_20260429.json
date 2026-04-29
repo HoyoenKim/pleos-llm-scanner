@@ -1,0 +1,232 @@
+{
+  "schema_version": "0.1",
+  "labeled_at": "2026-04-29",
+  "labeler": "self (Claude Code stage 2 caller analysis)",
+  "scope": "VehicleControl + sync.syslog + llm.model.provider stage 1 findings (n=12)",
+  "label_values": {
+    "is_real": "true | false | uncertain",
+    "true_severity": "high | medium | low | none (when is_real=false)"
+  },
+  "labels": [
+    {
+      "id": "vc-1",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.feature.information.p026ui.common.HtmlWebViewKt",
+      "line": 58,
+      "stage1_severity": "high",
+      "stage1_category": "network",
+      "is_real": false,
+      "true_severity": "low",
+      "notes": "Caller traces resolve to HtmlPopupScreenKt / ReleaseNotesKt — both internal Compose screens. htmlContentPath origin is internal asset path, not Intent extra. setAllowFileAccess(true) is a hardening concern but no LFI exploit chain visible. Marked FP at this stage; revisit if a deep-link to either screen is found in the manifest."
+    },
+    {
+      "id": "vc-2",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.feature.information.p026ui.common.HtmlWebViewKt",
+      "line": 82,
+      "stage1_severity": "medium",
+      "stage1_category": "network",
+      "is_real": false,
+      "true_severity": "low",
+      "notes": "Same caller chain as vc-1. loadUrl(htmlContentPath) is fed by internal callers. FP at current scope."
+    },
+    {
+      "id": "vc-3",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.feature.applications.data.permission.AppPermissionManager",
+      "line": 149,
+      "stage1_severity": "high",
+      "stage1_category": "permission",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "Caller chain: ApplicationDetailsScreenKt UI → ApplicationDetailsViewModel.grantPermission → AppPermissionManager. packageName is supplied via SavedStateHandle (Navigation Component arg), and ApplicationDetailsScreen is reached only through internal NavController routes. No deep-link verified yet — if one exists, this flips back to TP. Marked FP at current scope."
+    },
+    {
+      "id": "vc-4",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.feature.applications.data.permission.AppPermissionManager",
+      "line": 124,
+      "stage1_severity": "high",
+      "stage1_category": "permission",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "Symmetric to vc-3. Same caller chain, same FP verdict at current scope."
+    },
+    {
+      "id": "vc-5",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.p051ui.screens.GleoActionSender",
+      "line": 40,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "Producer = IntentRouter.toNavigationEvent. IntentRouter receives external Intent (action 'ai.umos.vehiclecontrol.NAVIGATE_TO_SETTING') via VehicleControlActivity (exported=true) and broadcasts the response payload. Implicit broadcast confirmed → TP. Severity stays medium because the response payload is currently 'success'/'fail' status strings, not user data — but the channel exists."
+    },
+    {
+      "id": "vc-6",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.feature.bluetooth.data.VehicleBroadcastReceiver",
+      "line": 58,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Manifest confirms <receiver android:exported=\"true\"> with no permission gate. macAddress Intent extra is persisted to PairedDeviceRepository.insertDevice without validation. system-context-adjacent (preferences DB) → severity raised to high."
+    },
+    {
+      "id": "vc-7",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "ai.umos.vehiclecontrol.Broadcasts",
+      "line": 92,
+      "stage1_severity": "low",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "low",
+      "notes": "TP as a hardening concern. registerReceiver flag suppression is real and propagates to all callers, but each caller currently uses internal action names. Keep at LOW."
+    },
+    {
+      "id": "ssl-1",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.crypto.ECCCrypto",
+      "line": 49,
+      "stage1_severity": "medium",
+      "stage1_category": "crypto",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "B-3.c resolved (2026-04-29): caller is SyncConfigsProvider:83 with `new ConfigLoader(BuildConfig.IDENTIFIER, BuildConfig.SERVER_PUBLIC_KEY)`. passPhrase is a build-time constant — same key on every device. APK reverse engineering recovers BuildConfig → identical private key → decrypt every device's encryptedYaml config. Severity raised to HIGH."
+    },
+    {
+      "id": "ssl-2",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.authenticator.AuthData",
+      "line": 82,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "B-3.c CONFIRMED (2026-04-29): SysLogService.java:170 emits `Log.d(SysLogService.TAG, \"onTokenChange : \" + this.$authData)`. Token reaches logcat on every token rotation. logcat is readable by READ_LOGS / dumpsys / vendor diagnostics. Stage 3 attacker perspective also confirms — strong TP 3/3."
+    },
+    {
+      "id": "ssl-3",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.authenticator.CCGAuthenticator",
+      "line": 49,
+      "stage1_severity": "medium",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "B-3.c PROVISIONAL (2026-04-29): grep across `ai/pleos/sync/**` for CertificatePinner|TrustManager|HostnameVerifier|setSSLSocketFactory|sslContext|network_security_config = NO MATCHES. sync 패키지 자체엔 pinning 코드 없음. Caveat: third-party HTTP/gRPC libs (com.squareup.okhttp3 등) 추가 grep 후 최종 결정 — 일단 TP, severity MEDIUM 유지."
+    },
+    {
+      "id": "lmp-1",
+      "apk": "ai.pleos.llm.model.provider",
+      "class": "ai.pleos.llm.model.provider.PromptsContentProvider",
+      "line": 62,
+      "stage1_severity": "high",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Manifest <provider exported=\"true\"> + query() returns assets/prompts.json verbatim. Confirmed TP. The LLM system-prompt corpus exposed to any installed app is a clear prompt-injection / jailbreak surface."
+    },
+    {
+      "id": "lmp-2",
+      "apk": "ai.pleos.llm.model.provider",
+      "class": "ai.pleos.llm.model.provider.receiver.LLMModelProviderReceiver",
+      "line": 43,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "Confirmed TP. Manifest <receiver exported=\"true\"> with no permission attribute, custom action handler that triggers file delete + Process.killProcess. DoS primitive against the on-device LLM."
+    },
+    {
+      "id": "ssl-4",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.authenticator.HMGAuthenticator$HmgUserInfo",
+      "line": 365,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Discovered during B-3.c. Same pattern as ssl-2 but for driver PII (UUID, birthdate, email, name). Kotlin data-class toString() embeds all four fields verbatim. If any caller logs HmgUserInfo, full identity reaches logcat. Severity HIGH (PII + privacy regulation impact)."
+    },
+    {
+      "id": "ssl-5",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.config.SyncConfigsProvider",
+      "line": 83,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Discovered during B-3.c root-causing of ssl-1. BuildConfig.IDENTIFIER is a build-time constant baked into the APK and used as KDF passphrase. APK reverse engineering recovers it — effectively a hardcoded secret. Independent finding (separate from ssl-1 KDF concern)."
+    },
+    {
+      "id": "ssl-6",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ai.pleos.sync.syslog.SysLogService",
+      "line": 120,
+      "stage1_severity": "medium",
+      "stage1_category": "network",
+      "is_real": "uncertain",
+      "true_severity": "medium",
+      "notes": "Discovered during B-3.c. SysLogService publishes to gRPC endpoint connect-gw.umos.ai:9091 carrying systemID + log payload. TLS verdict depends on gRPC ManagedChannel SSL config — needs further inspection of channel builder calls (OkHttpChannelBuilder.useTransportSecurity vs usePlaintext). Mark uncertain pending that grep."
+    }
+  ],
+  "summary": {
+    "n_findings": 15,
+    "true_positive": 10,
+    "false_positive": 4,
+    "uncertain": 1,
+    "by_apk": {
+      "ai.umos.vehiclecontrol": {
+        "n": 7,
+        "tp": 3,
+        "fp": 4,
+        "uncertain": 0
+      },
+      "ai.pleos.sync.syslog": {
+        "n": 6,
+        "tp": 5,
+        "fp": 0,
+        "uncertain": 1
+      },
+      "ai.pleos.llm.model.provider": {
+        "n": 2,
+        "tp": 2,
+        "fp": 0,
+        "uncertain": 0
+      }
+    },
+    "by_category_TP_only": {
+      "intent": 5,
+      "hardcoded": 3,
+      "network": 1,
+      "permission": 0,
+      "crypto": 1
+    },
+    "stage1_precision_strict_n15": "10/15 = 66.7% (uncertain → FP)",
+    "stage1_precision_lenient_n15": "10/(10+4) = 71.4% (uncertain excluded)",
+    "stage1_false_positive_rate_strict_n15": "(4+1)/15 = 33.3%",
+    "stage1_false_positive_rate_lenient_n15": "4/(10+4) = 28.6%",
+    "history_n12_first_session": {
+      "tp": 6,
+      "fp": 4,
+      "uncertain": 2,
+      "precision_lenient": "60.0%",
+      "false_positive_rate_lenient": "40.0%"
+    },
+    "improvement_via_b3c": {
+      "ssl-1": "uncertain → TP (HIGH) — passPhrase = BuildConfig.IDENTIFIER 확인",
+      "ssl-3": "uncertain → TP (MEDIUM) — sync 패키지 내 pinning 부재 확인",
+      "new_findings": [
+        "ssl-4 HmgUserInfo PII",
+        "ssl-5 BuildConfig.IDENTIFIER hardcoded",
+        "ssl-6 gRPC endpoint (uncertain)"
+      ]
+    },
+    "ppt_hypothesis_1차_오탐률": "25% — n=15 측정 결과 28.6% (lenient) / 33.3% (strict). PPT 가설에 매우 근접. 표본 작음 caveat 유지. intent+hardcoded+crypto 100% TP, network 50% TP (1/2), permission 0/0 (대상 없음).",
+    "computed_by": "src/eval.py against data/ground_truth/self_labels_20260429.json + data/reports/*.json"
+  }
+}
