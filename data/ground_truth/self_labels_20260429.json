@@ -116,7 +116,7 @@
       "stage1_category": "network",
       "is_real": true,
       "true_severity": "medium",
-      "notes": "B-3.c PROVISIONAL (2026-04-29): grep across `ai/pleos/sync/**` for CertificatePinner|TrustManager|HostnameVerifier|setSSLSocketFactory|sslContext|network_security_config = NO MATCHES. sync 패키지 자체엔 pinning 코드 없음. Caveat: third-party HTTP/gRPC libs (com.squareup.okhttp3 등) 추가 grep 후 최종 결정 — 일단 TP, severity MEDIUM 유지."
+      "notes": "B-3.c PROVISIONAL (2026-04-29): grep across `ai/pleos/sync/**` for CertificatePinner|TrustManager|HostnameVerifier|setSSLSocketFactory|sslContext|network_security_config = NO MATCHES. sync 패키지 자체엔 pinning 코드 없음. Caveat: third-party HTTP/gRPC libs (com.squareup.okhttp3 등) 추가 grep 후 최종 결정 — 일단 TP, severity MEDIUM 유지. 추가 grep: 앱 코드(ai/pleos/sync/**)에 .certificatePinner / setSSLSocketFactory / .sslSocketFactory 호출 0건 — sync 패키지 내 pinning 부재 confirmed. CCGAuthenticator의 HttpClient 구현(별도 inner class) 내 SSL 호출은 후속 follow-up."
     },
     {
       "id": "lmp-1",
@@ -149,7 +149,7 @@
       "stage1_category": "hardcoded",
       "is_real": true,
       "true_severity": "high",
-      "notes": "Discovered during B-3.c. Same pattern as ssl-2 but for driver PII (UUID, birthdate, email, name). Kotlin data-class toString() embeds all four fields verbatim. If any caller logs HmgUserInfo, full identity reaches logcat. Severity HIGH (PII + privacy regulation impact)."
+      "notes": "Discovered during B-3.c. Same pattern as ssl-2 but for driver PII (UUID, birthdate, email, name). Kotlin data-class toString() embeds all four fields verbatim. If any caller logs HmgUserInfo, full identity reaches logcat. Severity HIGH (PII + privacy regulation impact). 추가 grep: (Timber|Log.[diwev]) + (HmgUserInfo|hmgUserInfo) 매치 0건 — leak primitive는 real이지만 실 emission 미확인. Stage 3 attacker abstain → 2/3 TP."
     },
     {
       "id": "ssl-5",
@@ -169,16 +169,16 @@
       "line": 120,
       "stage1_severity": "medium",
       "stage1_category": "network",
-      "is_real": "uncertain",
-      "true_severity": "medium",
-      "notes": "Discovered during B-3.c. SysLogService publishes to gRPC endpoint connect-gw.umos.ai:9091 carrying systemID + log payload. TLS verdict depends on gRPC ManagedChannel SSL config — needs further inspection of channel builder calls (OkHttpChannelBuilder.useTransportSecurity vs usePlaintext). Mark uncertain pending that grep."
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "B-3.c 추가 grep (2026-04-29) 결과: SysLogService.java:76 'ManagedChannelBuilder.forTarget(BuildConfig.LOGCAT_PROXY_SERVER_URL).usePlaintext().build()' — TLS 명시적 off, 차량 syslog가 평문 gRPC로 외부 송출. MITM이 systemID + 진단 페이로드를 평문 관찰 가능. severity HIGH 격상."
     }
   ],
   "summary": {
     "n_findings": 15,
-    "true_positive": 10,
+    "true_positive": 11,
     "false_positive": 4,
-    "uncertain": 1,
+    "uncertain": 0,
     "by_apk": {
       "ai.umos.vehiclecontrol": {
         "n": 7,
@@ -188,9 +188,9 @@
       },
       "ai.pleos.sync.syslog": {
         "n": 6,
-        "tp": 5,
+        "tp": 6,
         "fp": 0,
-        "uncertain": 1
+        "uncertain": 0
       },
       "ai.pleos.llm.model.provider": {
         "n": 2,
@@ -202,14 +202,14 @@
     "by_category_TP_only": {
       "intent": 5,
       "hardcoded": 3,
-      "network": 1,
+      "network": 2,
       "permission": 0,
       "crypto": 1
     },
-    "stage1_precision_strict_n15": "10/15 = 66.7% (uncertain → FP)",
-    "stage1_precision_lenient_n15": "10/(10+4) = 71.4% (uncertain excluded)",
-    "stage1_false_positive_rate_strict_n15": "(4+1)/15 = 33.3%",
-    "stage1_false_positive_rate_lenient_n15": "4/(10+4) = 28.6%",
+    "stage1_precision_strict_n15": "11/15 = 73.3%",
+    "stage1_precision_lenient_n15": "11/(11+4) = 73.3%",
+    "stage1_false_positive_rate_strict_n15": "4/15 = 26.7%",
+    "stage1_false_positive_rate_lenient_n15": "4/(11+4) = 26.7%",
     "history_n12_first_session": {
       "tp": 6,
       "fp": 4,

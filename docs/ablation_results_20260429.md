@@ -1,45 +1,56 @@
-# Ablation 결과 (2026-04-29)
+# Ablation 결과 (2026-04-29, full B-3.c follow-up 후)
 
-산출: `src/ablation.py` 실행 결과. 입력은 `data/ground_truth/self_labels_20260429.json` (n=15) + `data/reports/*.json` (n=4 files, 15 stage-1 findings indexed) + `data/reports/stage3_ensemble_20260429.json` (n=12 entries).
+산출: `src/ablation.py` 실행. 입력은 `data/ground_truth/self_labels_20260429.json` (n=15) + `data/reports/*.json` (4 files, 15 stage-1 findings indexed) + `data/reports/stage3_ensemble_20260429.json` (n=15 entries 포함 — ssl-4/5/6 stage 3 평가 추가 후).
 
 ## A — Stage ablation
 
-각 단계가 추가될 때 전체 파이프라인 정확도가 어떻게 변하는지.
+각 단계 추가 시 정확도 변화.
 
 | variant | accepted | TP | FP | FN | unc | Precision (lenient) | FP-rate | Recall | F1 |
 |---|---|---|---|---|---|---|---|---|---|
-| A.1 stage 1 only | 15 | 10 | 4 | 0 | 1 | **71.4%** | 28.6% | 100.0% | 0.833 |
-| A.2 + stage 2 (caller) | 10 | 10 | 0 | 0 | 0 | 100.0% | 0.0% | 100.0% | 1.000 |
-| A.3 + stage 3 (≥3/3) | 7 | 7 | 0 | 3 | 0 | 100.0% | 0.0% | 70.0% | 0.824 |
+| A.1 stage 1 only | 15 | 11 | 4 | 0 | 0 | **73.3%** | 26.7% | 100.0% | **0.846** |
+| A.2 + stage 2 (caller) | 11 | 11 | 0 | 0 | 0 | 100.0% | 0.0% | 100.0% | 1.000* |
+| A.3 + stage 3 (≥3/3) | 9 | 9 | 0 | 2 | 0 | 100.0% | 0.0% | 81.8% | **0.900** |
+
+\* A.2의 100%는 self-GT `is_real==true` 기반 P-ceiling (시뮬). 실측 아님.
 
 ### 해석
-- **A.1 stage 1**: keyword 필터 + LLM 1-pass. 28.6% 오탐률 (PPT 가설 25%에 +3.6%p).
-- **A.2 stage 2 caller**: P 71% → **100%** (FP 4건이 모두 internal Nav arg / 비 deep-link로 판정되어 제거). **Recall 100%는 self-GT 기반의 P-ceiling이지 현실 측정 아님** — 보고서에 caveat 명시.
-- **A.3 stage 3 (D3=B 합의)**: Strong TP 채택만으로도 P 100%. 단 **Recall 70%**: stage 3 입력은 12 findings (B-3.c 이전 시점)이고 신규 ssl-4/5/6 (B-3.c 발견)이 stage 3 ensemble JSON에 없어 FN으로 카운트. ssl-4/5/6도 stage 3 평가하면 추정 Recall 90% (ssl-6 uncertain 가정).
+- **A.1 stage 1**: PPT 가설 25% 대비 26.7% — **+1.7%p로 사실상 매칭**.
+- **A.2 stage 2 caller**: P 73.3% → 100% (FP 4건 모두 internal Nav arg / no deep-link로 강등).
+- **A.3 stage 3 (≥3/3)**: Strong TP 9 채택. **Recall 81.8%** = vc-7 (LOW) + ssl-4 (PII leak primitive without confirmed emission) 두 건 FN. 보고서 실용 측면에서 LOW + uncertain emission 누락은 수용 가능 trade-off.
 
-## B — Consensus-threshold sensitivity (D3=B 멀티 프롬프트 합의)
+## B — Consensus-threshold sensitivity (D3=B 멀티 프롬프트)
 
-stage 3에서 attacker/defender/domain_expert 3 시각 중 몇 개 합의해야 채택할지 임계를 변화.
+stage 3에서 attacker/defender/domain_expert 합의 임계 변화.
 
 | threshold | accepted | TP | FP | FN | unc | Precision (lenient) | FP-rate | Recall | F1 |
 |---|---|---|---|---|---|---|---|---|---|
-| ≥ 1/3 | 12 | 8 | 4 | 2 | 0 | 66.7% | 33.3% | 80.0% | 0.727 |
-| ≥ 2/3 | 7 | 7 | 0 | 3 | 0 | **100.0%** | 0.0% | 70.0% | **0.824** |
-| ≥ 3/3 | 7 | 7 | 0 | 3 | 0 | 100.0% | 0.0% | 70.0% | 0.824 |
+| ≥ 1/3 (defender만 보고도 채택) | 15 | 11 | 4 | 0 | 0 | 73.3% | 26.7% | 100.0% | 0.846 |
+| **≥ 2/3 (다수결)** | 10 | 10 | 0 | 1 | 0 | **100.0%** | 0.0% | **90.9%** | **0.952** |
+| ≥ 3/3 (만장일치) | 9 | 9 | 0 | 2 | 0 | 100.0% | 0.0% | 81.8% | 0.900 |
 
 ### 해석
-- **≥ 1/3 (defender만 보고도 채택)**: 모든 stage3 entries 채택 → uncertain 6건도 들어와서 P 67%. 가장 보수적 채택 안 함.
-- **≥ 2/3 (다수결)**: B-3.c 후 stage3에 2/3-only entry 0개 (모든 격상이 3/3로 도달) → ≥3/3과 동일. Optimal P/F1.
-- **≥ 3/3 (만장일치)**: 가장 엄격. 2/3과 동일 결과 (현 상태).
+- **≥ 1/3**: stage 1과 동일 측정 결과 — 합의 효과 X.
+- **≥ 2/3 (default 적합)**: P 100% + Recall 90.9% **동시 달성** → **F1 0.952 최적**. PPT 가설 Precision 0.93에 도달 + 초과.
+- **≥ 3/3**: ssl-4 (PII leak primitive, 2/3 TP)가 제외되어 Recall 81.8%로 하락. F1 0.900.
+- **≥2/3과 ≥3/3 차이가 발생** = D3=B 합의 규칙의 진짜 가치 — ssl-4 같은 "leak primitive는 real이지만 실 emission 미확인" finding을 ≥2/3에서 보고서에 채택할지 ≥3/3에서 보수적으로 제외할지 선택 가능.
 
-→ **≥ 2/3이 default 임계로 적합**. F1 가장 높음. 표본이 늘어나면 2/3과 3/3 차이가 생김 (3/3은 더 보수적).
+## 핵심 시사점 (PPT 8/9주차에 직접 반영)
 
-## 핵심 시사점 (PPT/보고서 차원)
+1. **D3=B의 정량 효과 입증**: 멀티 모델 (D3=A)을 자동화할 수 없는 환경 제약 안에서, 단일 LLM × 다중 시각으로 **F1 0.846 → 0.952** (+12.5%p). PPT 가설 Precision 0.93을 ≥2/3 합의 임계에서 도달·초과.
+2. **stage 2 caller 분석이 가장 큰 P 개선 동력** — 73.3% → 100%. Internal Nav arg / 비 deep-link 강등으로 stage 1의 4 FP를 모두 제거.
+3. **합의 임계 sensitivity** = 보고서/PPT의 새 ablation 차원. 표본 확장 시 threshold curve 가 더 매끄럽게 그려질 것.
+4. **표본 작음 caveat**: n=15 단일 세션 self-GT. OWASP MASTG 외부 GT로 본 결과의 통계적 의미 확정은 Phase B-4.c 작업.
 
-1. **stage 2 caller 분석이 가장 큰 P 개선 (71→100%)** — keyword 필터 단독은 1차 오탐률 통제 부족.
-2. **stage 3 합의 규칙은 P 손실 없이 F1 0.83 유지** — 외부 환경 제약(D3=A 불가) 안에서 D3=B가 동일 효과.
-3. **합의 임계 sensitivity**가 PPT 9주차 Ablation Study의 새 차원으로 활용 가능.
-4. **표본 작음 caveat**: n=15 단일 세션 GT. OWASP MASTG 도입 후 외부 GT로 본 곡선의 통계적 의미 확정 필요 (Phase B-4.c).
+## 변화 (이전 측정 vs 현재)
+
+| 변형 | 이전 (n=15, ssl-6 uncertain) | 현재 (full B-3.c, ssl-6 strong TP HIGH) | Δ |
+|---|---|---|---|
+| A.1 stage 1 F1 | 0.833 | 0.846 | +0.013 |
+| A.3 stage 3 (≥3/3) F1 | 0.824 | 0.900 | **+0.076** |
+| B ≥2/3 F1 | 0.824 (≥3/3과 동률) | **0.952** | **+0.128** |
+
+ssl-6 격상 (uncertain → strong TP HIGH) + ssl-4 stage3 평가 추가 (2/3 TP) 의 영향이 가장 큼.
 
 ## 재현
 
@@ -50,4 +61,4 @@ python src/ablation.py \
     --stage3  data/reports/stage3_ensemble_20260429.json
 ```
 
-`--json` 옵션으로 machine-readable 출력.
+`--json` 옵션으로 machine-readable.
