@@ -1,8 +1,9 @@
 {
   "schema_version": "0.1",
   "labeled_at": "2026-04-29",
-  "labeler": "self (Claude Code stage 2 caller analysis)",
-  "scope": "VehicleControl + sync.syslog + llm.model.provider stage 1 findings (n=12)",
+  "last_updated": "2026-04-30",
+  "labeler": "self (Claude Code stage 2 caller analysis + 2.b deep-link verification)",
+  "scope": "VehicleControl + sync.syslog + llm.model.provider stage 1 findings (n=15). 2026-04-30 update: Stage 2.b deep-link verification for VehicleControl 4 pending findings (vc-1/2/3/4 confirmed FP) + ssl-6 GT line 정정 (120→76).",
   "label_values": {
     "is_real": "true | false | uncertain",
     "true_severity": "high | medium | low | none (when is_real=false)"
@@ -17,7 +18,7 @@
       "stage1_category": "network",
       "is_real": false,
       "true_severity": "low",
-      "notes": "Caller traces resolve to HtmlPopupScreenKt / ReleaseNotesKt — both internal Compose screens. htmlContentPath origin is internal asset path, not Intent extra. setAllowFileAccess(true) is a hardening concern but no LFI exploit chain visible. Marked FP at this stage; revisit if a deep-link to either screen is found in the manifest."
+      "notes": "Caller traces resolve to HtmlPopupScreenKt / ReleaseNotesKt — both internal Compose screens. htmlContentPath origin is internal asset path, not Intent extra. setAllowFileAccess(true) is a hardening concern but no LFI exploit chain visible. **Stage 2.b deep-link verification (2026-04-30) — FP CONFIRMED**: AndroidManifest.xml grep for 'android:scheme'/'android:host'/'deepLink' = 0 matches. Only exported entry is VehicleControlActivity with action-based intent-filters; no URI-data filters. HtmlPopupScreen / ReleaseNotes are not Compose Nav routes registered for external entry. htmlContentPath origin = ReleaseInfoData.summaryPath/whatsNewPath/detailedDescriptionPath, populated from OTA update flow (UpdateBroadcastReceiver exported=false, action ai.ftdot.update.UPDATE_STATE_CHANGED) — external-app uncontrolled."
     },
     {
       "id": "vc-2",
@@ -28,7 +29,7 @@
       "stage1_category": "network",
       "is_real": false,
       "true_severity": "low",
-      "notes": "Same caller chain as vc-1. loadUrl(htmlContentPath) is fed by internal callers. FP at current scope."
+      "notes": "Same caller chain as vc-1. loadUrl(htmlContentPath) is fed by internal callers. **Stage 2.b deep-link verification (2026-04-30) — FP CONFIRMED**: Same evidence as vc-1. No URI deep-link in manifest, htmlContentPath flows from OTA-trusted ReleaseInfoData."
     },
     {
       "id": "vc-3",
@@ -39,7 +40,7 @@
       "stage1_category": "permission",
       "is_real": false,
       "true_severity": "none",
-      "notes": "Caller chain: ApplicationDetailsScreenKt UI → ApplicationDetailsViewModel.grantPermission → AppPermissionManager. packageName is supplied via SavedStateHandle (Navigation Component arg), and ApplicationDetailsScreen is reached only through internal NavController routes. No deep-link verified yet — if one exists, this flips back to TP. Marked FP at current scope."
+      "notes": "Caller chain: ApplicationDetailsScreenKt UI → ApplicationDetailsViewModel.grantPermission → AppPermissionManager. packageName is supplied via SavedStateHandle (Navigation Component arg). **Stage 2.b deep-link verification (2026-04-30) — FP CONFIRMED**: (1) ApplicationDetails Nav route = 'application_details_route/{app_package_name}' — registered in NavGraphBuilder only, no manifest URI deep-link. (2) NestedNavRouter binding map has no APPLICATIONS key — only VehicleInformationNavRouter + ConvenienceNavRouter implement NavRouter. (3) IntentRouter NAVIGATE_TO_SETTING action builds path via LinkProvider.createLink which produces single-segment path + query (categoryKey?section=subKey); Uri.pathSegments.size > 1 condition never satisfied → subPathRoute(NestedNavRouter.findRoute) never called for any external intent. External NAVIGATE_TO_SETTING reaches ApplicationsScreen (CategoryType.APPLICATIONS.route='applications') at most — not ApplicationDetails. packageName fundamentally external-app uncontrolled."
     },
     {
       "id": "vc-4",
@@ -50,7 +51,7 @@
       "stage1_category": "permission",
       "is_real": false,
       "true_severity": "none",
-      "notes": "Symmetric to vc-3. Same caller chain, same FP verdict at current scope."
+      "notes": "Symmetric to vc-3. Same caller chain, same FP verdict. **Stage 2.b deep-link verification (2026-04-30) — FP CONFIRMED**: Same NestedNavRouter / IntentRouter / single-segment categoryPath evidence as vc-3."
     },
     {
       "id": "vc-5",
@@ -166,12 +167,12 @@
       "id": "ssl-6",
       "apk": "ai.pleos.sync.syslog",
       "class": "ai.pleos.sync.syslog.SysLogService",
-      "line": 120,
+      "line": 76,
       "stage1_severity": "medium",
       "stage1_category": "network",
       "is_real": true,
       "true_severity": "high",
-      "notes": "B-3.c 추가 grep (2026-04-29) 결과: SysLogService.java:76 'ManagedChannelBuilder.forTarget(BuildConfig.LOGCAT_PROXY_SERVER_URL).usePlaintext().build()' — TLS 명시적 off, 차량 syslog가 평문 gRPC로 외부 송출. MITM이 systemID + 진단 페이로드를 평문 관찰 가능. severity HIGH 격상."
+      "notes": "B-3.c 추가 grep (2026-04-29) 결과: SysLogService.java:76 'ManagedChannelBuilder.forTarget(BuildConfig.LOGCAT_PROXY_SERVER_URL).usePlaintext().build()' — TLS 명시적 off, 차량 syslog가 평문 gRPC로 외부 송출. MITM이 systemID + 진단 페이로드를 평문 관찰 가능. severity HIGH 격상. (2026-04-30 line 정정: GT 120 → 76 보고서 정합 맞춤)"
     }
   ],
   "summary": {
