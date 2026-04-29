@@ -1,0 +1,108 @@
+{
+  "root": "data\\decompiled\\UnCrackable-Level1",
+  "summary": {
+    "n_classes": 6,
+    "high_obf": 3,
+    "medium_obf": 1,
+    "low_obf": 2,
+    "high_obf_ratio": 0.5,
+    "mean_composite": 0.618,
+    "mean_jadx_ratio": 0.695
+  },
+  "results": [
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\sg\\vantagepoint\\p000a\\C0000a.java",
+      "class_name": "C0000a",
+      "n_methods": 0,
+      "n_fields": 0,
+      "n_total_ids": 1,
+      "mean_id_len": 6.0,
+      "mean_id_entropy": 1.252,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.475,
+      "sample_obf_ids": [
+        "C0000a"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\sg\\vantagepoint\\p000a\\C0001b.java",
+      "class_name": "C0001b",
+      "n_methods": 1,
+      "n_fields": 0,
+      "n_total_ids": 2,
+      "mean_id_len": 4.5,
+      "mean_id_entropy": 1.688,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.95,
+      "sample_obf_ids": [
+        "C0001b",
+        "m1a"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\sg\\vantagepoint\\p000a\\C0002c.java",
+      "class_name": "C0002c",
+      "n_methods": 3,
+      "n_fields": 0,
+      "n_total_ids": 4,
+      "mean_id_len": 3.75,
+      "mean_id_entropy": 1.637,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.95,
+      "sample_obf_ids": [
+        "C0002c",
+        "m2a",
+        "m3b",
+        "m4c"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\sg\\vantagepoint\\uncrackable1\\C0005a.java",
+      "class_name": "C0005a",
+      "n_methods": 2,
+      "n_fields": 0,
+      "n_total_ids": 3,
+      "mean_id_len": 4.0,
+      "mean_id_entropy": 1.654,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.95,
+      "sample_obf_ids": [
+        "C0005a",
+        "m6a",
+        "m7b"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\sg\\vantagepoint\\uncrackable1\\MainActivity.java",
+      "class_name": "MainActivity",
+      "n_methods": 5,
+      "n_fields": 0,
+      "n_total_ids": 6,
+      "mean_id_len": 7.17,
+      "mean_id_entropy": 2.593,
+      "jadx_obf_ratio": 0.167,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.125,
+      "sample_obf_ids": [
+        "m5a"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level1\\sources\\owasp\\mstg\\uncrackable1\\R.java",
+      "class_name": "is",
+      "n_methods": 0,
+      "n_fields": 13,
+      "n_total_ids": 14,
+      "mean_id_len": 12.0,
+      "mean_id_entropy": 2.83,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.071,
+      "composite_obf_score": 0.258,
+      "sample_obf_ids": []
+    }
+  ]
+}

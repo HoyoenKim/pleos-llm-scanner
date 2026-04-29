@@ -1,0 +1,41 @@
+{
+  "apk": "UnCrackable-Level2",
+  "stage": "stage_b_deobfuscate",
+  "model": "claude-opus-4-7",
+  "analyzed_at": "2026-04-30",
+  "input_filter": "obfuscation entropy composite_obf_score >= 0.7 (sg.vantagepoint.p023a only — non-framework HIGH classes)",
+  "renames": [
+    {
+      "original_class": "sg.vantagepoint.p023a.C0296a",
+      "suggested_class_name": "DebugFlagDetector",
+      "confidence_class": 0.92,
+      "role_description": "Single static method returning true if the application's manifest sets android:debuggable (FLAG_DEBUGGABLE = 0x2). Identical pattern to UnCrackable-Level1.C0001b.",
+      "method_renames": [
+        {"original": "m2173a", "suggested": "isAppDebuggable", "confidence": 0.92, "evidence": "Returns (context.getApplicationContext().getApplicationInfo().flags & 2) != 0; 0x2 is ApplicationInfo.FLAG_DEBUGGABLE."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Identical to UnCrackable-Level1.C0001b. The bitmask 0x2 + ApplicationInfo.flags + boolean return is a canonical FLAG_DEBUGGABLE check."
+    },
+    {
+      "original_class": "sg.vantagepoint.p023a.C0297b",
+      "suggested_class_name": "RootDetector",
+      "confidence_class": 0.96,
+      "role_description": "Three independent static heuristics for detecting a rooted device (PATH 'su' file search, Build.TAGS 'test-keys' substring match, well-known SU-related file probe). Identical pattern to UnCrackable-Level1.C0002c.",
+      "method_renames": [
+        {"original": "m2174a", "suggested": "checkSuInPath", "confidence": 0.95, "evidence": "Iterates System.getenv(\"PATH\").split(\":\") looking for 'su' file existence."},
+        {"original": "m2175b", "suggested": "checkTestKeysBuildTag", "confidence": 0.95, "evidence": "str.contains(\"test-keys\") on Build.TAGS."},
+        {"original": "m2176c", "suggested": "checkRootFiles", "confidence": 0.95, "evidence": "Hard-coded list including /system/app/Superuser.apk, /system/xbin/daemonsu, /system/etc/.installed_su_daemon, /dev/com.koushikdutta.superuser.daemon/."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Three sibling boolean methods, each clearly recognisable as a root-detection heuristic. Caller pattern (MainActivity.onCreate invokes m2174a() || m2175b() || m2176c() → \"Root detected!\" dialog) confirms intent. Direct copy of Level1 utility."
+    }
+  ],
+  "summary": {
+    "n_classes_attempted": 2,
+    "n_classes_with_class_rename": 2,
+    "n_methods_attempted": 4,
+    "n_method_renames_emitted": 4,
+    "mean_class_confidence": 0.94,
+    "mean_method_confidence": 0.9425
+  }
+}

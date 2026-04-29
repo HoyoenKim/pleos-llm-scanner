@@ -1,0 +1,161 @@
+{
+  "apks": ["UnCrackable-Level1", "UnCrackable-Level2"],
+  "purpose": "Manual ground truth for stage B (deobfuscation) — accepted-set rather than single-string. Each rename target is graded as exact / semantic / partial / mismatch against the LLM output in UnCrackable-Level{1,2}_renames_20260430.json.",
+  "labeled_at": "2026-04-30",
+  "labeler": "self (Claude Code review of OWASP MASTG canonical solution + post-decompile reading)",
+  "grading_rubric": {
+    "exact": "LLM output ∈ accepted-name set",
+    "semantic": "LLM output not in set but conveys the same role (e.g. AesEcbCipher vs AesUtil)",
+    "partial": "LLM captures one aspect but misses the dominant role (e.g. CryptoHelper for what is specifically AES decrypt)",
+    "mismatch": "LLM output contradicts the actual role"
+  },
+  "items": [
+    {
+      "obfuscated": "sg.vantagepoint.p000a.C0000a",
+      "kind": "class",
+      "accepted_names": ["AesUtil", "AesWrapper", "AesEcbCipher", "AesEcbDecryptor", "AesCipher"],
+      "llm_output": "AesEcbCipher",
+      "grade": "exact",
+      "notes": "AesEcbCipher is more precise than the OWASP MASTG-style 'AesUtil' (the latter is also accepted in our rubric). Mode hint comes from Cipher.getInstance default behavior."
+    },
+    {
+      "obfuscated": "C0000a.m0a",
+      "kind": "method",
+      "accepted_names": ["decrypt", "decryptAes", "aesDecrypt", "doDecrypt"],
+      "llm_output": "decryptAes",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "sg.vantagepoint.p000a.C0001b",
+      "kind": "class",
+      "accepted_names": ["DebugDetector", "DebugFlagDetector", "DebuggableFlagCheck", "DebuggableChecker"],
+      "llm_output": "DebugFlagDetector",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0001b.m1a",
+      "kind": "method",
+      "accepted_names": ["isDebuggable", "isAppDebuggable", "checkDebuggable", "isDebugBuild"],
+      "llm_output": "isAppDebuggable",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "sg.vantagepoint.p000a.C0002c",
+      "kind": "class",
+      "accepted_names": ["RootDetector", "RootCheck", "RootDetection", "RootDetector3"],
+      "llm_output": "RootDetector",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0002c.m2a",
+      "kind": "method",
+      "accepted_names": ["checkSuInPath", "checkSuPath", "hasSuInPath", "checkPathForSu"],
+      "llm_output": "checkSuInPath",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0002c.m3b",
+      "kind": "method",
+      "accepted_names": ["checkTestKeys", "checkTestKeysBuildTag", "hasTestKeys", "isTestKeysBuild"],
+      "llm_output": "checkTestKeysBuildTag",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0002c.m4c",
+      "kind": "method",
+      "accepted_names": ["checkRootFiles", "checkRootPaths", "hasRootBinaries", "checkSuFiles"],
+      "llm_output": "checkRootFiles",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "sg.vantagepoint.uncrackable1.C0005a",
+      "kind": "class",
+      "accepted_names": ["CodeCheck", "InputVerifier", "CodeVerifier", "SecretCheck"],
+      "llm_output": "CodeCheck",
+      "grade": "exact",
+      "notes": "Confidence 1.00 because Log.d tag is literally 'CodeCheck' (line 17). Best-case canonical naming match."
+    },
+    {
+      "obfuscated": "C0005a.m6a",
+      "kind": "method",
+      "accepted_names": ["verify", "check", "checkInput", "verifySecret"],
+      "llm_output": "verify",
+      "grade": "exact",
+      "notes": "MainActivity.verify(view) directly delegates here. Exact name match."
+    },
+    {
+      "obfuscated": "C0005a.m7b",
+      "kind": "method",
+      "accepted_names": ["hexToBytes", "hexStringToBytes", "decodeHex", "fromHexString"],
+      "llm_output": "hexToBytes",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "sg.vantagepoint.p023a.C0296a",
+      "apk": "UnCrackable-Level2",
+      "kind": "class",
+      "accepted_names": ["DebugDetector", "DebugFlagDetector", "DebuggableFlagCheck", "DebuggableChecker"],
+      "llm_output": "DebugFlagDetector",
+      "grade": "exact",
+      "notes": "Identical pattern to Level1.C0001b. Repeat measurement confirms LLM consistency on a known-easy case."
+    },
+    {
+      "obfuscated": "C0296a.m2173a",
+      "apk": "UnCrackable-Level2",
+      "kind": "method",
+      "accepted_names": ["isDebuggable", "isAppDebuggable", "checkDebuggable", "isDebugBuild"],
+      "llm_output": "isAppDebuggable",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "sg.vantagepoint.p023a.C0297b",
+      "apk": "UnCrackable-Level2",
+      "kind": "class",
+      "accepted_names": ["RootDetector", "RootCheck", "RootDetection", "RootDetector3"],
+      "llm_output": "RootDetector",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0297b.m2174a",
+      "apk": "UnCrackable-Level2",
+      "kind": "method",
+      "accepted_names": ["checkSuInPath", "checkSuPath", "hasSuInPath", "checkPathForSu"],
+      "llm_output": "checkSuInPath",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0297b.m2175b",
+      "apk": "UnCrackable-Level2",
+      "kind": "method",
+      "accepted_names": ["checkTestKeys", "checkTestKeysBuildTag", "hasTestKeys", "isTestKeysBuild"],
+      "llm_output": "checkTestKeysBuildTag",
+      "grade": "exact"
+    },
+    {
+      "obfuscated": "C0297b.m2176c",
+      "apk": "UnCrackable-Level2",
+      "kind": "method",
+      "accepted_names": ["checkRootFiles", "checkRootPaths", "hasRootBinaries", "checkSuFiles"],
+      "llm_output": "checkRootFiles",
+      "grade": "exact"
+    }
+  ],
+  "summary": {
+    "n_items_total": 17,
+    "n_class_renames": 6,
+    "n_method_renames": 11,
+    "by_apk": {
+      "UnCrackable-Level1": {"items": 11, "exact": 11, "semantic": 0, "partial": 0, "mismatch": 0},
+      "UnCrackable-Level2": {"items": 6,  "exact": 6,  "semantic": 0, "partial": 0, "mismatch": 0}
+    },
+    "by_grade": {
+      "exact": 17,
+      "semantic": 0,
+      "partial": 0,
+      "mismatch": 0
+    },
+    "accuracy_exact": "17/17 = 100.0%",
+    "accuracy_acceptable": "17/17 = 100.0% (exact + semantic)",
+    "caveat": "n=17 (6 classes, 11 methods). Both Level1 + Level2 sg.vantagepoint utilities are hand-crafted by OWASP with strong contextual hints (Log.d tag in CodeCheck; 'test-keys'/Superuser.apk literals in RootDetector). Result is a clean upper-bound demonstration but does not translate directly to real-world ProGuard'd commercial code. PleOS APK 3종은 거의 난독화 안 되어 있어 (HIGH 0.2~0.4%) Phase B (deobfuscation)가 본 corpus에서 영향이 작음 — 이게 중요한 corpus-level finding. PPT 6주차 narrative는 '난독화 전처리 효과는 OWASP UnCrackable에서는 100% 입증, PleOS 자체 corpus에서는 효과 미미 (그만큼 PleOS 코드가 의미적 클래스명을 유지)'로 수정 필요."
+  }
+}

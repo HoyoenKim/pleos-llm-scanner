@@ -1,0 +1,92 @@
+{
+  "root": "data\\decompiled\\UnCrackable-Level2",
+  "summary": {
+    "n_classes": 5,
+    "high_obf": 2,
+    "medium_obf": 0,
+    "low_obf": 3,
+    "high_obf_ratio": 0.4,
+    "mean_composite": 0.529,
+    "mean_jadx_ratio": 0.507
+  },
+  "results": [
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level2\\sources\\sg\\vantagepoint\\p023a\\C0296a.java",
+      "class_name": "C0296a",
+      "n_methods": 1,
+      "n_fields": 0,
+      "n_total_ids": 2,
+      "mean_id_len": 6.0,
+      "mean_id_entropy": 2.585,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.95,
+      "sample_obf_ids": [
+        "C0296a",
+        "m2173a"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level2\\sources\\sg\\vantagepoint\\p023a\\C0297b.java",
+      "class_name": "C0297b",
+      "n_methods": 3,
+      "n_fields": 0,
+      "n_total_ids": 4,
+      "mean_id_len": 6.0,
+      "mean_id_entropy": 2.585,
+      "jadx_obf_ratio": 1.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.95,
+      "sample_obf_ids": [
+        "C0297b",
+        "m2174a",
+        "m2175b",
+        "m2176c"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level2\\sources\\sg\\vantagepoint\\uncrackable2\\CodeCheck.java",
+      "class_name": "CodeCheck",
+      "n_methods": 2,
+      "n_fields": 0,
+      "n_total_ids": 3,
+      "mean_id_len": 6.0,
+      "mean_id_entropy": 2.187,
+      "jadx_obf_ratio": 0.333,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.331,
+      "sample_obf_ids": [
+        "m2177a"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level2\\sources\\sg\\vantagepoint\\uncrackable2\\MainActivity.java",
+      "class_name": "MainActivity",
+      "n_methods": 8,
+      "n_fields": 1,
+      "n_total_ids": 10,
+      "mean_id_len": 8.3,
+      "mean_id_entropy": 2.693,
+      "jadx_obf_ratio": 0.2,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.139,
+      "sample_obf_ids": [
+        "m2178a",
+        "f1998m"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level2\\sources\\owasp\\mstg\\uncrackable2\\R.java",
+      "class_name": "is",
+      "n_methods": 0,
+      "n_fields": 1200,
+      "n_total_ids": 1201,
+      "mean_id_len": 26.55,
+      "mean_id_entropy": 3.604,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.001,
+      "composite_obf_score": 0.277,
+      "sample_obf_ids": []
+    }
+  ]
+}

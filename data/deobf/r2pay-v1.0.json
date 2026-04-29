@@ -1,0 +1,44 @@
+{
+  "root": "data\\decompiled\\r2pay-v1.0",
+  "summary": {
+    "n_classes": 2,
+    "high_obf": 0,
+    "medium_obf": 0,
+    "low_obf": 2,
+    "high_obf_ratio": 0.0,
+    "mean_composite": 0.246,
+    "mean_jadx_ratio": 0.15
+  },
+  "results": [
+    {
+      "file_path": "data\\decompiled\\r2pay-v1.0\\sources\\re\\pwnme\\MainActivity.java",
+      "class_name": "MainActivity",
+      "n_methods": 6,
+      "n_fields": 3,
+      "n_total_ids": 10,
+      "mean_id_len": 6.9,
+      "mean_id_entropy": 2.403,
+      "jadx_obf_ratio": 0.3,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.216,
+      "sample_obf_ids": [
+        "f507",
+        "f508",
+        "f509"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\r2pay-v1.0\\sources\\re\\pwnme\\R.java",
+      "class_name": "is",
+      "n_methods": 0,
+      "n_fields": 1242,
+      "n_total_ids": 1243,
+      "mean_id_len": 26.44,
+      "mean_id_entropy": 3.599,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.001,
+      "composite_obf_score": 0.277,
+      "sample_obf_ids": []
+    }
+  ]
+}

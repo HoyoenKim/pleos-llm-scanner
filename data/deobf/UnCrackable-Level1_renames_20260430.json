@@ -1,0 +1,64 @@
+{
+  "apk": "UnCrackable-Level1",
+  "stage": "stage_b_deobfuscate",
+  "model": "claude-opus-4-7",
+  "analyzed_at": "2026-04-30",
+  "input_filter": "obfuscation entropy composite_obf_score >= 0.45 (per src/deobf/entropy.py)",
+  "renames": [
+    {
+      "original_class": "sg.vantagepoint.p000a.C0000a",
+      "suggested_class_name": "AesEcbCipher",
+      "confidence_class": 0.85,
+      "role_description": "AES wrapper that invokes Cipher.getInstance(\"AES\") with a SecretKeySpec passed by the caller; effectively AES/ECB/PKCS5Padding (provider default).",
+      "method_renames": [
+        {"original": "m0a", "suggested": "decryptAes", "confidence": 0.85, "evidence": "Returns cipher.doFinal(bArr2) after init(DECRYPT_MODE, secretKeySpec). Public byte[] (byte[] key, byte[] ciphertext) signature."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Imports javax.crypto.Cipher + SecretKeySpec. Body: SecretKeySpec(bArr, \"AES/ECB/PKCS7Padding\"); Cipher.getInstance(\"AES\"); init(2, ...); doFinal. The SecretKeySpec algorithm string is misleading — only the Cipher.getInstance arg controls the mode."
+    },
+    {
+      "original_class": "sg.vantagepoint.p000a.C0001b",
+      "suggested_class_name": "DebugFlagDetector",
+      "confidence_class": 0.92,
+      "role_description": "Single static method returning true if the application's manifest sets android:debuggable (FLAG_DEBUGGABLE = 0x2).",
+      "method_renames": [
+        {"original": "m1a", "suggested": "isAppDebuggable", "confidence": 0.92, "evidence": "Returns (context.getApplicationContext().getApplicationInfo().flags & 2) != 0; the bitmask 0x2 is android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Single 1-line method; FLAG_DEBUGGABLE bitmask check is unambiguous. No string literals but the bit-twiddle pattern is canonical."
+    },
+    {
+      "original_class": "sg.vantagepoint.p000a.C0002c",
+      "suggested_class_name": "RootDetector",
+      "confidence_class": 0.96,
+      "role_description": "Three independent static heuristics for detecting a rooted device: PATH 'su' file search, Build.TAGS 'test-keys' substring match, and a hard-coded list of known SU-related file paths.",
+      "method_renames": [
+        {"original": "m2a", "suggested": "checkSuInPath", "confidence": 0.95, "evidence": "Iterates System.getenv(\"PATH\").split(\":\") looking for 'su' file existence — canonical path-based root check."},
+        {"original": "m3b", "suggested": "checkTestKeysBuildTag", "confidence": 0.95, "evidence": "str.contains(\"test-keys\") on Build.TAGS — distinctive AOSP debug-build signature commonly used for root detection."},
+        {"original": "m4c", "suggested": "checkRootFiles", "confidence": 0.95, "evidence": "Hard-coded list including /system/app/Superuser.apk, /system/xbin/daemonsu, /system/etc/.installed_su_daemon, /dev/com.koushikdutta.superuser.daemon/. All known SU-related artefacts."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Three sibling boolean methods, each clearly recognisable as a root-detection heuristic. Caller pattern (MainActivity invokes m2a() || m3b() || m4c() → \"Root detected!\" dialog) confirms intent."
+    },
+    {
+      "original_class": "sg.vantagepoint.uncrackable1.C0005a",
+      "suggested_class_name": "CodeCheck",
+      "confidence_class": 1.00,
+      "role_description": "Verifies user input by AES-ECB-decrypting a hardcoded ciphertext under a hardcoded key, then string-comparing the result to the user input.",
+      "method_renames": [
+        {"original": "m6a", "suggested": "verify", "confidence": 0.92, "evidence": "Public boolean (String) signature, body decrypts hardcoded ciphertext and returns str.equals(decryptedSecret). Caller (MainActivity.verify) confirms the role."},
+        {"original": "m7b", "suggested": "hexToBytes", "confidence": 0.95, "evidence": "Pure helper: walks pairs of hex chars, returns byte[]. Standard hex-string → byte-array converter."}
+      ],
+      "field_renames": [],
+      "evidence_summary": "Log.d tag literally says \"CodeCheck\" (line 17 in C0005a.java). Class name confidence is therefore maximum. The verify-method comparison and hex-decoder helper are also unambiguous."
+    }
+  ],
+  "summary": {
+    "n_classes_attempted": 4,
+    "n_classes_with_class_rename": 4,
+    "n_methods_attempted": 7,
+    "n_method_renames_emitted": 7,
+    "mean_class_confidence": 0.9325,
+    "mean_method_confidence": 0.9128
+  }
+}
