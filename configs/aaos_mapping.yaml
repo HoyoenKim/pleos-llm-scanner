@@ -1,0 +1,66 @@
+version: 0.1
+source: "Android Automotive OS Security — https://source.android.com/docs/automotive/start/secure_aaos"
+
+# 카테고리(keywords.yaml의 키와 동일) → AAOS 가이드라인 섹션
+mappings:
+  crypto:
+    aaos_section: "4.2 Credential Protection"
+    description: "암호화 알고리즘 선택, 키 관리, 키스토어 사용"
+    related_findings:
+      - "약한 알고리즘 (MD5, SHA-1, DES, RC4)"
+      - "ECB 모드 또는 정적 IV"
+      - "하드코딩된 키/Salt"
+
+  hardcoded:
+    aaos_section: "4.2 Credential Protection"
+    description: "비밀(키, 토큰, 비밀번호)을 코드에 직접 박지 않을 것 — Android Keystore 또는 환경 분리"
+    related_findings:
+      - "API key / access token literal"
+      - "DB 비밀번호 / OAuth secret literal"
+      - "PEM 형식 private key embedded"
+
+  network:
+    aaos_section: "5.1 Communication Security"
+    description: "TLS 강제, 평문 HTTP 금지, 인증서 검증 우회 금지"
+    related_findings:
+      - "http:// 평문 통신"
+      - "TrustManager / HostnameVerifier 우회"
+      - "WebView setJavaScriptEnabled(true) + setAllowFileAccess(true) 결합"
+
+  permission:
+    aaos_section: "3.7 Permission Model"
+    description: "런타임 권한 요청, 위험 권한 사용 정당성, 부여된 권한 범위 검증"
+    related_findings:
+      - "위험 권한(CAMERA, RECORD_AUDIO, ACCESS_FINE_LOCATION) 사용처"
+      - "checkPermission/checkSelfPermission 누락"
+      - "GRANT_RUNTIME_PERMISSIONS 동적 부여"
+
+  intent:
+    aaos_section: "3.7 Permission Model"
+    description: "exported 컴포넌트 최소화, 암묵 인텐트로 민감 데이터 송출 금지, PendingIntent 불변(IMMUTABLE) 원칙"
+    related_findings:
+      - 'android:exported="true" 컴포넌트'
+      - "암묵 인텐트로 외부 앱과 통신"
+      - "PendingIntent.FLAG_MUTABLE 사용"
+
+  reflection_dynamic:
+    aaos_section: "(보안 코딩 일반 — DEX 무결성)"
+    description: "동적 코드 로딩, 리플렉션, Runtime.exec — 외부 입력으로 invoke 시 권한 우회 위험"
+    related_findings:
+      - "DexClassLoader / PathClassLoader로 외부 dex 로드"
+      - "Class.forName / Method.invoke로 가시성 우회"
+      - "Runtime.getRuntime().exec(외부 입력)"
+
+# TARA 자산-위협 연결용 보조 키
+tara:
+  asset_categories:
+    - "차량 제어 명령"
+    - "사용자 자격증명"
+    - "위치/센서 데이터"
+    - "차량 식별자(VIN, IMEI)"
+  threat_categories:
+    - "Spoofing"
+    - "Tampering"
+    - "Information Disclosure"
+    - "Denial of Service"
+    - "Elevation of Privilege"

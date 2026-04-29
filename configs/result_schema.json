@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PleOS LLM Scanner — Vulnerability Result",
+  "type": "object",
+  "required": ["class", "findings"],
+  "properties": {
+    "class": {
+      "type": "string",
+      "description": "Fully-qualified class name (e.g. com.example.foo.BarActivity)"
+    },
+    "source_file": {
+      "type": "string",
+      "description": "Path to the decompiled .java file relative to the APK output directory"
+    },
+    "stage": {
+      "type": "string",
+      "enum": ["stage1", "stage2", "stage3"],
+      "description": "Pipeline stage that produced this result"
+    },
+    "model": {
+      "type": "string",
+      "description": "Model identifier used (e.g. claude-opus-4-7, claude-sonnet-4-6, claude-haiku-4-5)"
+    },
+    "analyzed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["line", "category", "severity", "title", "evidence", "rationale", "confidence"],
+        "properties": {
+          "line": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Line number in source_file (1-indexed)"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["crypto", "network", "permission", "intent", "hardcoded", "reflection_dynamic"]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Verbatim 1-3 lines of the offending source"
+          },
+          "rationale": {
+            "type": "string",
+            "description": "1-2 sentence explanation of why this is a vulnerability"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "aaos_mapping": {
+            "type": "string",
+            "description": "Resolved AAOS guideline section (auto-filled from configs/aaos_mapping.yaml)"
+          },
+          "verified_by": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["regex_rule", "ast_rule", "stage2_llm", "stage3_consensus"]
+            }
+          },
+          "false_positive": {
+            "type": "boolean",
+            "description": "Marked true after manual review during evaluation"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+crypto:
+  patterns:
+    - 'javax\.crypto\.Cipher'
+    - 'java\.security\.MessageDigest'
+    - '\bAES\b|\bDES\b|\bRSA\b|\bMD5\b|\bSHA[-_]?1\b'
+    - 'KeyStore|SecretKeySpec|IvParameterSpec'
+  severity: high
+
+network:
+  patterns:
+    - 'http://'
+    - 'HttpURLConnection|OkHttp|Retrofit'
+    - 'WebView'
+    - 'setJavaScriptEnabled\s*\(\s*true'
+    - 'TrustManager|HostnameVerifier'
+    - 'setAllowFileAccess|setAllowContentAccess'
+  severity: medium
+
+permission:
+  patterns:
+    - 'requestPermissions|checkSelfPermission|checkPermission'
+    - 'GRANT_RUNTIME_PERMISSIONS'
+    - 'android\.permission\.(CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|READ_CONTACTS|READ_SMS)'
+  severity: medium
+
+intent:
+  patterns:
+    - 'android:exported="true"'
+    - 'sendBroadcast|sendOrderedBroadcast'
+    - 'PendingIntent\.FLAG_MUTABLE'
+    - 'startActivityForResult'
+  severity: medium
+
+hardcoded:
+  patterns:
+    - '"AKIA[A-Z0-9]{16}"'
+    - '"sk_live_[A-Za-z0-9]{20,}"'
+    - '"-----BEGIN [A-Z ]*PRIVATE KEY-----"'
+    - '(?i)(api[_-]?key|secret|token|password)\s*=\s*"[^"]{16,}"'
+  severity: high
+
+reflection_dynamic:
+  patterns:
+    - 'Class\.forName|Method\.invoke'
+    - 'DexClassLoader|PathClassLoader'
+    - 'Runtime\.getRuntime\(\)\.exec'
+  severity: medium
