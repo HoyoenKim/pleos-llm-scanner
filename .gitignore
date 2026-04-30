@@ -18,8 +18,13 @@ Thumbs.db
 data/apks/
 data/decompiled/
 
-# Reports — private until report-finalisation review
-data/reports/
+# Reports — per-APK private until report-finalisation review
+# (directory itself NOT ignored so meta-analysis tables can opt-in via negation)
+data/reports/*.json
+data/reports/*.md
+# Exception: meta-analysis aggregation tables (no PleOS source, GT-derived only)
+!data/reports/aaos_mapping_table_*
+!data/reports/tara_artifact_*
 
 # PPT — private until report-finalisation review
 *.pptx

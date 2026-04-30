@@ -1,66 +1,160 @@
-version: 0.1
-source: "Android Automotive OS Security — https://source.android.com/docs/automotive/start/secure_aaos"
+version: 0.2
+updated: 2026-04-30
+source:
+  aaos: "Android Automotive OS Security — https://source.android.com/docs/automotive/start/secure_aaos"
+  android_security: "Android App Security best practices — https://developer.android.com/topic/security/best-practices"
+  masvs: "OWASP MASVS v2 — https://mas.owasp.org/MASVS/"
 
-# 카테고리(keywords.yaml의 키와 동일) → AAOS 가이드라인 섹션
+# 카테고리(keywords.yaml의 키와 동일) → AAOS / MASVS / TARA 매핑
 mappings:
   crypto:
     aaos_section: "4.2 Credential Protection"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos#credential-protection"
+    masvs_categories: ["MASVS-CRYPTO-1", "MASVS-CRYPTO-2"]
     description: "암호화 알고리즘 선택, 키 관리, 키스토어 사용"
     related_findings:
       - "약한 알고리즘 (MD5, SHA-1, DES, RC4)"
       - "ECB 모드 또는 정적 IV"
       - "하드코딩된 키/Salt"
+      - "PBKDF2 미사용 passphrase-to-key"
+    tara_threat_class: "Information Disclosure"
+    tara_impact: "키 노출 → 데이터 복호화 가능"
 
   hardcoded:
     aaos_section: "4.2 Credential Protection"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos#credential-protection"
+    masvs_categories: ["MASVS-STORAGE-2", "MASVS-CRYPTO-1", "MASVS-AUTH-2"]
     description: "비밀(키, 토큰, 비밀번호)을 코드에 직접 박지 않을 것 — Android Keystore 또는 환경 분리"
     related_findings:
       - "API key / access token literal"
       - "DB 비밀번호 / OAuth secret literal"
       - "PEM 형식 private key embedded"
+      - "BuildConfig 상수를 KDF passphrase로 사용"
+      - "data class toString() 토큰/PII 누출"
+    tara_threat_class: "Information Disclosure"
+    tara_impact: "APK 디컴파일로 모든 인스턴스 동일 키 도출"
 
   network:
     aaos_section: "5.1 Communication Security"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos#communication-security"
+    masvs_categories: ["MASVS-NETWORK-1", "MASVS-NETWORK-2"]
     description: "TLS 강제, 평문 HTTP 금지, 인증서 검증 우회 금지"
     related_findings:
       - "http:// 평문 통신"
+      - "gRPC .usePlaintext()"
       - "TrustManager / HostnameVerifier 우회"
       - "WebView setJavaScriptEnabled(true) + setAllowFileAccess(true) 결합"
+      - "Certificate pinning 미적용"
+    tara_threat_class: "Information Disclosure / Tampering"
+    tara_impact: "MITM으로 평문 트래픽 관찰 + 변조"
 
   permission:
     aaos_section: "3.7 Permission Model"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos#permissions"
+    masvs_categories: ["MASVS-PLATFORM-1", "MASVS-PLATFORM-3"]
     description: "런타임 권한 요청, 위험 권한 사용 정당성, 부여된 권한 범위 검증"
     related_findings:
       - "위험 권한(CAMERA, RECORD_AUDIO, ACCESS_FINE_LOCATION) 사용처"
       - "checkPermission/checkSelfPermission 누락"
       - "GRANT_RUNTIME_PERMISSIONS 동적 부여"
+      - "system UID에서 caller-controlled 권한 부여"
+    tara_threat_class: "Elevation of Privilege"
+    tara_impact: "악성 앱이 정상 앱 권한 강제 회수 또는 비정상 부여"
 
   intent:
     aaos_section: "3.7 Permission Model"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos#permissions"
+    masvs_categories: ["MASVS-PLATFORM-1", "MASVS-PLATFORM-2"]
     description: "exported 컴포넌트 최소화, 암묵 인텐트로 민감 데이터 송출 금지, PendingIntent 불변(IMMUTABLE) 원칙"
     related_findings:
       - 'android:exported="true" 컴포넌트'
       - "암묵 인텐트로 외부 앱과 통신"
       - "PendingIntent.FLAG_MUTABLE 사용"
+      - "ContentProvider permission 미설정"
+      - "Receiver signature 가드 누락"
+    tara_threat_class: "Spoofing / Tampering / Information Disclosure / DoS"
+    tara_impact: "외부 앱의 컴포넌트 호출로 민감 데이터/제어/DoS"
 
   reflection_dynamic:
     aaos_section: "(보안 코딩 일반 — DEX 무결성)"
+    aaos_url: "https://source.android.com/docs/automotive/start/secure_aaos"
+    masvs_categories: ["MASVS-CODE-2", "MASVS-CODE-4"]
     description: "동적 코드 로딩, 리플렉션, Runtime.exec — 외부 입력으로 invoke 시 권한 우회 위험"
     related_findings:
       - "DexClassLoader / PathClassLoader로 외부 dex 로드"
       - "Class.forName / Method.invoke로 가시성 우회"
       - "Runtime.getRuntime().exec(외부 입력)"
+    tara_threat_class: "Tampering / Elevation of Privilege"
+    tara_impact: "외부 입력으로 임의 코드 실행"
 
 # TARA 자산-위협 연결용 보조 키
 tara:
   asset_categories:
-    - "차량 제어 명령"
-    - "사용자 자격증명"
-    - "위치/센서 데이터"
-    - "차량 식별자(VIN, IMEI)"
+    vehicle_control:
+      label: "차량 제어 명령"
+      examples: ["seat / climate / door / engine commands", "Gleo car action API"]
+      impact_if_compromised: "차량 안전 손상, 운전자 위협"
+    user_credentials:
+      label: "사용자 자격증명"
+      examples: ["OAuth tokens", "user_id / passwords", "session keys"]
+      impact_if_compromised: "계정 탈취, 차량 원격 제어"
+    pii:
+      label: "개인정보 (PII)"
+      examples: ["UUID, 생년월일, 이메일, 이름", "위치 / 센서 데이터"]
+      impact_if_compromised: "GDPR/개인정보보호법 위반, 평판 손상"
+    vehicle_identifier:
+      label: "차량 식별자"
+      examples: ["VIN", "IMEI", "systemID"]
+      impact_if_compromised: "차량 추적, 핀포인트 공격"
+    diagnostic_data:
+      label: "진단/시스템 로그"
+      examples: ["syslog", "modem diagnostic", "vehicle state telemetry"]
+      impact_if_compromised: "공격 표면 정보 수집, 차량 상태 추정"
+    llm_corpus:
+      label: "LLM 시스템 프롬프트 / 모델"
+      examples: ["IVI LLM system prompts", "GGUF model files"]
+      impact_if_compromised: "Prompt injection / model jailbreak / DoS"
+
   threat_categories:
-    - "Spoofing"
-    - "Tampering"
-    - "Information Disclosure"
-    - "Denial of Service"
-    - "Elevation of Privilege"
+    - id: "S"
+      label: "Spoofing"
+      description: "정상 컴포넌트로 위장하거나 외부 앱이 신뢰된 sender 흉내"
+    - id: "T"
+      label: "Tampering"
+      description: "데이터 변조 (intent extra, broadcast payload)"
+    - id: "I"
+      label: "Information Disclosure"
+      description: "민감 데이터 외부 노출 (평문 송출, 키 노출, 로그 leak)"
+    - id: "D"
+      label: "Denial of Service"
+      description: "정상 동작 방해 (프로세스 강제 종료, 리소스 삭제)"
+    - id: "E"
+      label: "Elevation of Privilege"
+      description: "권한 상승 (system UID 컴포넌트 통한 권한 조작)"
+
+# Finding-level 매핑 (combined_labels_20260430.json의 18 finding을 자산/위협으로 재매핑)
+finding_tara_assignments:
+  vc-1:  {asset: "diagnostic_data", threats: ["I"], note: "WebView setAllowFileAccess — TP였다면 LFI 가능. FP CONFIRMED (Stage 2.b OTA-trusted source)"}
+  vc-2:  {asset: "diagnostic_data", threats: ["T"], note: "WebView loadUrl 미검증 — FP CONFIRMED (4중 차단)"}
+  vc-3:  {asset: "user_credentials", threats: ["E"], note: "AppPermissionManager grantRuntimePermission caller-controlled pkg — FP CONFIRMED (NavRouter binding 부재)"}
+  vc-4:  {asset: "user_credentials", threats: ["E", "D"], note: "revokeRuntimePermission 동일 — FP CONFIRMED"}
+  vc-5:  {asset: "vehicle_control", threats: ["I"], note: "GleoActionSender implicit broadcast — TP CONFIRMED, response JSON 외부 가시"}
+  vc-6:  {asset: "vehicle_control", threats: ["S", "T"], note: "VehicleBroadcastReceiver macAddress 미검증 — TP CONFIRMED, exported"}
+  vc-7:  {asset: "diagnostic_data", threats: ["I"], note: "registerReceiver flag 미지정 — TP LOW (API 34 hardening)"}
+  ssl-1: {asset: "user_credentials", threats: ["I"], note: "ECCCrypto KDF (BuildConfig.IDENTIFIER) — TP HIGH, 모든 device 동일 키"}
+  ssl-2: {asset: "user_credentials", threats: ["I"], note: "AuthData.toString() — TP HIGH, logcat 누출 가능"}
+  ssl-3: {asset: "diagnostic_data", threats: ["I"], note: "CCGAuthenticator hardcoded endpoint + secret POST — TP MEDIUM"}
+  lmp-1: {asset: "llm_corpus", threats: ["I"], note: "PromptsContentProvider exported — TP HIGH, prompt injection chain"}
+  lmp-2: {asset: "llm_corpus", threats: ["D"], note: "LLMModelProviderReceiver 외부 앱 모델 삭제/process kill — TP MEDIUM"}
+  ssl-4: {asset: "pii", threats: ["I"], note: "HmgUserInfo PII toString — TP HIGH, GDPR/개인정보보호법"}
+  ssl-5: {asset: "user_credentials", threats: ["I"], note: "BuildConfig.IDENTIFIER as KDF passphrase — TP HIGH, ssl-1과 동일 chain의 hardcoded layer"}
+  ssl-6: {asset: "diagnostic_data", threats: ["I", "T"], note: "gRPC .usePlaintext() — TP HIGH, 평문 syslog + systemID"}
+  ucl1-1: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 hardcoded AES key (sg.vantagepoint.uncrackable1.C0005a:15) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"}
+  ucl1-2: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 weak crypto (sg.vantagepoint.p000a.C0000a:15) — TP MEDIUM, MASVS-CRYPTO-1"}
+  ucl1-3: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3"}
+
+# Future Work — coverage gap
+future_work:
+  - "AAOS §4.1 Lockscreen / §4.3 Biometric — 본 corpus 미해당"
+  - "AAOS §6 OTA / Verified Boot — 정적 분석 범위 외, OTA 게이팅 통합 시 보강"
+  - "MASVS-RESILIENCE — 본 파이프라인은 obfuscation 측정만, anti-tamper 항목은 native 의존 (Phase B-4.c boundary)"

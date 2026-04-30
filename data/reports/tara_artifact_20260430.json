@@ -1,0 +1,287 @@
+{
+  "scenarios": [
+    {
+      "scenario_id": "TS-VC-5",
+      "finding_id": "vc-5",
+      "apk": "ai.umos.vehiclecontrol",
+      "asset": "차량 제어 명령",
+      "asset_key": "vehicle_control",
+      "asset_criticality": "Severe",
+      "stage1_category": "intent",
+      "stage1_severity": "medium",
+      "true_severity": "medium",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Severe",
+      "attack_feasibility": "High",
+      "risk_level": "Critical",
+      "treatment": "Avoid (must fix before release)",
+      "source": "self",
+      "note": "GleoActionSender implicit broadcast — TP CONFIRMED, response JSON 외부 가시"
+    },
+    {
+      "scenario_id": "TS-VC-6",
+      "finding_id": "vc-6",
+      "apk": "ai.umos.vehiclecontrol",
+      "asset": "차량 제어 명령",
+      "asset_key": "vehicle_control",
+      "asset_criticality": "Severe",
+      "stage1_category": "intent",
+      "stage1_severity": "medium",
+      "true_severity": "high",
+      "threats": [
+        "S (Spoofing)",
+        "T (Tampering)"
+      ],
+      "impact": "Severe",
+      "attack_feasibility": "High",
+      "risk_level": "Critical",
+      "treatment": "Avoid (must fix before release)",
+      "source": "self",
+      "note": "VehicleBroadcastReceiver macAddress 미검증 — TP CONFIRMED, exported"
+    },
+    {
+      "scenario_id": "TS-VC-7",
+      "finding_id": "vc-7",
+      "apk": "ai.umos.vehiclecontrol",
+      "asset": "진단/시스템 로그",
+      "asset_key": "diagnostic_data",
+      "asset_criticality": "Moderate",
+      "stage1_category": "intent",
+      "stage1_severity": "low",
+      "true_severity": "low",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Moderate",
+      "attack_feasibility": "Low",
+      "risk_level": "Low",
+      "treatment": "Accept with monitoring",
+      "source": "self",
+      "note": "registerReceiver flag 미지정 — TP LOW (API 34 hardening)"
+    },
+    {
+      "scenario_id": "TS-SSL-1",
+      "finding_id": "ssl-1",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "crypto",
+      "stage1_severity": "medium",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "Medium",
+      "risk_level": "Medium",
+      "treatment": "Mitigate (next minor release) or Transfer",
+      "source": "self",
+      "note": "ECCCrypto KDF (BuildConfig.IDENTIFIER) — TP HIGH, 모든 device 동일 키"
+    },
+    {
+      "scenario_id": "TS-SSL-2",
+      "finding_id": "ssl-2",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "hardcoded",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "self",
+      "note": "AuthData.toString() — TP HIGH, logcat 누출 가능"
+    },
+    {
+      "scenario_id": "TS-SSL-3",
+      "finding_id": "ssl-3",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "진단/시스템 로그",
+      "asset_key": "diagnostic_data",
+      "asset_criticality": "Moderate",
+      "stage1_category": "network",
+      "stage1_severity": "medium",
+      "true_severity": "medium",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Moderate",
+      "attack_feasibility": "Low",
+      "risk_level": "Low",
+      "treatment": "Accept with monitoring",
+      "source": "self",
+      "note": "CCGAuthenticator hardcoded endpoint + secret POST — TP MEDIUM"
+    },
+    {
+      "scenario_id": "TS-LMP-1",
+      "finding_id": "lmp-1",
+      "apk": "ai.pleos.llm.model.provider",
+      "asset": "LLM 시스템 프롬프트 / 모델",
+      "asset_key": "llm_corpus",
+      "asset_criticality": "Moderate",
+      "stage1_category": "intent",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "self",
+      "note": "PromptsContentProvider exported — TP HIGH, prompt injection chain"
+    },
+    {
+      "scenario_id": "TS-LMP-2",
+      "finding_id": "lmp-2",
+      "apk": "ai.pleos.llm.model.provider",
+      "asset": "LLM 시스템 프롬프트 / 모델",
+      "asset_key": "llm_corpus",
+      "asset_criticality": "Moderate",
+      "stage1_category": "intent",
+      "stage1_severity": "medium",
+      "true_severity": "medium",
+      "threats": [
+        "D (Denial of Service)"
+      ],
+      "impact": "Moderate",
+      "attack_feasibility": "High",
+      "risk_level": "Medium",
+      "treatment": "Mitigate (next minor release) or Transfer",
+      "source": "self",
+      "note": "LLMModelProviderReceiver 외부 앱 모델 삭제/process kill — TP MEDIUM"
+    },
+    {
+      "scenario_id": "TS-SSL-4",
+      "finding_id": "ssl-4",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "개인정보 (PII)",
+      "asset_key": "pii",
+      "asset_criticality": "Major",
+      "stage1_category": "hardcoded",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "self",
+      "note": "HmgUserInfo PII toString — TP HIGH, GDPR/개인정보보호법"
+    },
+    {
+      "scenario_id": "TS-SSL-5",
+      "finding_id": "ssl-5",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "hardcoded",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "self",
+      "note": "BuildConfig.IDENTIFIER as KDF passphrase — TP HIGH, ssl-1과 동일 chain의 hardcoded layer"
+    },
+    {
+      "scenario_id": "TS-SSL-6",
+      "finding_id": "ssl-6",
+      "apk": "ai.pleos.sync.syslog",
+      "asset": "진단/시스템 로그",
+      "asset_key": "diagnostic_data",
+      "asset_criticality": "Moderate",
+      "stage1_category": "network",
+      "stage1_severity": "medium",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)",
+        "T (Tampering)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "self",
+      "note": "gRPC .usePlaintext() — TP HIGH, 평문 syslog + systemID"
+    },
+    {
+      "scenario_id": "TS-UCL1-1",
+      "finding_id": "ucl1-1",
+      "apk": "UnCrackable-Level1",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "hardcoded",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "mastg",
+      "note": "UnCrackable Level1 hardcoded AES key (sg.vantagepoint.uncrackable1.C0005a:15) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"
+    },
+    {
+      "scenario_id": "TS-UCL1-2",
+      "finding_id": "ucl1-2",
+      "apk": "UnCrackable-Level1",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "crypto",
+      "stage1_severity": "medium",
+      "true_severity": "medium",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "Medium",
+      "risk_level": "Medium",
+      "treatment": "Mitigate (next minor release) or Transfer",
+      "source": "mastg",
+      "note": "UnCrackable Level1 weak crypto (sg.vantagepoint.p000a.C0000a:15) — TP MEDIUM, MASVS-CRYPTO-1"
+    },
+    {
+      "scenario_id": "TS-UCL1-3",
+      "finding_id": "ucl1-3",
+      "apk": "UnCrackable-Level1",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "crypto",
+      "stage1_severity": "low",
+      "true_severity": "low",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "Medium",
+      "risk_level": "Medium",
+      "treatment": "Mitigate (next minor release) or Transfer",
+      "source": "mastg",
+      "note": "UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3"
+    }
+  ],
+  "generated": "2026-04-30"
+}
