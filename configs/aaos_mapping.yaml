@@ -152,6 +152,7 @@ finding_tara_assignments:
   ucl1-1: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 hardcoded AES key (sg.vantagepoint.uncrackable1.C0005a:15) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"}
   ucl1-2: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 weak crypto (sg.vantagepoint.p000a.C0000a:15) — TP MEDIUM, MASVS-CRYPTO-1"}
   ucl1-3: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3"}
+  ucl3-1: {asset: "user_credentials", threats: ["I"], note: "UnCrackable Level3 hardcoded XOR key passed to native init (sg.vantagepoint.uncrackable3.MainActivity:25) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"}
 
 # Future Work — coverage gap
 future_work:

@@ -183,3 +183,23 @@ PPT는 "단일 LLM 1-pass 가설 오탐률 25%" 설정. 측정 22.2%로 **매칭
 | 날짜 | 변경 |
 |---|---|
 | 2026-04-30 | Phase B-4.c.2 완료 — 4 baseline 비교 표 + 정성/정량 분석. PPT 7주차 deliverable 마무리. ③/④ 측정값 부재가 본 연구의 차별 gap임을 narrative화 |
+
+
+---
+
+## 2026-04-30 update (L5 + L2 부분 해소 후 재측정)
+
+| 변형 | 이전 (n=15 또는 n=18) | 현재 (combined n=19) | 변화 |
+|---|---|---|---|
+| A.1 stage 1 only | F1 0.846 (n=15) → 0.875 (n=18) | F1 **0.882** (n=19) | +0.007 |
+| A.2 + stage 2 (caller) | F1 1.000 (P-ceiling) | F1 1.000 | 동일 |
+| A.3 + stage 3 ≥3/3 | F1 0.783 (n=18 artifact) | F1 **0.889** | +0.106 (artifact 해소) |
+| B ≥2/3 (default) | F1 0.952 (PleOS-only n=15) | F1 **0.966** (combined n=19) | +0.014 |
+| B ≥3/3 | F1 0.900 (n=15) | F1 0.889 (n=19) | -0.011 (ucl1-3 2/3) |
+| 1차 오탐률 | 22.2% (n=18) | **21.1%** (n=19) | -1.1%p (가설 25% -3.9%p) |
+
+**해소 작업**:
+- L5: ucl1-1/2/3에 stage 3 multi-prompt 합의(attacker/defender/domain_expert) 평가 추가 → `data/reports/stage3_ensemble_20260429.json` 갱신
+- L2 부분: UnCrackable-Level3 디컴파일 + Stage 1 → ucl3-1 (XOR 키 hardcoded HIGH) 추가, GT 라벨 + stage 3 평가 동시 진행
+
+**전체 재실행**: `src/eval.py`, `src/ablation.py`, `src/aaos_map.py`, `src/tara_generate.py`, `src/deobf/entropy.py` (UnCrackable-Level3 측정 추가), `src/viz/plot_metrics.py` 모두 자동 재생성됨.

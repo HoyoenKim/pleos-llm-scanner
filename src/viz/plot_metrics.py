@@ -120,7 +120,7 @@ def chart_fp_rate_trend() -> None:
     stages = ["1차", "2차", "3차"]
     ppt_hyp = [25.0, 12.0, 7.0]
     actual_pleos = [26.7, 0.0, 0.0]   # n=15
-    actual_combined_stage1 = [22.2, 0.0, 0.0]  # n=18 (stage2/3 PleOS-only 측정 그대로)
+    actual_combined_stage1 = [22.2, 0.0, 0.0]  # n=18 (stage2/3는 L5 해소 후 combined n=18 측정)
     x = np.arange(len(stages))
     width = 0.27
     fig, ax = plt.subplots(figsize=(8.0, 4.4))
@@ -141,7 +141,7 @@ def chart_fp_rate_trend() -> None:
             ax.text(b.get_x() + b.get_width() / 2, h + 0.5, f"{h:.1f}%", ha="center", fontsize=9)
     ax.text(
         0.99, -0.16,
-        "Stage 3 (≥2/3 합의)는 PleOS-only n=15 측정. MASTG 외부 GT는 stage 3 미평가 (Phase B-4.c.2 narrative 참조)",
+        "Stage 3 (≥2/3 합의) — L5 해소 후 combined n=18 측정 (P 100% / R 92.9% / F1 0.963)",
         transform=ax.transAxes, ha="right", va="center", fontsize=7.5, color="#666",
     )
     fig.savefig(OUT_DIR / "03_fp_rate_trend.png")
@@ -184,11 +184,11 @@ def chart_deobf_accuracy_trend() -> None:
 def chart_ablation_bars() -> None:
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.6))
 
-    # --- Variant A — stage ablation (n=18 combined) ---
+    # --- Variant A — stage ablation (n=18 combined, L5 resolved 2026-04-30) ---
     a_labels = ["A.1\nstage 1", "A.2\n+stage 2", "A.3\n+stage 3 ≥3/3"]
     a_p = [77.8, 100.0, 100.0]
-    a_r = [100.0, 100.0, 64.3]
-    a_f1 = [0.875, 1.000, 0.783]
+    a_r = [100.0, 100.0, 78.6]
+    a_f1 = [0.875, 1.000, 0.880]
     x = np.arange(len(a_labels))
     width = 0.27
     ax = axes[0]
@@ -208,11 +208,11 @@ def chart_ablation_bars() -> None:
             h = b.get_height()
             ax.text(b.get_x() + b.get_width() / 2, h + 1.5, f"{h:.1f}", ha="center", fontsize=8)
 
-    # --- Variant B — consensus threshold (PleOS-only n=15) ---
+    # --- Variant B — consensus threshold (combined n=18, L5 resolved 2026-04-30) ---
     b_labels = ["≥1/3\n(any flag)", "≥2/3\n(default)", "≥3/3\n(unanimous)"]
-    b_p = [73.3, 100.0, 100.0]
-    b_r = [100.0, 90.9, 81.8]
-    b_f1 = [0.846, 0.952, 0.900]
+    b_p = [77.8, 100.0, 100.0]
+    b_r = [100.0, 92.9, 78.6]
+    b_f1 = [0.875, 0.963, 0.880]
     x = np.arange(len(b_labels))
     ax = axes[1]
     b1 = ax.bar(x - width, b_p, width, label="Precision", color="#3673a4")
@@ -222,7 +222,7 @@ def chart_ablation_bars() -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(b_labels)
     ax.set_ylabel("값 (%)")
-    ax.set_title("Variant B — D3=B 합의 임계 sensitivity (PleOS-only n=15)")
+    ax.set_title("Variant B — D3=B 합의 임계 sensitivity (combined n=18, L5 해소)")
     ax.legend(loc="lower left", frameon=False, fontsize=9)
     ax.set_axisbelow(True)
     ax.grid(axis="y", linestyle=":", alpha=0.4)

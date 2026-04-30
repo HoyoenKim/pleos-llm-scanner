@@ -1,0 +1,107 @@
+{
+  "root": "data\\decompiled\\UnCrackable-Level3",
+  "summary": {
+    "n_classes": 7,
+    "high_obf": 0,
+    "medium_obf": 0,
+    "low_obf": 7,
+    "high_obf_ratio": 0.0,
+    "mean_composite": 0.114,
+    "mean_jadx_ratio": 0.0
+  },
+  "results": [
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\uncrackable3\\BuildConfig.java",
+      "class_name": "BuildConfig",
+      "n_methods": 0,
+      "n_fields": 6,
+      "n_total_ids": 7,
+      "mean_id_len": 10.0,
+      "mean_id_entropy": 3.028,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.031,
+      "sample_obf_ids": []
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\uncrackable3\\C0230R.java",
+      "class_name": "C0230R",
+      "n_methods": 0,
+      "n_fields": 1835,
+      "n_total_ids": 1836,
+      "mean_id_len": 28.7,
+      "mean_id_entropy": 3.679,
+      "jadx_obf_ratio": 0.001,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.303,
+      "sample_obf_ids": [
+        "C0230R"
+      ]
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\uncrackable3\\CodeCheck.java",
+      "class_name": "CodeCheck",
+      "n_methods": 2,
+      "n_fields": 1,
+      "n_total_ids": 4,
+      "mean_id_len": 6.25,
+      "mean_id_entropy": 2.135,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.125,
+      "sample_obf_ids": []
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\uncrackable3\\MainActivity.java",
+      "class_name": "MainActivity",
+      "n_methods": 10,
+      "n_fields": 4,
+      "n_total_ids": 15,
+      "mean_id_len": 7.73,
+      "mean_id_entropy": 2.584,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.062,
+      "sample_obf_ids": []
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\util\\IntegrityCheck.java",
+      "class_name": "IntegrityCheck",
+      "n_methods": 1,
+      "n_fields": 0,
+      "n_total_ids": 2,
+      "mean_id_len": 13.0,
+      "mean_id_entropy": 3.303,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.002,
+      "sample_obf_ids": []
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\sg\\vantagepoint\\util\\RootDetection.java",
+      "class_name": "RootDetection",
+      "n_methods": 3,
+      "n_fields": 0,
+      "n_total_ids": 4,
+      "mean_id_len": 10.75,
+      "mean_id_entropy": 2.895,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.0,
+      "composite_obf_score": 0.0,
+      "sample_obf_ids": []
+    },
+    {
+      "file_path": "data\\decompiled\\UnCrackable-Level3\\sources\\owasp\\mstg\\uncrackable3\\R.java",
+      "class_name": "is",
+      "n_methods": 0,
+      "n_fields": 1237,
+      "n_total_ids": 1238,
+      "mean_id_len": 26.44,
+      "mean_id_entropy": 3.597,
+      "jadx_obf_ratio": 0.0,
+      "short_lc_ratio": 0.001,
+      "composite_obf_score": 0.277,
+      "sample_obf_ids": []
+    }
+  ]
+}

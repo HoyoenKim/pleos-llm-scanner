@@ -455,5 +455,31 @@
     "tara_threat_class_default": "Information Disclosure",
     "tara_impact_default": "키 노출 → 데이터 복호화 가능",
     "note": "UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3"
+  },
+  {
+    "id": "ucl3-1",
+    "apk": "UnCrackable-Level3",
+    "class": "sg.vantagepoint.uncrackable3.MainActivity",
+    "line": 25,
+    "stage1_severity": "high",
+    "stage1_category": "hardcoded",
+    "is_real": true,
+    "true_severity": "high",
+    "source": "mastg",
+    "aaos_section": "4.2 Credential Protection",
+    "aaos_url": "https://source.android.com/docs/automotive/start/secure_aaos#credential-protection",
+    "masvs_categories": [
+      "MASVS-STORAGE-2",
+      "MASVS-CRYPTO-1",
+      "MASVS-AUTH-2"
+    ],
+    "masvs_external": "MASVS-CRYPTO-1, MASVS-STORAGE-2",
+    "tara_asset": "사용자 자격증명",
+    "tara_threats": [
+      "I (Information Disclosure)"
+    ],
+    "tara_threat_class_default": "Information Disclosure",
+    "tara_impact_default": "APK 디컴파일로 모든 인스턴스 동일 키 도출",
+    "note": "UnCrackable Level3 hardcoded XOR key passed to native init (sg.vantagepoint.uncrackable3.MainActivity:25) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"
   }
 ]

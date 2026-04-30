@@ -41,9 +41,13 @@ def load_json(path: Path) -> dict[str, Any]:
 def index_findings(report_jsons: list[dict[str, Any]]) -> dict[tuple[str, str, int], dict[str, Any]]:
     """
     Index every finding by (apk, class, line) so we can match labels to findings cheaply.
+    Skips JSON files that don't match the stage-1 report schema (e.g. aaos_mapping_table,
+    tara_artifact, stage3_ensemble).
     """
     idx: dict[tuple[str, str, int], dict[str, Any]] = {}
     for r in report_jsons:
+        if not isinstance(r, dict) or "apk" not in r or "results" not in r:
+            continue
         apk = r.get("apk")
         for cls_result in r.get("results", []):
             cls = cls_result.get("class")

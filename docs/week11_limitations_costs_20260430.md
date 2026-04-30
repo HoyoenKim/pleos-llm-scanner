@@ -15,10 +15,10 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 | # | 한계 | 근본 원인 (1차) | 근본 원인 (2차, 환경) | 측정 증거 |
 |---|---|---|---|---|
 | L1 | **네이티브 코드 분석 불가** | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope finding 0건 (`docs/phase_b4c_mastg_baseline_20260430.md`) |
-| L2 | **표본 크기 작음 (n=18)** | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined n=18 만 측정 (`data/ground_truth/combined_labels_20260430.json`) |
+| L2 | **표본 크기 작음 (n=19)** ← 2026-04-30 부분 해소 (n=18→19, UnCrackable-Level3 추가) | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined n=19 측정. 추가 sample 도입은 Future Work |
 | L3 | **Multi-LLM ensemble (D3=A) 미구현** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | D3 결정을 (A) → (B)로 전환 (`CLAUDE.md` 의사결정 기록) |
 | L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat (`docs/phase_c_deobf_baseline_20260430.md`) |
-| L5 | **Stage 3 ensemble의 MASTG 미평가** | UnCrackable-Level1 ucl1-1/2/3에 attacker/defender/domain_expert 평가 추가 안 함 | 시간 cost 우선순위에서 밀림 | A.3 stage3 ≥3/3 F1 0.783 (combined n=18, MASTG가 FN으로 처리되는 artifact) |
+| L5 | ~~Stage 3 ensemble의 MASTG 미평가~~ ✅ **2026-04-30 해소** | ucl1-1/2/3 + ucl3-1 stage 3 ensemble 평가 추가 완료 | — | ablation A.3 ≥3/3 F1 0.783 → **0.889** (combined n=19), B ≥2/3 F1 0.952 → **0.966** |
 
 ### 1.2 L1 — 네이티브 코드 분석 불가 (가장 중요한 한계)
 
@@ -89,17 +89,16 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 - 대형 commercial APK 1~2개에 본 deobf 파이프라인 적용해서 정확도 측정 (manual GT 라벨링 + 측정)
 - 시간 cost: APK 1개당 4~5시간 추정 (단순 anti-tamper helper보다 클래스 많음)
 
-### 1.6 L5 — Stage 3 ensemble의 MASTG 미평가
+### 1.6 L5 — Stage 3 ensemble의 MASTG 미평가 (✅ 2026-04-30 해소)
 
-#### 증상
+#### 증상 (해소 전)
 - ablation A.3 (stage 3 ≥3/3) F1 = 0.783 (combined n=18 기준)
-- 이 0.783은 **artifact** — UnCrackable-Level1의 ucl1-1/2/3가 stage 3 ensemble JSON에 entry가 없어서 자동으로 FN으로 처리됨
-- PleOS-only n=15 측정값 (≥2/3 F1 0.952) 만 진정한 stage 3 성능
+- 0.783은 **artifact** — UnCrackable-Level1의 ucl1-1/2/3가 stage 3 ensemble JSON에 entry가 없어서 자동 FN으로 처리됨
 
-#### 해결 경로
-- ucl1-1/2/3 3건에 대해 attacker/defender/domain_expert 시각 평가 추가 → `data/reports/stage3_ensemble_20260430.json` 갱신
-- 시간 cost: 30분 ~ 1시간 (Claude Code 본 세션이 prompt 3종 적용)
-- 완료 시 combined n=18 stage 3 측정 가능 → ablation 표 일관성 회복
+#### 해소 결과 (2026-04-30)
+- ucl1-1/2/3 + ucl3-1 4건에 attacker/defender/domain_expert 평가 추가 → `data/reports/stage3_ensemble_20260429.json` 갱신
+- combined n=19 ablation 재실행 결과: A.3 ≥3/3 F1 **0.889** (이전 0.783 → +0.106), B ≥2/3 F1 **0.966** (이전 PleOS-only 0.952 → combined 향상)
+- ablation 표 일관성 회복
 
 ---
 

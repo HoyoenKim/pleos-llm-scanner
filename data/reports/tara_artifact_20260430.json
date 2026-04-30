@@ -281,6 +281,26 @@
       "treatment": "Mitigate (next minor release) or Transfer",
       "source": "mastg",
       "note": "UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3"
+    },
+    {
+      "scenario_id": "TS-UCL3-1",
+      "finding_id": "ucl3-1",
+      "apk": "UnCrackable-Level3",
+      "asset": "사용자 자격증명",
+      "asset_key": "user_credentials",
+      "asset_criticality": "Major",
+      "stage1_category": "hardcoded",
+      "stage1_severity": "high",
+      "true_severity": "high",
+      "threats": [
+        "I (Information Disclosure)"
+      ],
+      "impact": "Major",
+      "attack_feasibility": "High",
+      "risk_level": "High",
+      "treatment": "Mitigate (fix in current sprint)",
+      "source": "mastg",
+      "note": "UnCrackable Level3 hardcoded XOR key passed to native init (sg.vantagepoint.uncrackable3.MainActivity:25) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2"
     }
   ],
   "generated": "2026-04-30"

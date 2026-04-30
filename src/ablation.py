@@ -45,6 +45,8 @@ Key = tuple[str, str, int]  # (apk, class, line)
 def index_stage1_findings(reports: list[dict[str, Any]]) -> dict[Key, dict[str, Any]]:
     idx: dict[Key, dict[str, Any]] = {}
     for r in reports:
+        if not isinstance(r, dict) or "apk" not in r or "results" not in r:
+            continue
         apk = r.get("apk")
         for cr in r.get("results", []):
             cls = cr.get("class")

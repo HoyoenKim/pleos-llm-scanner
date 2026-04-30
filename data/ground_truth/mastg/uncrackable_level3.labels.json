@@ -1,0 +1,61 @@
+{
+  "schema_version": "0.1",
+  "labeled_at": "2026-04-30",
+  "labeler": "external (OWASP MASTG official challenge — Bernhard Mueller / Vantage Point Security)",
+  "scope": "UnCrackable-Level3 stage-1 findings restricted to result_schema.json category enum. Native verification logic + anti-tamper out of scope.",
+  "label_values": {
+    "is_real": "true | false | uncertain",
+    "true_severity": "high | medium | low | none"
+  },
+  "ground_truth_source": [
+    "OWASP MASTG official Crackme description (Level 3)",
+    "MASVS-CRYPTO-1 (cryptographic key management)",
+    "MASVS-STORAGE-2 (no sensitive data hardcoded)"
+  ],
+  "labels": [
+    {
+      "id": "ucl3-1",
+      "apk": "UnCrackable-Level3",
+      "class": "sg.vantagepoint.uncrackable3.MainActivity",
+      "line": 25,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "masvs": "MASVS-CRYPTO-1, MASVS-STORAGE-2",
+      "notes": "Hardcoded XOR key 'pizzapizzapizzapizzapizz' forwarded to native init(). 24-byte literal compiled into APK. Even if actual XOR-decrypt is native, the key on Java side enables direct secret recovery. OWASP-recognised TP."
+    }
+  ],
+  "out_of_scope_known_issues": [
+    {
+      "issue": "Native CodeCheck verification (libfoo.so XOR + compare)",
+      "masvs": "MASVS-CRYPTO-1",
+      "future_pipeline_extension": "radare2/Ghidra native binary analysis (Phase D L1)"
+    },
+    {
+      "issue": "Integrity check (CRC of classes.dex + libfoo.so)",
+      "masvs": "MASVS-RESILIENCE-3",
+      "future_pipeline_extension": "anti_tamper category 추가"
+    },
+    {
+      "issue": "Root + debugger detection (3 root heuristics + Debug.isDebuggerConnected polling)",
+      "masvs": "MASVS-RESILIENCE-2/3",
+      "future_pipeline_extension": "anti_tamper category"
+    }
+  ],
+  "summary": {
+    "n_findings": 1,
+    "true_positive": 1,
+    "false_positive": 0,
+    "uncertain": 0,
+    "by_category_TP_only": {
+      "hardcoded": 1
+    },
+    "expected_pipeline_metrics": {
+      "stage1_precision": "1/1 = 100%",
+      "stage1_recall": "1/1 = 100% (in-scope only)",
+      "note": "1 in-scope finding 모두 TP. Out-of-scope native + anti-tamper 다수 발견됐으나 schema 6 카테고리 enum 밖."
+    }
+  },
+  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level3_20260430.json"
+}

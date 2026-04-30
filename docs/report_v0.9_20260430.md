@@ -21,22 +21,24 @@
 `ai.pleos.sync.syslog`, `ai.pleos.llm.model.provider`) 과 외부 OWASP MASTG corpus
 (UnCrackable-Level1)에 적용하여 정량 측정값을 산출하였다.
 
-### 핵심 측정값 (combined n=18, PleOS 15 + MASTG 3)
+### 핵심 측정값 (combined n=19, PleOS 15 + MASTG 4 — 2026-04-30 L5+L2 해소 후)
 
 | 지표 | PPT 가설 | 실측 | 충족 여부 |
 |---|---|---|---|
-| 1차 오탐률 (Stage 1) | 25% | **22.2%** | ✅ -2.8%p |
+| 1차 오탐률 (Stage 1) | 25% | **21.1%** | ✅ -3.9%p |
 | 3차 오탐률 (Stage 3 ≥2/3) | 7% | **0%** | ✅ -7%p |
 | Precision (Full Pipeline) | 0.93 | **1.00** (≥2/3 합의) | ✅ |
-| F1 (Stage 1) | — | **0.875** | — |
-| F1 (Stage 3 ≥2/3) | — | **0.952** | — |
+| F1 (Stage 1) | — | **0.882** | — |
+| F1 (Stage 3 ≥2/3) | — | **0.966** | — |
 | 분석 대상 축소율 | 30~40% | **99.49%** (1,765 → 9 priority class) | ✅ 초과 |
 | 난독화 정확도 | 78% (8주차) | **100%** (UnCrackable n=17 exact) | ✅ 단, hand-crafted corpus caveat |
+
+> **Update history**: 2026-04-30 초안은 n=18 (Stage 1 F1 0.875 / B ≥2/3 F1 0.952). 같은 날 L5 해소 (ucl1-1/2/3 stage 3 ensemble 평가 추가) + L2 부분 해소 (UnCrackable-Level3 ucl3-1 추가)로 n=19 / F1 0.882 / 0.966 으로 갱신.
 
 ### 핵심 산출물
 
 1. **GitHub public repo**: [`HoyoenKim/pleos-llm-scanner`](https://github.com/HoyoenKim/pleos-llm-scanner) (MIT)
-2. **GT corpus**: `data/ground_truth/combined_labels_20260430.json` (n=18, self 15 + MASTG 3)
+2. **GT corpus**: `data/ground_truth/combined_labels_20260430.json` (n=19, self 15 + MASTG 4)
 3. **AAOS / MASVS / TARA 매핑 표**: `data/reports/aaos_mapping_table_20260430.{md,json}`
 4. **TARA 시나리오 + Risk Matrix**: `data/reports/tara_artifact_20260430.{md,json}`
 5. **사례 연구 5건**: `docs/case_studies_20260430.md`
@@ -143,33 +145,33 @@ VehicleControl APK 기준:
 
 캐비어트: priority 9개 외에도 stage 2 caller 추적 시 후보가 늘어날 수 있음.
 
-### 3.2 1차 / 3차 오탐률 (G3)
+### 3.2 1차 / 3차 오탐률 (G3) — combined n=19, L5+L2 해소 후
 
 | 단계 | n | TP | FP | Precision | F1 |
 |---|---|---|---|---|---|
 | Stage 1 (PleOS-only n=15) | 15 | 11 | 4 | 73.3% | 0.846 |
-| Stage 1 (combined n=18) | 18 | 14 | 4 | **77.8%** | **0.875** |
-| Stage 1 (MASTG-only n=3) | 3 | 3 | 0 | **100%** | — |
-| Stage 3 ≥2/3 (PleOS-only) | 15 | 10 (TP+strong) | 0 | **100%** | **0.952** |
-| Stage 3 ≥3/3 (PleOS-only) | 15 | 9 strong | 0 | **100%** | 0.900 |
+| Stage 1 (combined n=19) | 19 | 15 | 4 | **78.9%** | **0.882** |
+| Stage 1 (MASTG-only n=4) | 4 | 4 | 0 | **100%** | — |
+| Stage 3 ≥2/3 (combined n=19) | 19 | 14 | 0 | **100%** | **0.966** |
+| Stage 3 ≥3/3 (combined n=19) | 19 | 12 strong | 0 | **100%** | 0.889 |
 
 **핵심 결과**:
-- Stage 1 P 77.8% (FP 22.2%) — PPT 가설 25%에 -2.8%p 충족.
+- Stage 1 P 78.9% (FP 21.1%) — PPT 가설 25%에 -3.9%p 충족.
 - Stage 3 ≥2/3 합의로 P 100% 달성 — PPT 가설 0.93 도달 + 초과.
-- ≥2/3 vs ≥3/3 분리: ssl-4 (HmgUserInfo PII)가 2/3 합의로 격상되어 F1 0.952 vs
-  0.900 차이 발생. 합의 임계 ≥2/3가 default 적합.
+- ≥2/3 vs ≥3/3 분리: ssl-4 (PII), ucl1-3 (log hardening) 두 finding이 2/3 합의 격상.
+  합의 임계 ≥2/3가 default 적합.
 
-### 3.3 Ablation (B-4.d → combined corpus)
+### 3.3 Ablation (combined n=19, L5+L2 해소 후)
 
 A 변형 (단계 추가 효과):
-- A.1 Stage 1 only: F1 0.846 → **0.875** (n=18)
-- A.2 + Stage 2 (caller): F1 1.000 (P-ceiling, GT 기반) — n=18에서도 동일
-- A.3 + Stage 3 (≥3/3): F1 0.900 (n=15) — combined에서는 stage3 미평가 entry로 artifact
+- A.1 Stage 1 only: F1 0.846 (n=15) → 0.875 (n=18) → **0.882** (n=19)
+- A.2 + Stage 2 (caller): F1 1.000 (P-ceiling, GT 기반) — 모든 n에서 동일
+- A.3 + Stage 3 (≥3/3): F1 0.889 — L5 해소 + ucl3-1 strong TP 추가로 일관성 회복
 
-B 변형 (합의 임계 sensitivity):
-- ≥1/3: P 66.7% / F1 0.727
-- ≥2/3 = ≥3/3 (B-3.c 시점) → ssl-4 격상 후 ≥2/3 분리
-- 최종 ≥2/3: P 100% / R 90.9% / **F1 0.952**
+B 변형 (합의 임계 sensitivity, combined n=19):
+- ≥1/3: P 78.9% / R 100% / F1 0.882
+- **≥2/3 (default): P 100% / R 93.3% / F1 0.966** ← PPT 가설 0.93 초과
+- ≥3/3: P 100% / R 80.0% / F1 0.889
 
 ### 3.4 난독화 정확도 (G4)
 
@@ -204,7 +206,7 @@ OWASP MASTG corpus 적용:
 
 ## 4. AAOS / MASVS / TARA 매핑 (Phase D, G5/G6)
 
-### 4.1 AAOS 섹션 커버리지 (auto-generated, n=18)
+### 4.1 AAOS 섹션 커버리지 (auto-generated, n=19)
 
 | AAOS Section | Findings | TP | HIGH |
 |---|---|---|---|
@@ -289,7 +291,7 @@ endpoint 정의 후 (Future Work).
 
 ### 7.1 측정 caveat
 
-- **표본 작음**: n=18은 통계적 일반화에 부족. 추가 MASTG sample (UnCrackable-Level3,
+- **표본 작음**: n=19로 확장됐지만 통계적 일반화에는 여전히 부족. 추가 MASTG sample (certificatePinningXamarin,
   certificatePinning 등) + 의도적 취약 corpus (DIVA, InsecureBankv2) 도입 필요.
 - **PleOS-internal 사용자 base 추정 어려움**: 본 corpus의 attack feasibility는
   정적 분석 단계 추정. 실차 시나리오 (네트워크 위치, 권한 grant 경로) 미반영.
@@ -323,7 +325,7 @@ endpoint 정의 후 (Future Work).
 **주요 성과**:
 1. PPT 가설 정량 지표 (1차 오탐 25%, Stage 3 0.93 Precision, 분석 축소 30-40%)
    모두 충족 또는 초과.
-2. **Stage 3 합의 임계 ≥2/3에서 P 100% / R 90.9% / F1 0.952** — PPT 가설 0.93 도달.
+2. **Stage 3 합의 임계 ≥2/3에서 P 100% / R 93.3% / F1 0.966** (combined n=19) — PPT 가설 0.93 도달·초과.
 3. **자체 GT (n=15) + OWASP MASTG (n=3)** combined corpus로 외부 베이스라인 비교
    체계 구축.
 4. **Pipeline boundary** 정량 입증 (UnCrackable-Level2, r2pay-v1.0) — 본 학기
@@ -332,7 +334,7 @@ endpoint 정의 후 (Future Work).
 
 **남은 작업 (10~14주차)**:
 - 표본 확장 (MASTG 추가 sample, 다른 의도적 취약 corpus)
-- Stage 3 ensemble을 MASTG corpus로 확장 (combined n=18 stage 3 측정)
+- ~~Stage 3 ensemble을 MASTG corpus로 확장~~ ✅ 2026-04-30 해소 — combined n=19 stage 3 측정 (F1 0.966)
 - 운영 비용 평가 (Claude Code 정액제 정확한 시간 측정)
 - 발표 PPT v1.0 + 라이브 데모 시나리오
 - 지도교수 1차 리뷰 → 보고서 v1.0
@@ -371,12 +373,12 @@ endpoint 정의 후 (Future Work).
 
 | 지표 | PPT 가설 | 실측 |
 |---|---|---|
-| 1차 오탐률 | 25% | 22.2% (n=18) |
+| 1차 오탐률 | 25% | 21.1% (n=19) |
 | 2차 오탐률 | 12% | A.2 P-ceiling 1.000 (GT 기반 caveat) |
 | 3차 오탐률 | 7% | 0% (≥2/3 합의) |
 | Precision (Full) | 0.93 | 1.00 (≥2/3) |
-| F1 (Stage 1) | — | 0.875 |
-| F1 (Stage 3 ≥2/3) | — | 0.952 |
+| F1 (Stage 1) | — | 0.882 |
+| F1 (Stage 3 ≥2/3) | — | 0.966 |
 | 분석 대상 축소율 | 30-40% | 99.49% |
 | 난독화 정확도 (5주차) | 40% | 100% (caveat) |
 | 난독화 정확도 (6주차) | 65% | 100% (동일 caveat) |

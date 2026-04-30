@@ -2,7 +2,7 @@
 
 _Generated: 2026-04-30 (deterministic from `configs/aaos_mapping.yaml` + GT)_
 
-**n = 18** (PleOS self 15 + MASTG 3)
+**n = 19** (PleOS self 15 + MASTG 4)
 
 ## 1. Finding-level Mapping
 
@@ -26,13 +26,14 @@ _Generated: 2026-04-30 (deterministic from `configs/aaos_mapping.yaml` + GT)_
 | ucl1-1 | UnCrackable-Level1 | hardcoded | high | ✓ | 4.2 Credential Protection | MASVS-STORAGE-2, MASVS-CRYPTO-1, MASVS-AUTH-2 (MASVS-CRYPTO-1, MASVS-STORAGE-2) | 사용자 자격증명 | I (Information Disclosure) |
 | ucl1-2 | UnCrackable-Level1 | crypto | medium | ✓ | 4.2 Credential Protection | MASVS-CRYPTO-1, MASVS-CRYPTO-2 (MASVS-CRYPTO-1) | 사용자 자격증명 | I (Information Disclosure) |
 | ucl1-3 | UnCrackable-Level1 | crypto | low | ✓ | 4.2 Credential Protection | MASVS-CRYPTO-1, MASVS-CRYPTO-2 (MASVS-STORAGE-3) | 사용자 자격증명 | I (Information Disclosure) |
+| ucl3-1 | UnCrackable-Level3 | hardcoded | high | ✓ | 4.2 Credential Protection | MASVS-STORAGE-2, MASVS-CRYPTO-1, MASVS-AUTH-2 (MASVS-CRYPTO-1, MASVS-STORAGE-2) | 사용자 자격증명 | I (Information Disclosure) |
 
 ## 2. AAOS Section Coverage
 
 | AAOS Section | Findings | TP | HIGH |
 |---|---|---|---|
+| 4.2 Credential Protection | 8 | 8 | 5 |
 | 3.7 Permission Model | 7 | 5 | 3 |
-| 4.2 Credential Protection | 7 | 7 | 4 |
 | 5.1 Communication Security | 4 | 2 | 1 |
 
 ## 3. TARA Asset × Threat Matrix (TP only)
@@ -41,7 +42,7 @@ _Generated: 2026-04-30 (deterministic from `configs/aaos_mapping.yaml` + GT)_
 |---|---|---|---|---|
 | LLM 시스템 프롬프트 / 모델 | 0 | 0 | 1 | 1 |
 | 개인정보 (PII) | 0 | 0 | 1 | 0 |
-| 사용자 자격증명 | 0 | 0 | 6 | 0 |
+| 사용자 자격증명 | 0 | 0 | 7 | 0 |
 | 진단/시스템 로그 | 0 | 1 | 3 | 0 |
 | 차량 제어 명령 | 1 | 1 | 1 | 0 |
 
@@ -65,3 +66,4 @@ _Generated: 2026-04-30 (deterministic from `configs/aaos_mapping.yaml` + GT)_
 - **ucl1-1** — UnCrackable Level1 hardcoded AES key (sg.vantagepoint.uncrackable1.C0005a:15) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2
 - **ucl1-2** — UnCrackable Level1 weak crypto (sg.vantagepoint.p000a.C0000a:15) — TP MEDIUM, MASVS-CRYPTO-1
 - **ucl1-3** — UnCrackable Level1 unsafe storage (sg.vantagepoint.uncrackable1.C0005a:17) — TP LOW, MASVS-STORAGE-3
+- **ucl3-1** — UnCrackable Level3 hardcoded XOR key passed to native init (sg.vantagepoint.uncrackable3.MainActivity:25) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2

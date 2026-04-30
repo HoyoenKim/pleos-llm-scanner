@@ -16,7 +16,7 @@ _Generated: 2026-04-30 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
 | 진단/시스템 로그 | syslog, modem diagnostic, vehicle state telemetry | Moderate | 공격 표면 정보 수집, 차량 상태 추정 |
 | LLM 시스템 프롬프트 / 모델 | IVI LLM system prompts, GGUF model files | Moderate | Prompt injection / model jailbreak / DoS |
 
-## 2. Threat Scenarios (n = 14, TP only)
+## 2. Threat Scenarios (n = 15, TP only)
 
 | ID | APK | Asset | Threats (STRIDE) | Impact | Feasibility | Risk | Treatment |
 |---|---|---|---|---|---|---|---|
@@ -34,13 +34,14 @@ _Generated: 2026-04-30 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
 | TS-UCL1-1 | UnCrackable-Level1 | 사용자 자격증명 | I | Major | High | **High** | Mitigate (fix in current sprint) |
 | TS-UCL1-2 | UnCrackable-Level1 | 사용자 자격증명 | I | Major | Medium | **Medium** | Mitigate (next minor release) or Transfer |
 | TS-UCL1-3 | UnCrackable-Level1 | 사용자 자격증명 | I | Major | Medium | **Medium** | Mitigate (next minor release) or Transfer |
+| TS-UCL3-1 | UnCrackable-Level3 | 사용자 자격증명 | I | Major | High | **High** | Mitigate (fix in current sprint) |
 
 ## 3. Risk Matrix (count of scenarios per cell)
 
 | Impact \ Feasibility | High | Medium | Low |
 |---|---|---|---|
 | Severe | 2 | 0 | 0 |
-| Major | 6 | 3 | 0 |
+| Major | 7 | 3 | 0 |
 | Moderate | 1 | 0 | 2 |
 | Negligible | 0 | 0 | 0 |
 
@@ -49,7 +50,7 @@ _Generated: 2026-04-30 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
 | Risk Level | Count | Treatment |
 |---|---|---|
 | **Critical** | 2 | Avoid (must fix before release) |
-| **High** | 6 | Mitigate (fix in current sprint) |
+| **High** | 7 | Mitigate (fix in current sprint) |
 | **Medium** | 4 | Mitigate (next minor release) or Transfer |
 | **Low** | 2 | Accept with monitoring |
 
@@ -118,6 +119,14 @@ _Generated: 2026-04-30 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
 - **Impact / Feasibility**: Major / High
 - **Treatment**: Mitigate (fix in current sprint)
 - **Note**: UnCrackable Level1 hardcoded AES key (sg.vantagepoint.uncrackable1.C0005a:15) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2
+
+### TS-UCL3-1 — 사용자 자격증명 (High)
+- **APK**: `UnCrackable-Level3`
+- **Category**: hardcoded (high → high)
+- **Threats**: I (Information Disclosure)
+- **Impact / Feasibility**: Major / High
+- **Treatment**: Mitigate (fix in current sprint)
+- **Note**: UnCrackable Level3 hardcoded XOR key passed to native init (sg.vantagepoint.uncrackable3.MainActivity:25) — TP HIGH, MASVS-CRYPTO-1 / MASVS-STORAGE-2
 
 
 ## 6. Methodology
