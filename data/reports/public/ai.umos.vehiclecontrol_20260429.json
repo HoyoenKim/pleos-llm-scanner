@@ -1,0 +1,175 @@
+{
+  "apk": "ai.umos.vehiclecontrol",
+  "version_code": 34,
+  "version_name": "0.0.0",
+  "platform_uid": "android.uid.system",
+  "analyzed_at": "2026-04-29T14:46:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "results": [
+    {
+      "class": "ai.umos.vehiclecontrol.feature.information.p026ui.common.HtmlWebViewKt",
+      "source_file": "ai/umos/vehiclecontrol/feature/information/p026ui/common/HtmlWebViewKt.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T14:46:00+09:00",
+      "findings": [
+        {
+          "line": 58,
+          "category": "network",
+          "severity": "high",
+          "title": "WebView setAllowFileAccess(true) under system UID context",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "On API 30+ the default is false; the explicit opt-in re-enables file:// scheme access. The hosting APK declares android:sharedUserId=android.uid.system and uses-permission WRITE_SECURE_SETTINGS, so a controllable htmlContentPath could read privileged system files via file:// URLs.",
+          "confidence": 0.75,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": []
+        },
+        {
+          "line": 82,
+          "category": "network",
+          "severity": "medium",
+          "title": "WebView.loadUrl(htmlContentPath) without scheme or origin validation",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "htmlContentPath is the function parameter and is forwarded to loadUrl with no allow-list, scheme check, or asset prefix. Combined with setAllowFileAccess(true) and the system UID, an untrusted caller could induce file:// or javascript: navigations. Caller trust boundary is not visible in this file — needs follow-up to identify producers.",
+          "confidence": 0.55,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.umos.vehiclecontrol.p051ui.screens.GleoActionSender",
+      "source_file": "ai/umos/vehiclecontrol/p051ui/screens/GleoActionSender.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:00:00+09:00",
+      "findings": [
+        {
+          "line": 40,
+          "category": "intent",
+          "severity": "medium",
+          "title": "Implicit broadcast carries response payload (status/message/response JSON) without setPackage or signature permission",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "The action string is custom but the broadcast is implicit (no setPackage, no signature-protected receiver permission). Any app on the device that registers a receiver for this action observes the response. Under system UID, this is a one-way information channel out of the system process. If the response ever contains user-context (Gleo voice command results, vehicle property values), it is exposed to third-party apps.",
+          "confidence": 0.55,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.umos.vehiclecontrol.feature.bluetooth.data.VehicleBroadcastReceiver",
+      "source_file": "ai/umos/vehiclecontrol/feature/bluetooth/data/VehicleBroadcastReceiver.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:01:00+09:00",
+      "findings": [
+        {
+          "line": 58,
+          "category": "intent",
+          "severity": "medium",
+          "title": "Untrusted Intent extra `macAddress` is persisted to the paired-device repository without validation",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "If this receiver is exported (manifest declares several android:exported='true' receivers — needs cross-check), an attacker can broadcast `DEVICE_SUPPORT_ANDROID_AUTO_WIRELESS` with an arbitrary `macAddress` string and inject DB rows under the system UID. No format validation, no signature-permission gate visible at the call site.",
+          "confidence": 0.5,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.umos.vehiclecontrol.Broadcasts",
+      "source_file": "ai/umos/vehiclecontrol/Broadcasts.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:02:00+09:00",
+      "findings": [
+        {
+          "line": 92,
+          "category": "intent",
+          "severity": "low",
+          "title": "registerReceiver without RECEIVER_EXPORTED/RECEIVER_NOT_EXPORTED flag (UnspecifiedRegisterReceiverFlag suppressed)",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "On Android 14+ (target API 34) explicit `RECEIVER_EXPORTED`/`RECEIVER_NOT_EXPORTED` is required. The lint suppression keeps the legacy default which, for system apps with `INTERNET` permission, can register an exported receiver implicitly. Each caller of `Broadcasts.observe(...)` inherits this and may be surprised. Severity is low because the *callers* drive the action allow-list, but it widens the attack surface across the codebase.",
+          "confidence": 0.5,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.umos.orda.BroadcastManager",
+      "source_file": "ai/umos/orda/BroadcastManager.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:03:00+09:00",
+      "findings": []
+    },
+    {
+      "class": "ai.umos.orda.Manager",
+      "source_file": "ai/umos/orda/Manager.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:04:00+09:00",
+      "findings": []
+    },
+    {
+      "class": "ai.pleos.playground.navi.helper.utils.C0014b",
+      "source_file": "ai/pleos/playground/navi/helper/utils/C0014b.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:05:00+09:00",
+      "findings": []
+    },
+    {
+      "class": "ai.umos.vehiclecontrol.VehicleControlActivity",
+      "source_file": "ai/umos/vehiclecontrol/VehicleControlActivity.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:06:00+09:00",
+      "findings": []
+    },
+    {
+      "class": "ai.umos.vehiclecontrol.feature.applications.data.permission.AppPermissionManager",
+      "source_file": "ai/umos/vehiclecontrol/feature/applications/data/permission/AppPermissionManager.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T14:48:00+09:00",
+      "findings": [
+        {
+          "line": 149,
+          "category": "permission",
+          "severity": "high",
+          "title": "grantRuntimePermission(packageName, ...) on a caller-supplied packageName with no allow-list",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "this.packageName is captured from the constructor argument. There is no validation that the targeted package exists, is system-signed, or that the caller has the right to mutate its permissions. Combined with the host APK's system UID and platform signature, this method is effectively a privileged primitive: if any reachable code path lets an untrusted producer choose packageName, an attacker can promote a third-party APK to runtime permissions it could not otherwise hold.",
+          "confidence": 0.55,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        },
+        {
+          "line": 124,
+          "category": "permission",
+          "severity": "high",
+          "title": "revokeRuntimePermission(packageName, ...) — symmetric primitive without callsite validation",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "Same caller-trust issue as grantPermission. An attacker controlling packageName can revoke another app's runtime permissions, potentially silencing security features (e.g. revoke ACCESS_FINE_LOCATION from a safety app).",
+          "confidence": 0.55,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    }
+  ],
+  "todo_followups": [
+    "Identify callers of HtmlWebView(htmlContentPath, …) to confirm/refute the trust boundary of htmlContentPath.",
+    "Identify callers/factories of AppPermissionManager — Dagger/Hilt graph, exported activities/services that route into the applications-permission feature, and whether packageName ever comes from an Intent extra or IPC.",
+    "Verify whether setJavaScriptEnabled is set elsewhere (e.g. via WebSettings defaults or a different code path).",
+    "Confirm whether VehicleBroadcastReceiver is one of the manifest entries declared as android:exported='true'.",
+    "Identify producers of GleoActionSender.respondAction(status, message) — is the responding payload ever security-sensitive?",
+    "Cross-check the `data/sync` package for `LocalBroadcastManager` vs system-level broadcast usage."
+  ],
+  "_redaction_note": "evidence fields masked — PleOS proprietary code excerpts replaced. All other metadata (class FQCN, line, category, severity, rationale, mappings) kept verbatim. Original raw report retained locally only."
+}

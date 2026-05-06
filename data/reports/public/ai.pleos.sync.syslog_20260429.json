@@ -1,0 +1,170 @@
+{
+  "apk": "ai.pleos.sync.syslog",
+  "version_code": 4,
+  "version_name": "1.0.4",
+  "platform_uid": null,
+  "analyzed_at": "2026-04-29T15:30:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "manifest_summary": {
+    "permissions": [
+      "INTERNET",
+      "RECEIVE_BOOT_COMPLETED",
+      "FOREGROUND_SERVICE",
+      "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+      "GET_ACCOUNTS",
+      "QUERY_ALL_PACKAGES",
+      "pleos.car.permission.CAR_INFO",
+      "ai.pleos.playground.service.vehicle.VEHICLE_BINDING"
+    ],
+    "exported": [
+      "ai.pleos.sync.syslog.BootCompletionReceiver (BOOT_COMPLETED)",
+      "androidx.profileinstaller.ProfileInstallReceiver (DUMP-protected)"
+    ],
+    "self_permissions_signature": [
+      "ai.pleos.sync.syslog.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ]
+  },
+  "endpoint_inventory": [
+    "https://connect-gw.umos.ai/auth (production)",
+    "https://connect-gw-int.umos.ai (internal)",
+    "https://connect-gw-stage.umos.ai (staging)",
+    "https://connect-gw-coral.umos.ai (coral env, hardcoded baseURL in CCGAuthenticator)"
+  ],
+  "results": [
+    {
+      "class": "ai.pleos.sync.crypto.ECCCrypto",
+      "source_file": "ai/pleos/sync/crypto/ECCCrypto.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:30:00+09:00",
+      "findings": [
+        {
+          "line": 49,
+          "category": "crypto",
+          "severity": "medium",
+          "title": "generateDeterministicPrivateKey: passphrase → single SHA-256 → ECC private key (no PBKDF2 / Argon2 / salt / iterations)",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "Deriving an ECC private key from a passphrase via a single SHA-256 hash exposes weak passphrases to cheap brute-force. There is no salt and no iteration count, so identical passphrases always produce identical keys; an attacker who guesses the passphrase recovers every derived key for every device. Standard practice is PBKDF2 / scrypt / Argon2 with a per-device salt and a high iteration / cost parameter.",
+          "confidence": 0.7,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.sync.authenticator.AuthData",
+      "source_file": "ai/pleos/sync/authenticator/AuthData.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:31:00+09:00",
+      "findings": [
+        {
+          "line": 82,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "Kotlin data-class auto-generated toString() embeds the authenticator token",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "If any caller logs an AuthData instance (Timber, Log.d, exception messages, Result.toString), the access token leaks into logcat. The hosting APK has INTERNET, RECEIVE_BOOT_COMPLETED, GET_ACCOUNTS, QUERY_ALL_PACKAGES — it is exactly the kind of background sync service whose token would unlock backend access. Any other privileged process that reads logcat (or a `dumpsys logd` privileged user) sees the token. Mitigation: override toString() to mask the token, or strip the token field from the data-class footprint.",
+          "confidence": 0.85,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.sync.authenticator.CCGAuthenticator",
+      "source_file": "ai/pleos/sync/authenticator/CCGAuthenticator.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:32:00+09:00",
+      "findings": [
+        {
+          "line": 49,
+          "category": "network",
+          "severity": "medium",
+          "title": "Hardcoded production endpoint + clientID/clientSecret are sent over an HttpClient with no visible certificate pinning at this layer",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "TLS scheme is used (https://). However: (1) the production endpoint is hardcoded — environment changes require re-shipping the APK; (2) this class issues a POST to `${baseURL}/auth/client/login` carrying `client_id` and `secret`. There is no certificate-pinning configuration in this file. If pinning is not configured at the shared HttpClient layer (CCGTokenProvider / network-security-config / OkHttp interceptor), a MITM with a trusted CA harvests the client credentials. Follow-up to confirm pinning is the next stage-2 step.",
+          "confidence": 0.5,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.sync.authenticator.HMGAuthenticator$HmgUserInfo",
+      "source_file": "ai/pleos/sync/authenticator/HMGAuthenticator.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T17:00:00+09:00",
+      "discovered_during": "Phase B-3.c follow-up (HMGAuthenticator read while resolving ssl-3 pinning)",
+      "findings": [
+        {
+          "line": 365,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "HmgUserInfo data-class toString() embeds driver PII (UUID, birthdate, email, name)",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "Same Kotlin data-class auto-toString pattern as ssl-2 (AuthData) but for driver PII rather than just an opaque token. If any caller logs HmgUserInfo (Timber, Log.d, exception, Result.toString), full driver identity (UUID + birthdate + email + name) reaches logcat. logcat is readable by READ_LOGS / dumpsys / vendor diagnostics. Severity HIGH (PII regulatory impact + identity theft surface).",
+          "confidence": 0.85,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.sync.config.SyncConfigsProvider",
+      "source_file": "ai/pleos/sync/config/SyncConfigsProvider.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T17:01:00+09:00",
+      "discovered_during": "Phase B-3.c root-causing of ssl-1",
+      "findings": [
+        {
+          "line": 83,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "BuildConfig.IDENTIFIER used as ECC KDF passphrase — build-time constant baked into the APK",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "BuildConfig.IDENTIFIER is a build-time constant baked into every APK by the Android Gradle plugin. Combined with the deterministic SHA-256 KDF in ECCCrypto.generateDeterministicPrivateKey, every device derives the same ECC private key from this constant. APK reverse engineering trivially recovers BuildConfig → recovers the key → decrypts every device's encryptedYaml config (server endpoints + secrets). Independent finding from ssl-1 (which is the KDF design issue); this finding is the hardcoded-secret root cause that makes ssl-1 exploitable.",
+          "confidence": 0.9,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.sync.syslog.SysLogService",
+      "source_file": "ai/pleos/sync/syslog/SysLogService.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T17:02:00+09:00",
+      "discovered_during": "Phase B-3.c grep for log emission",
+      "findings": [
+        {
+          "line": 76,
+          "category": "network",
+          "severity": "high",
+          "title": "gRPC sync channel uses .usePlaintext() — TLS off, vehicle syslog sent in cleartext",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "B-3.c 추가 grep 결과 SysLogService:76에서 io.grpc.ManagedChannelBuilder의 `.usePlaintext()` 명시적 호출 confirmed. TLS 없이 gRPC frame 평문 전송 → MITM (corporate proxy / hostile Wi-Fi / network tap)이 차량 systemID + 진단 페이로드 평문 관찰. line 120의 'connect-gw.umos.ai:9091' Log.i와 결합 시 endpoint 노출도 추가. CCGAuthenticator (HTTPS) 와 SysLogService (gRPC plaintext) 는 별도 channel — sync 패키지의 두 channel 중 syslog 가 평문.",
+          "confidence": 0.95,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": [
+            "stage2_grep"
+          ]
+        }
+      ]
+    }
+  ],
+  "todo_followups": [
+    "Read CCGTokenProvider — does it set a certificate pinner / TrustManager? What HTTP client is used? Confirm or refute the pinning gap above.",
+    "Read SysLogService and BootCompletionReceiver — they're the two attack-surface entry points (foreground service + boot trigger).",
+    "Grep callers of AuthData.toString — does anyone actually log it? If yes, finding 2 escalates from HIGH-potential to HIGH-confirmed.",
+    "Grep callers of generateDeterministicPrivateKey — what passphrase ends up here? If it's a derived value with high entropy (e.g. random per-device seed + server constants), severity drops; if it's a user-supplied PIN or a constant, severity rises.",
+    "Continue stage1 on ai.pleos.llm.model.provider (Phase B-3.b)."
+  ],
+  "_redaction_note": "evidence fields masked — PleOS proprietary code excerpts replaced. All other metadata (class FQCN, line, category, severity, rationale, mappings) kept verbatim. Original raw report retained locally only."
+}

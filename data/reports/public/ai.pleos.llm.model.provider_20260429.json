@@ -1,0 +1,98 @@
+{
+  "apk": "ai.pleos.llm.model.provider",
+  "version_code": null,
+  "version_name": null,
+  "platform_uid": null,
+  "analyzed_at": "2026-04-29T15:50:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "manifest_summary": {
+    "permissions": [
+      "ai.pleos.caas.EVENT_PERMISSION",
+      "SYSTEM_APPLICATION_OVERLAY",
+      "SYSTEM_ALERT_WINDOW",
+      "RECEIVE_BOOT_COMPLETED"
+    ],
+    "exported_components": [
+      "LLMModelProviderReceiver (BOOT_COMPLETED + SHARE_FILE_COMPLETE + LLM_SERVICE_STARTED)",
+      "PromptsContentProvider (authority=ai.pleos.playground.llm.model.provider.prompts, grantUriPermissions=true)",
+      "ProfileInstallReceiver (DUMP-protected, standard)"
+    ],
+    "non_exported": [
+      "LLMModelProviderService",
+      "FileProvider (authority=ai.pleos.llm.model.provider.fileprovider, grantUriPermissions=true)"
+    ],
+    "self_permissions_signature": [
+      "ai.pleos.llm.model.provider.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ],
+    "no_internet_permission": true
+  },
+  "model_artifact": {
+    "filename": "chatbaker-1.5b-16k-d0.3.3-m0.4.0-r250210.gguf",
+    "shape": "1.5B parameters, 16k context window",
+    "shipped_via": "assets/ → internal storage (copyRawFileToInternalStorage) → FileProvider URI → CAAS FileShareActivity"
+  },
+  "results": [
+    {
+      "class": "ai.pleos.llm.model.provider.PromptsContentProvider",
+      "source_file": "ai/pleos/llm/model/provider/PromptsContentProvider.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:50:00+09:00",
+      "findings": [
+        {
+          "line": 62,
+          "category": "intent",
+          "severity": "high",
+          "title": "Exported ContentProvider returns the entire LLM system-prompt corpus to any caller, with no caller verification or URI validation",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "The provider is declared `android:exported=\"true\"` (no signature permission, no path-permission allow-list). `query()` ignores the URI, projection, selection, sortOrder — for any query it reads `assets/prompts.json` and ships it as a single-row Cursor. `prompts.json` is the LLM's system-prompt corpus (the rules that constrain Gleo's behaviour, mapped to vehicle-control commands). Any installed app can read it via `content://ai.pleos.playground.llm.model.provider.prompts/...` and use the contents to: (1) mount prompt-injection or jailbreak attacks against the LLM by replicating exact phrasing the model treats as authoritative, (2) reverse-engineer the safety guards. Mitigation: protect with a signature-level permission, or remove `exported=true` and use `grantUriPermissions` only when forwarding an Intent.",
+          "confidence": 0.85,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.llm.model.provider.receiver.LLMModelProviderReceiver",
+      "source_file": "ai/pleos/llm/model/provider/receiver/LLMModelProviderReceiver.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:51:00+09:00",
+      "findings": [
+        {
+          "line": 43,
+          "category": "intent",
+          "severity": "medium",
+          "title": "Exported receiver acts on caller-controlled custom actions FILE_SHARE_COMPLETE / PROMPTS_QUERY_COMPLETE without any signature gate",
+          "evidence": "<redacted: PleOS proprietary code>",
+          "rationale": "The manifest declares this receiver `exported=\"true\"` with `<intent-filter>` containing the custom actions, and there is no `android:permission=\"...\"` attribute. Any third-party app can send a broadcast with action `ai.pleos.llm.model.provider.intent.action.SHARE_FILE_COMPLETE` (literal name observed in the manifest <queries> block) which routes into `deleteLLMModelFile` (`new File(context.getFilesDir(), LLM_MODEL_FILE_NAME).delete()`). Sending both actions trips `checkAndStopProcess` → `Process.killProcess(Process.myPid())`. Net effect: a non-privileged app can (a) delete the local copy of the GGUF model, (b) kill the provider process. This is a denial-of-service primitive against an on-device LLM that the rest of PleOS depends on. Mitigation: gate the receiver with `ai.pleos.caas.EVENT_PERMISSION` (already declared) or a signature permission.",
+          "confidence": 0.8,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "ai.pleos.llm.model.provider.LLMModelProviderService",
+      "source_file": "ai/pleos/llm/model/provider/LLMModelProviderService.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-29T15:52:00+09:00",
+      "findings": []
+    }
+  ],
+  "negative_confirmations": [
+    "No INTERNET permission — model is local; no exfiltration vector via this app's process",
+    "LLMModelProviderService is exported=false. IPC uses FileProvider URIs with FLAG_GRANT_READ_URI_PERMISSION and an explicit ComponentName (`ai.pleos.playground.caas/ai.pleos.playground.caas.service.llm.FileShareActivity`) — the file-share path is correctly scoped",
+    "FileProvider scope (`file_paths.xml`) is `<files-path name=\"shared_files\" path=\".\"/>` — bounds the URI grant to the app's `getFilesDir()`"
+  ],
+  "todo_followups": [
+    "Read `MainActivity`, `PreferenceHelper`, `Utils`, `ServiceConst` to fully account for the 22 java files.",
+    "Confirm the exact `intent-filter` action strings and any `permission=` attribute on `LLMModelProviderReceiver` by re-reading `AndroidManifest.xml` (line-by-line).",
+    "Cross-check with `ai.pleos.playground.caas.apk` — that's the consumer of the file-share Intent. The receiver chain there determines whether the model file ever crosses outside the trust boundary.",
+    "Phase B-4: build evaluation framework (OWASP MASTG GT, src/eval.py)."
+  ],
+  "_redaction_note": "evidence fields masked — PleOS proprietary code excerpts replaced. All other metadata (class FQCN, line, category, severity, rationale, mappings) kept verbatim. Original raw report retained locally only."
+}

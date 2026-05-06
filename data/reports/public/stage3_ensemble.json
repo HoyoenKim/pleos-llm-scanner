@@ -1,0 +1,898 @@
+{
+  "schema_version": "0.1",
+  "generated_at": "2026-04-30T15:30:00+09:00",
+  "stage": "stage3",
+  "ensemble_strategy": "multi-prompt-D3-B",
+  "perspectives_run": [
+    "attacker",
+    "defender",
+    "domain_expert"
+  ],
+  "model": "claude-opus-4-7",
+  "consensus_rules": "stage3_ensemble_rule.md (3/3 strong TP, 2/3 TP, 1/3 uncertain, 0/3 clean)",
+  "input_findings": "data/reports/{ai.umos.vehiclecontrol,ai.pleos.sync.syslog,ai.pleos.llm.model.provider,UnCrackable-Level1,UnCrackable-Level3}_*.json (n=19 stage1 findings)",
+  "results": [
+    {
+      "id": "vc-1",
+      "class": "ai.umos.vehiclecontrol.feature.information.p026ui.common.HtmlWebViewKt",
+      "line": 58,
+      "category": "network",
+      "stage1_severity": "high",
+      "consensus_count": 1,
+      "consensus_perspectives": [
+        "defender"
+      ],
+      "consensus_class": "uncertain",
+      "severity": "low",
+      "confidence": 0.45,
+      "title": "WebView setAllowFileAccess(true) — defender hardening only",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Defender flags missing hardening (default false on API 30+). Attacker chain blocked because callers (HtmlPopupScreenKt, ReleaseNotesKt) are internal Compose screens with no manifest deep-link. Domain expert sees no clear vehicle-asset impact under current caller graph. → uncertain.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "blocked: caller chain internal",
+          "attack_chain": [
+            "external app → deep-link to HtmlPopup/ReleaseNotes (none registered)",
+            "blocked"
+          ]
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "WebSettings.setAllowFileAccess(false) + WebViewClient.shouldOverrideUrlLoading scheme allow-list"
+        },
+        "domain_expert": {
+          "severity": "low",
+          "vehicle_asset": "정보 페이지 (driver-facing)",
+          "stride": "Information Disclosure (potential)",
+          "tara_impact": "privacy",
+          "verdict": "low — no exploit chain visible"
+        }
+      }
+    },
+    {
+      "id": "vc-2",
+      "class": "ai.umos.vehiclecontrol.feature.information.p026ui.common.HtmlWebViewKt",
+      "line": 82,
+      "category": "network",
+      "stage1_severity": "medium",
+      "consensus_count": 1,
+      "consensus_perspectives": [
+        "defender"
+      ],
+      "consensus_class": "uncertain",
+      "severity": "low",
+      "confidence": 0.4,
+      "title": "WebView.loadUrl(htmlContentPath) — defender only",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Same caller chain as vc-1. Attacker has no exploitable producer; defender flags missing scheme allow-list; domain expert sees no vehicle impact. → uncertain.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "no external producer reachable"
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "WebViewAssetLoader + scheme/origin allow-list"
+        },
+        "domain_expert": {
+          "severity": "low",
+          "verdict": "no clear vehicle-safety chain"
+        }
+      }
+    },
+    {
+      "id": "vc-3",
+      "class": "ai.umos.vehiclecontrol.feature.applications.data.permission.AppPermissionManager",
+      "line": 149,
+      "category": "permission",
+      "stage1_severity": "high",
+      "consensus_count": 1,
+      "consensus_perspectives": [
+        "defender"
+      ],
+      "consensus_class": "uncertain",
+      "severity": "medium",
+      "confidence": 0.5,
+      "title": "grantRuntimePermission(packageName) caller-driven — internal Nav arg",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Defender flags absence of allow-list/signature gate. Attacker chain blocked: ApplicationDetailsViewModel.packageName comes from SavedStateHandle (Navigation arg) without a registered deep-link. Domain expert: HIGH IF caller becomes external (e.g. future deep-link); currently uncertain.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "no external producer of packageName visible"
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "signature permission on the entry route + explicit allow-list of target packages"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "vehicle_asset": "차량 안전 앱 권한 모델",
+          "stride": "Elevation of Privilege (conditional)",
+          "tara_impact": "operational",
+          "verdict": "uncertain pending caller graph completeness"
+        }
+      }
+    },
+    {
+      "id": "vc-4",
+      "class": "ai.umos.vehiclecontrol.feature.applications.data.permission.AppPermissionManager",
+      "line": 124,
+      "category": "permission",
+      "stage1_severity": "high",
+      "consensus_count": 1,
+      "consensus_perspectives": [
+        "defender"
+      ],
+      "consensus_class": "uncertain",
+      "severity": "medium",
+      "confidence": 0.5,
+      "title": "revokeRuntimePermission(packageName) — symmetric to vc-3",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Same caller chain as vc-3. Symmetric verdict.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "no external producer reachable"
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "signature permission gate + allow-list"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "vehicle_asset": "차량 안전 앱 권한 모델",
+          "stride": "DoS (silently strip safety-app permission, conditional)",
+          "tara_impact": "safety",
+          "verdict": "uncertain"
+        }
+      }
+    },
+    {
+      "id": "vc-5",
+      "class": "ai.umos.vehiclecontrol.p051ui.screens.GleoActionSender",
+      "line": 40,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "medium",
+      "confidence": 0.92,
+      "title": "Implicit broadcast leaks Gleo response payload — confirmed external chain via IntentRouter",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Attacker chain confirmed: external app sends 'NAVIGATE_TO_SETTING' to VehicleControlActivity (exported=true) → IntentRouter forwards to respondAction → implicit broadcast. Defender flags missing setPackage/signature-permission. Domain expert maps to Information Disclosure of voice-assistant context (Gleo). All 3 perspectives agree — strong TP. Severity stays MEDIUM until response payload provably contains user data.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "medium",
+          "attack_chain": [
+            "external app sends Intent action 'ai.umos.vehiclecontrol.NAVIGATE_TO_SETTING' to VehicleControlActivity (exported)",
+            "IntentRouter.toNavigationEvent invokes gleoActionSender.respondAction",
+            "external app's BroadcastReceiver registered for 'APP_ACTION_RESPONSE' observes status/message/response"
+          ]
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "Intent.setPackage(<pleos-package>) OR <permission> attribute on the receiver allow-list"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "vehicle_asset": "음성 비서 명령 응답 (Gleo)",
+          "stride": "Information Disclosure",
+          "tara_impact": "privacy"
+        }
+      }
+    },
+    {
+      "id": "vc-6",
+      "class": "ai.umos.vehiclecontrol.feature.bluetooth.data.VehicleBroadcastReceiver",
+      "line": 58,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.88,
+      "title": "Exported receiver persists untrusted macAddress to paired-device DB",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Manifest confirms <receiver android:exported=\"true\"> with no permission. Attacker injects arbitrary macAddress → DB row under system-adjacent context. Defender: missing format validation + signature permission. Domain expert: Bluetooth pairing tampering — Spoofing/Tampering of paired-device identity, operational impact (e.g. spoofed Android Auto device). 3/3 strong TP. Severity raised to HIGH.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "external app sends VehicleBroadcastIntent.DEVICE_SUPPORT_ANDROID_AUTO_WIRELESS broadcast with arbitrary macAddress",
+            "VehicleBroadcastReceiver persists to PairedDeviceRepository",
+            "spoofed device appears as paired Android Auto"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "MAC address format regex + android:permission='android.permission.BLUETOOTH_PRIVILEGED' on the <receiver>"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "페어링된 디바이스 (Android Auto, 키레스 엔트리 등)",
+          "stride": "Spoofing / Tampering",
+          "tara_impact": "operational"
+        }
+      }
+    },
+    {
+      "id": "vc-7",
+      "class": "ai.umos.vehiclecontrol.Broadcasts",
+      "line": 92,
+      "category": "intent",
+      "stage1_severity": "low",
+      "consensus_count": 1,
+      "consensus_perspectives": [
+        "defender"
+      ],
+      "consensus_class": "uncertain",
+      "severity": "low",
+      "confidence": 0.5,
+      "title": "registerReceiver flag suppression — defender hardening only",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Defender: explicit RECEIVER_NOT_EXPORTED required on API 34+. Attacker has no specific chain because callers are diverse. Domain expert: no vehicle-specific impact. → uncertain.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "no specific producer; diffuse risk"
+        },
+        "defender": {
+          "severity": "low",
+          "missing_control": "Context.RECEIVER_NOT_EXPORTED flag explicit at every Broadcasts.observe(...) call site"
+        },
+        "domain_expert": {
+          "severity": "low",
+          "verdict": "no vehicle-domain mapping"
+        }
+      }
+    },
+    {
+      "id": "ssl-1",
+      "class": "ai.pleos.sync.crypto.ECCCrypto",
+      "line": 49,
+      "category": "crypto",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.9,
+      "title": "Deterministic ECC key derivation from BuildConfig.IDENTIFIER — same key on every device",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Stage 2 caller trace resolved the passphrase: it is BuildConfig.IDENTIFIER (a build-time constant baked into the APK). Combined with single-SHA-256 KDF, every device derives the SAME ECC private key. Attacker recovers the constant by APK reverse engineering. Defender confirms missing PBKDF/salt/iterations. Domain expert: this key is used to decrypt the PleOS sync config (server endpoints, credentials) — recovering it gives every attacker the same access to the encrypted YAML config of every device. 3/3 strong TP, severity HIGH.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "unzip the APK and read BuildConfig.IDENTIFIER + BuildConfig.SERVER_PUBLIC_KEY (constants)",
+            "run ECCCrypto.generateDeterministicPrivateKey(BuildConfig.IDENTIFIER) → identical private key to every device",
+            "ECDH with server public key + AES-GCM decrypt of any captured encryptedYaml config blob"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "(a) per-device salt + PBKDF2/Argon2 high-iteration; (b) Android Keystore EC key generation per device; (c) avoid build-time constant as a key seed entirely"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "차량 sync 설정 (서버 endpoint·자격증명)",
+          "stride": "Information Disclosure",
+          "tara_impact": "operational + privacy"
+        }
+      }
+    },
+    {
+      "id": "ssl-2",
+      "class": "ai.pleos.sync.authenticator.AuthData",
+      "line": 82,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.92,
+      "title": "Kotlin data-class toString embeds access token — log emission CONFIRMED at SysLogService:170",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Stage 2 grep confirms `Log.d(TAG, \"onTokenChange : \" + this.$authData)` at SysLogService:170. Token now provably reaches logcat under normal operation (every token rotation event). Attacker chain confirmed (logcat read via adb / dumpsys / privileged service). Defender + domain expert already HIGH. 3/3 strong TP.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "app naturally writes Log.d(TAG, 'onTokenChange : ' + authData) per token rotation (SysLogService:170)",
+            "logcat reader (READ_LOGS, dumpsys, vendor diagnostic) captures the line",
+            "extract authenticatorToken substring → use as Bearer for connect-gw.umos.ai"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "override toString() to mask token; OR move token to a non-data-class wrapper; OR add ProGuard rule to strip toString in release; OR use Timber's .tag().mo... wrapper that filters sensitive fields"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "차량-서버 동기화 인증 토큰 (CCG/HMG)",
+          "stride": "Information Disclosure",
+          "tara_impact": "privacy + operational"
+        }
+      }
+    },
+    {
+      "id": "ssl-3",
+      "class": "ai.pleos.sync.authenticator.CCGAuthenticator",
+      "line": 49,
+      "category": "network",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP_provisional",
+      "severity": "medium",
+      "confidence": 0.75,
+      "title": "Hardcoded prod endpoint + credential POST — no pinning anywhere in ai/pleos/sync",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Stage 2 grep across `ai/pleos/sync/**` confirms NO `CertificatePinner` / `TrustManager` / `HostnameVerifier` / `network_security_config` in the sync code. Combined with the hardcoded HTTPS endpoint and credential POST, a CA-trusted MITM (corporate proxy with planted root, hostile Wi-Fi user-cert) reads `client_id` and `secret` in cleartext. CAVEAT: third-party HTTP client libraries (OkHttp/Retrofit/gRPC) bundled in the APK might still apply pinning; that grep is the next verification (PROVISIONAL strong TP).",
+      "per_perspective": {
+        "attacker": {
+          "severity": "medium",
+          "attack_chain": [
+            "plant CA-trusted root cert on the device or on intermediate proxy",
+            "intercept TLS to connect-gw-coral.umos.ai/auth/client/login",
+            "harvest {client_id, secret} JSON body",
+            "use credentials to obtain server-side tokens"
+          ]
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "OkHttpClient.Builder().certificatePinner(CertificatePinner) on the shared HttpClient and/or res/xml/network_security_config.xml with <pin-set>"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "vehicle_asset": "차량-서버 통신 채널 (CCG 자격증명 교환)",
+          "stride": "Information Disclosure / Spoofing",
+          "tara_impact": "operational"
+        },
+        "caveat": "third-party HttpClient/gRPC layer pinning는 sync/* 외부 패키지 (com.squareup.okhttp3 등) 추가 grep 필요"
+      }
+    },
+    {
+      "id": "lmp-1",
+      "class": "ai.pleos.llm.model.provider.PromptsContentProvider",
+      "line": 62,
+      "category": "intent",
+      "stage1_severity": "high",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.95,
+      "title": "Exported provider returns LLM system-prompt corpus to any caller — 3/3 consensus",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Attacker constructs a one-shot read with content://ai.pleos.playground.llm.model.provider.prompts/ → receives full prompts.json. Defender: missing signature permission. Domain expert: jailbreak primitive on the in-vehicle voice-assistant brain — direct safety relevance. 3/3 unanimous, strong TP. Severity HIGH.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "any installed app calls getContentResolver().query(content://ai.pleos.playground.llm.model.provider.prompts/...)",
+            "receives prompts.json verbatim",
+            "uses exact phrasing for prompt injection / jailbreak against Gleo"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "android:permission='ai.pleos.caas.EVENT_PERMISSION' (signature) on <provider>; or remove exported=true and use FLAG_GRANT_READ_URI_PERMISSION on demand"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "LLM 시스템 프롬프트 (Gleo 안전 가드 + 명령 매핑)",
+          "stride": "Tampering / Information Disclosure",
+          "tara_impact": "safety + operational"
+        }
+      }
+    },
+    {
+      "id": "lmp-2",
+      "class": "ai.pleos.llm.model.provider.receiver.LLMModelProviderReceiver",
+      "line": 43,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "medium",
+      "confidence": 0.9,
+      "title": "Exported receiver enables LLM-model file deletion + process kill via custom actions — 3/3",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Attacker: external broadcast of FILE_SHARE_COMPLETE deletes the GGUF model file (persistent DoS via LLM_MODEL_SHARE_COMPLETE flag) + both actions kill the process. Defender: missing signature permission. Domain expert: DoS against on-device voice assistant. 3/3 unanimous, strong TP.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "medium",
+          "attack_chain": [
+            "external app sends ai.pleos.llm.model.provider.intent.action.SHARE_FILE_COMPLETE broadcast",
+            "deleteLLMModelFile() removes the GGUF model in getFilesDir()",
+            "PreferenceHelper sets LLM_MODEL_SHARE_COMPLETE=true → subsequent BOOT paths skip re-shipping the model (persistent)"
+          ]
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "android:permission='ai.pleos.caas.EVENT_PERMISSION' (signature) attached to <receiver>; or move actions to a runtime-registered Context.RECEIVER_NOT_EXPORTED listener"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "vehicle_asset": "차량 내장 LLM (Gleo 음성 비서)",
+          "stride": "Denial of Service",
+          "tara_impact": "operational"
+        }
+      }
+    },
+    {
+      "id": "ssl-4",
+      "class": "ai.pleos.sync.authenticator.HMGAuthenticator$HmgUserInfo",
+      "line": 365,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "consensus_count": 2,
+      "consensus_perspectives": [
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "TP",
+      "severity": "high",
+      "confidence": 0.7,
+      "title": "HmgUserInfo PII (UUID/생년월일/이메일/이름) toString 누출 — emission 미확인",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "Defender + domain expert: PII auto-toString 패턴 + 차량 도메인에서 운전자 신원 직접 노출 = HIGH (GDPR/개인정보보호법 적용). Attacker abstain: B-3.c grep 결과 (Timber|Log.[diwev]) + HmgUserInfo 매치 0건 — emission 미확인이라 실 exploit chain 불완전. 2/3 TP.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "uncertain",
+          "verdict": "leak primitive real but no actual log emission of HmgUserInfo found in caller grep"
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "override toString to mask PII (UUID=***, email=***@..., birthdate=***); or move PII fields out of data class"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "운전자 PII (UUID/생년월일/이메일/이름)",
+          "stride": "Information Disclosure",
+          "tara_impact": "privacy + regulatory (GDPR / 개인정보보호법)"
+        }
+      }
+    },
+    {
+      "id": "ssl-5",
+      "class": "ai.pleos.sync.config.SyncConfigsProvider",
+      "line": 83,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.92,
+      "title": "BuildConfig.IDENTIFIER as KDF passphrase — same root cause as ssl-1, listed as separate finding by hardcoded category",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "attacker + defender + domain_expert 모두 동의: build-time 박힌 IDENTIFIER → 모든 device 동일 ECC 키 → 모든 device의 sync config 복호화. ssl-1 (KDF 설계)과 ssl-5 (passphrase가 hardcoded) 는 같은 attack chain의 두 layer. 3/3 strong TP, severity HIGH.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "unzip APK → BuildConfig.IDENTIFIER 추출",
+            "ECCCrypto.generateDeterministicPrivateKey → 동일 ECC 키",
+            "ECDH(server_public_key) → AES-GCM decrypt of any encryptedYaml config"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "build-time 상수 대신 (a) 디바이스 unique salt + Android Keystore 또는 (b) 서버에서 device 별 발급 + secure provisioning"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "차량 sync 설정 (서버 endpoint·자격증명)",
+          "stride": "Information Disclosure",
+          "tara_impact": "operational + privacy"
+        }
+      }
+    },
+    {
+      "id": "ssl-6",
+      "class": "ai.pleos.sync.syslog.SysLogService",
+      "line": 76,
+      "category": "network",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.95,
+      "title": "차량 syslog가 평문 gRPC로 외부 송출 — ManagedChannelBuilder.usePlaintext() 명시",
+      "evidence": "<redacted: PleOS proprietary code>",
+      "rationale_merged": "B-3.c 추가 grep으로 SysLogService:76에서 .usePlaintext() 명시적 호출 confirmed. TLS 비활성화 → MITM이 차량 syslog (systemID + 로그 페이로드) 평문 관찰. logcat에 systemID + crp-analytics endpoint 노출(line 120)과 결합 시 영향 큼. attacker + defender + domain_expert 모두 HIGH 동의. 3/3 strong TP, severity HIGH로 격상.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "attack_chain": [
+            "passive MITM at the network path to BuildConfig.LOGCAT_PROXY_SERVER_URL (corporate proxy / hostile Wi-Fi / network tap)",
+            "observe gRPC frames in cleartext",
+            "extract systemID + log payload (vehicle telemetry, package state)"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "ManagedChannelBuilder.useTransportSecurity() (TLS) + CertificatePinner. Or migrate to OkHttpChannelBuilder.useTransportSecurity. Avoid usePlaintext() in production."
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "차량 syslog (systemID, 진단 페이로드)",
+          "stride": "Information Disclosure",
+          "tara_impact": "privacy + operational"
+        }
+      }
+    },
+    {
+      "id": "ucl1-1",
+      "class": "sg.vantagepoint.uncrackable1.C0005a",
+      "line": 15,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.95,
+      "title": "UnCrackable-Level1 hardcoded AES key + ciphertext (canonical MASVS-CRYPTO-1) — 3/3 strong TP",
+      "evidence": "C0000a.m0a(m7b(\"8d127684cbc37c17616d806cf50473cc\"), Base64.decode(\"5UJiFctbmgbDoLXmpL12mkno8HT4Lv8dlat8FxR2GOc=\", 0))",
+      "rationale_merged": "All three perspectives confirm. Attacker: APK 추출 후 즉시 hex/base64 literal 추출 → AES 복호 → secret string 'I want to believe' 복원 (canonical OWASP challenge solution). Defender: KDF 도입 + per-session ephemeral key 도입 권고 — 즉시 fix 필요. Domain expert: MASVS-CRYPTO-1 + MASVS-STORAGE-2 직접 위반, OWASP MASTG의 leading example.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "verdict": "trivially exploitable — public OWASP solution exists",
+          "attack_chain": [
+            "jadx decompile",
+            "extract hex literal (key) + base64 literal (ciphertext)",
+            "AES-ECB decrypt locally",
+            "recovered secret = compare target string"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "no KDF, no per-session secret. Mitigation: server-issued ephemeral verification token + per-session salt"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "vehicle_asset": "사용자 자격증명 (challenge demo, but pattern applies to IVI auth/keystore)",
+          "stride": "I (Information Disclosure)",
+          "tara_impact": "Major (in real IVI auth context)",
+          "verdict": "MASVS-CRYPTO-1 / MASVS-STORAGE-2 canonical violation"
+        }
+      }
+    },
+    {
+      "id": "ucl1-2",
+      "class": "sg.vantagepoint.p000a.C0000a",
+      "line": 15,
+      "category": "crypto",
+      "stage1_severity": "medium",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "medium",
+      "confidence": 0.85,
+      "title": "AES default mode (Cipher.getInstance(\"AES\") = ECB without IV) — 3/3 strong TP",
+      "evidence": "Cipher cipher = Cipher.getInstance(\"AES\");",
+      "rationale_merged": "All three perspectives agree on MEDIUM severity. Attacker: deterministic ECB enables pattern leakage chosen-plaintext analysis (in this challenge, paired with ucl1-1 the attack is via key recovery, but ECB alone is pre-conditional weakness). Defender: explicit Cipher.getInstance(\"AES/GCM/NoPadding\") + per-message IV. Domain expert: MASVS-CRYPTO-1 — algorithm choice control violation, AES/ECB is industry-deprecated for arbitrary plaintext.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "medium",
+          "verdict": "deterministic + no IV → pattern leakage; in this challenge subordinate to ucl1-1 key recovery"
+        },
+        "defender": {
+          "severity": "medium",
+          "missing_control": "Cipher.getInstance with explicit GCM mode + IvParameterSpec"
+        },
+        "domain_expert": {
+          "severity": "medium",
+          "stride": "I (potential)",
+          "verdict": "MASVS-CRYPTO-1 algorithm-choice control"
+        }
+      }
+    },
+    {
+      "id": "ucl1-3",
+      "class": "sg.vantagepoint.uncrackable1.C0005a",
+      "line": 17,
+      "category": "crypto",
+      "stage1_severity": "low",
+      "consensus_count": 2,
+      "consensus_perspectives": [
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "TP",
+      "severity": "low",
+      "confidence": 0.6,
+      "title": "Crypto exception detail logged via Log.d — 2/3 TP (attacker abstain, hardening only)",
+      "evidence": "Log.d(\"CodeCheck\", \"AES error:\" + e.getMessage());",
+      "rationale_merged": "Attacker abstains: in production builds Log.d is typically stripped, and even on debuggable build the CodeCheck error message reveals nothing the attacker doesn't already know post-key-extraction. Defender flags as hardening (production builds must filter logs, vendor diagnostics may readback). Domain expert flags MASVS-STORAGE-3 (sensitive data not leaked via system logs) — tertiary control.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "low",
+          "verdict": "abstain — minimal exploit value beyond ucl1-1"
+        },
+        "defender": {
+          "severity": "low",
+          "missing_control": "production build filter / Timber.tag with debug guard / no PII or crypto state in logs"
+        },
+        "domain_expert": {
+          "severity": "low",
+          "stride": "I (low)",
+          "verdict": "MASVS-STORAGE-3 hardening"
+        }
+      }
+    },
+    {
+      "id": "ucl3-1",
+      "class": "sg.vantagepoint.uncrackable3.MainActivity",
+      "line": 25,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "consensus_count": 3,
+      "consensus_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ],
+      "consensus_class": "strong_TP",
+      "severity": "high",
+      "confidence": 0.95,
+      "title": "UnCrackable-Level3 hardcoded XOR key (init param to libfoo.so) — 3/3 strong TP",
+      "evidence": "private static final String xorkey = \"pizzapizzapizzapizzapizz\";",
+      "rationale_merged": "All three perspectives confirm. Attacker: 24-byte XOR key는 string literal로 APK에 박혀 있고, native init(xorkey.getBytes())로 전달된다. APK 추출 후 즉시 키 노출 — 굳이 native lib 분해할 필요 없이 ucl3-1만으로 hardcoded secret 위반 명확. Defender: per-session ephemeral key + server-issued challenge 도입 권고. Domain expert: MASVS-CRYPTO-1 / MASVS-STORAGE-2 위반 — Level1과 같은 패턴이지만 native와 결합되어 더 깊은 anti-tamper 환경.",
+      "per_perspective": {
+        "attacker": {
+          "severity": "high",
+          "verdict": "trivially extractable from APK string pool",
+          "attack_chain": [
+            "jadx decompile",
+            "extract MainActivity.xorkey literal",
+            "use as XOR key against (native-derived) ciphertext"
+          ]
+        },
+        "defender": {
+          "severity": "high",
+          "missing_control": "no per-session secret. Mitigation: server-issued ephemeral challenge + OS Keystore"
+        },
+        "domain_expert": {
+          "severity": "high",
+          "stride": "I (Information Disclosure)",
+          "verdict": "MASVS-CRYPTO-1 + MASVS-STORAGE-2 canonical violation"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "n_findings_input": 15,
+    "consensus_distribution_initial": {
+      "strong_TP_3of3": 4,
+      "TP_2of3": 2,
+      "uncertain_1of3": 6,
+      "clean_0of3": 0
+    },
+    "consensus_distribution_after_stage2_b3c": {
+      "strong_TP_3of3": 6,
+      "strong_TP_provisional_3of3": 1,
+      "TP_2of3": 0,
+      "uncertain_1of3": 5,
+      "clean_0of3": 0,
+      "note": "Phase B-3.c follow-up resolved 3 escalations: ssl-1 (passphrase = BuildConfig.IDENTIFIER 확인), ssl-2 (Log.d emission at SysLogService:170 확인), ssl-3 (sync 패키지 내 SSL 코드 부재 확인 — third-party lib pinning은 추가 검증 필요로 'provisional')"
+    },
+    "by_class_after_b3c": {
+      "strong_TP_findings": [
+        "vc-5 GleoActionSender",
+        "vc-6 VehicleBroadcastReceiver",
+        "lmp-1 PromptsContentProvider",
+        "lmp-2 LLMModelProviderReceiver",
+        "ssl-1 ECCCrypto deterministic key (escalated)",
+        "ssl-2 AuthData toString token leak (escalated)"
+      ],
+      "strong_TP_provisional": [
+        "ssl-3 CCGAuthenticator pinning (sync 패키지 confirmed; third-party lib 추가 검증 필요)"
+      ],
+      "uncertain_findings": [
+        "vc-1 HtmlWebViewKt setAllowFileAccess",
+        "vc-2 HtmlWebViewKt loadUrl",
+        "vc-3 AppPermissionManager grant",
+        "vc-4 AppPermissionManager revoke",
+        "vc-7 Broadcasts flag"
+      ]
+    },
+    "new_findings_discovered_during_b3c": [
+      {
+        "id": "ssl-4",
+        "class": "ai.pleos.sync.authenticator.HMGAuthenticator$HmgUserInfo",
+        "line": 365,
+        "category": "hardcoded",
+        "severity": "high",
+        "title": "Driver PII (UUID/birthdate/email/name) leaked via Kotlin data-class toString() — same pattern as ssl-2 but for personally identifying info"
+      },
+      {
+        "id": "ssl-5",
+        "class": "ai.pleos.sync.config.SyncConfigsProvider",
+        "line": 83,
+        "category": "hardcoded",
+        "severity": "high",
+        "title": "BuildConfig.IDENTIFIER used as KDF passphrase = effectively a hardcoded secret in the APK"
+      },
+      {
+        "id": "ssl-6",
+        "class": "ai.pleos.sync.syslog.SysLogService",
+        "line": 120,
+        "category": "network",
+        "severity": "medium",
+        "title": "gRPC endpoint connect-gw.umos.ai:9091 — TLS verdict depends on grpc-channel SSL config (verification pending)"
+      }
+    ],
+    "comparison_with_self_GT_after_b3c": {
+      "self_GT_TP_initial": 6,
+      "self_GT_TP_after_b3c_escalation": "8 (ssl-1, ssl-3 also flipped from uncertain to TP based on attacker confirmation; ssl-2 was already TP)",
+      "self_GT_FP": 4,
+      "stage3_strong_TP": 7,
+      "stage3_uncertain": 5,
+      "stage3_clean": 0,
+      "agreement_on_self_GT_TP": "all 8 self-GT TPs reached 3/3 consensus (or provisional 3/3 in ssl-3 case)",
+      "interpretation": "After Phase B-3.c caller resolution, every self-GT TP reaches strong TP in stage 3, and every self-GT FP stays in uncertain (defender-only). Consensus rule maps cleanly to ground-truth labels."
+    },
+    "stage3_metric_impact_vs_stage1_after_b3c": {
+      "stage1_precision_lenient": 0.6,
+      "stage1_false_positive_rate_lenient": 0.4,
+      "stage3_strong_TP_precision": "7/7 = 1.00 (strong TP만 채택; ssl-3 provisional 포함)",
+      "stage3_strong_TP_false_positive_rate": "0%",
+      "stage3_recall_vs_self_GT": "8/8 = 100%",
+      "caveat": "표본 n=12 단일 APK 세트. OWASP MASTG 도입 후 외부 GT 기반 재측정 필수. ssl-3는 third-party lib pinning 추가 검증 후 strong TP 확정 가능."
+    },
+    "consensus_distribution_after_b3c_full": {
+      "strong_TP_3of3": 9,
+      "TP_2of3": 1,
+      "uncertain_1of3": 5,
+      "clean_0of3": 0,
+      "note": "After full B-3.c follow-up (pinning grep + emission grep): ssl-3 confirmed 3/3 (no longer provisional), ssl-4 added as 2/3 (PII leak primitive without confirmed emission), ssl-5 added as 3/3 (separate hardcoded finding from ssl-1), ssl-6 added as 3/3 HIGH (usePlaintext() confirmed)"
+    },
+    "by_class_after_full_b3c": {
+      "strong_TP_findings": [
+        "vc-5",
+        "vc-6",
+        "lmp-1",
+        "lmp-2",
+        "ssl-1",
+        "ssl-2",
+        "ssl-3",
+        "ssl-5",
+        "ssl-6"
+      ],
+      "TP_findings": [
+        "ssl-4"
+      ],
+      "uncertain_findings": [
+        "vc-1",
+        "vc-2",
+        "vc-3",
+        "vc-4",
+        "vc-7"
+      ]
+    },
+    "consensus_distribution_after_combined_n18": {
+      "strong_TP_3of3": 11,
+      "TP_2of3": 2,
+      "uncertain_1of3": 5,
+      "clean_0of3": 0,
+      "note": "2026-04-30: ucl1-1 (hardcoded AES key, 3/3) + ucl1-2 (AES/ECB mode, 3/3) + ucl1-3 (Log.d hardening, 2/3) 추가. 11 strong TP = vc-5/6 + lmp-1/2 + ssl-1/2/3/5/6 + ucl1-1/2. 2 TP at ≥2/3 = ssl-4 (PII), ucl1-3 (log hardening). 5 uncertain = vc-1/2/3/4/7 (모두 self-GT FP 또는 LOW)."
+    },
+    "by_class_after_combined_n18": {
+      "strong_TP_findings": [
+        "vc-5",
+        "vc-6",
+        "lmp-1",
+        "lmp-2",
+        "ssl-1",
+        "ssl-2",
+        "ssl-3",
+        "ssl-5",
+        "ssl-6",
+        "ucl1-1",
+        "ucl1-2"
+      ],
+      "TP_findings": [
+        "ssl-4",
+        "ucl1-3"
+      ],
+      "uncertain_findings": [
+        "vc-1",
+        "vc-2",
+        "vc-3",
+        "vc-4",
+        "vc-7"
+      ]
+    },
+    "consensus_distribution_after_combined_n19": {
+      "strong_TP_3of3": 12,
+      "TP_2of3": 2,
+      "uncertain_1of3": 5,
+      "clean_0of3": 0,
+      "note": "2026-04-30 (extension): ucl3-1 (XOR key, 3/3) 추가로 strong TP 11→12. 2/3 TP 변동 없음 (ssl-4 + ucl1-3 그대로). uncertain 5건 (vc-1/2/3/4/7) 변동 없음."
+    },
+    "by_class_after_combined_n19": {
+      "strong_TP_findings": [
+        "vc-5",
+        "vc-6",
+        "lmp-1",
+        "lmp-2",
+        "ssl-1",
+        "ssl-2",
+        "ssl-3",
+        "ssl-5",
+        "ssl-6",
+        "ucl1-1",
+        "ucl1-2",
+        "ucl3-1"
+      ],
+      "TP_findings": [
+        "ssl-4",
+        "ucl1-3"
+      ],
+      "uncertain_findings": [
+        "vc-1",
+        "vc-2",
+        "vc-3",
+        "vc-4",
+        "vc-7"
+      ]
+    }
+  },
+  "_redaction_note": "PleOS finding evidence (vc-/ssl-/lmp-) masked. MASTG findings (ucl1-/ucl3-) are public corpus — kept verbatim."
+}
