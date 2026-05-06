@@ -24,7 +24,6 @@ PPT 10/12주차 deliverable. 측정 기록(archive/)을 묶어 보고서·발표
 | 파일 | 무엇 |
 |---|---|
 | [week11_limitations_costs.md](week11_limitations_costs.md) | **한계 + 운영 비용**. L1 native 분석 불가 / L2 표본 작음 / L3 multi-LLM ensemble 미구현 / L4 hand-crafted MASTG / L5 stage3 MASTG 미평가(해소). APK 1개당 시간/메모리/비용 추정 + 트레이드오프. |
-| [ppt_revision_guide.md](ppt_revision_guide.md) | 학기 PPT 슬라이드의 가설 수치를 실측/Future Work 표기로 옮기는 변경 가이드. v2 작성 시 참조. |
 
 ## 측정 기록 (`archive/` — local-only, gitignored)
 
