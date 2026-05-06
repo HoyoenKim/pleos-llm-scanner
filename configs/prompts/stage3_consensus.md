@@ -1,6 +1,6 @@
 # Stage 3 — Consensus Rule (Multi-Perspective Ensemble)
 
-D3=B decision: the same model (Claude Opus 4.7) is invoked with three perspective prompts (`stage3_attacker.md`, `stage3_defender.md`, `stage3_domain_expert.md`) and their verdicts are merged by this rule.
+The same model (Claude Opus 4.7) is invoked with three perspective prompts (`stage3_attacker.md`, `stage3_defender.md`, `stage3_domain_expert.md`) and their verdicts are merged by this rule. Diversity comes from the prompts (different analytical stances), not from different models.
 
 ## Consensus rule (TP determination)
 
@@ -50,17 +50,18 @@ For each `(class, line)` location, compare the three perspective verdicts:
 4. **Stage 3 run**: apply the three perspective prompts to the same class → three perspective verdicts → apply the consensus rule above.
 5. **Stage 3 output path**: `data/reports/<apk>_<YYYYMMDD>_stage3.json`, stored separately from the Stage 1 / 2 reports.
 
-## D3=A (multi-Claude-model) comparison
+## Multi-prompt vs multi-model — alternative considered
 
-| Property | (A) Multi-model Claude | (B) Multi-prompt (current) |
+A multi-model ensemble (e.g. Opus + Sonnet + Haiku, or Claude + GPT-4) was considered first but ruled out by environment constraints. The trade-off:
+
+| Property | Multi-model ensemble (alternative) | Multi-prompt ensemble (current) |
 |---|---|---|
-| Model diversity | Opus / Sonnet / Haiku | All Opus 4.7 |
-| Automation | Not possible inside a single Claude Code session (manual workflow) | **Automatable** |
-| Perspective diversity | Comes from training-data differences | Comes from explicit prompts |
-| Match with PPT narrative | "Multi-LLM ensemble" — direct | "Single-LLM multi-prompt ensemble (environment constraint)" — narrative rewritten |
-| Reporting honesty | Must disclose manual workflow | Can document environment limit + chosen substitute |
+| Model diversity | Opus / Sonnet / Haiku, or different vendors | All Opus 4.7 |
+| Automation | Not possible inside a single Claude Code session — manual cross-reading required | **Automatable in one session** |
+| Source of perspective diversity | Training-data and architecture differences | Explicit role prompts (attacker / defender / domain expert) |
+| Reporting honesty | Must disclose the manual workflow | Documents the environment limit and the chosen substitute |
 
-## Future Work
+## Future work
 
-- Adopting (A) requires external SDK / API budget; the current report keeps it as Future Work.
-- A separate model family (GPT-4, Gemini, etc.) can be plugged in later; the consensus rule above is reusable as-is.
+- Switching to a multi-model ensemble requires an external SDK / API budget; this is left as future work.
+- A different model family (GPT-4, Gemini, etc.) can be plugged in later — the consensus rule above is reusable as-is.

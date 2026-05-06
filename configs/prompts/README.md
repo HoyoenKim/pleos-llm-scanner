@@ -28,10 +28,11 @@ APK ── jadx ──► obf check ──► detection ──► verification �
 | [stage3_domain_expert.md](stage3_domain_expert.md) | 3 (3/3) | IVI / vehicle-security domain viewpoint |
 | [stage3_consensus.md](stage3_consensus.md) | 3 (merge) | Consensus rule (≥1/2/3 thresholds) + merged JSON schema |
 
-## D3 mapping
+## Why multi-prompt instead of multi-model
 
-- **D3 = (B) multi-prompt ensemble** — chosen due to environment constraints (single-model Claude Code session, no external paid API budget). The same Opus 4.7 model is invoked with three perspective prompts.
-- Default consensus threshold = **≥ 2/3** — best F1 in Variant B ablation (combined n=19 → F1 0.966).
+The original plan was a multi-model ensemble (Claude + GPT-4) but two environment constraints ruled it out: a Claude Code session is bound to a single model, and the project has no external paid-API budget to fan out to other providers. Instead, the same Opus 4.7 model is invoked **three times with three different role prompts** (attacker / defender / domain expert) and their verdicts are merged. Diversity comes from the prompts, not from different models.
+
+**Default consensus threshold = ≥ 2/3** (a finding is accepted as a true positive when at least two of the three perspectives flag it). This threshold gave the best F1 in the Variant B ablation (combined n=19 → F1 0.966).
 
 ## Output schema
 
