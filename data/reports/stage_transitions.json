@@ -1,0 +1,353 @@
+{
+  "measurement_id": "R1.a",
+  "description": "Per-finding Stage 1 → Stage 2 (GT) → Stage 3 (consensus) verdict transitions",
+  "measured_at": "2026-05-06",
+  "scope": "n=19 (combined GT)",
+  "rows": [
+    {
+      "id": "vc-1",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "HtmlWebViewKt",
+      "line": 58,
+      "category": "network",
+      "stage1_severity": "high",
+      "stage2_gt": "FP",
+      "stage2_true_severity": "low",
+      "stage3_consensus_count": 1,
+      "stage3_class": "uncertain",
+      "stage3_perspectives": [
+        "defender"
+      ]
+    },
+    {
+      "id": "vc-2",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "HtmlWebViewKt",
+      "line": 82,
+      "category": "network",
+      "stage1_severity": "medium",
+      "stage2_gt": "FP",
+      "stage2_true_severity": "low",
+      "stage3_consensus_count": 1,
+      "stage3_class": "uncertain",
+      "stage3_perspectives": [
+        "defender"
+      ]
+    },
+    {
+      "id": "vc-3",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "AppPermissionManager",
+      "line": 149,
+      "category": "permission",
+      "stage1_severity": "high",
+      "stage2_gt": "FP",
+      "stage2_true_severity": "none",
+      "stage3_consensus_count": 1,
+      "stage3_class": "uncertain",
+      "stage3_perspectives": [
+        "defender"
+      ]
+    },
+    {
+      "id": "vc-4",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "AppPermissionManager",
+      "line": 124,
+      "category": "permission",
+      "stage1_severity": "high",
+      "stage2_gt": "FP",
+      "stage2_true_severity": "none",
+      "stage3_consensus_count": 1,
+      "stage3_class": "uncertain",
+      "stage3_perspectives": [
+        "defender"
+      ]
+    },
+    {
+      "id": "vc-5",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "GleoActionSender",
+      "line": 40,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "vc-6",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "VehicleBroadcastReceiver",
+      "line": 58,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "vc-7",
+      "apk": "ai.umos.vehiclecontrol",
+      "class": "Broadcasts",
+      "line": 92,
+      "category": "intent",
+      "stage1_severity": "low",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "low",
+      "stage3_consensus_count": 1,
+      "stage3_class": "uncertain",
+      "stage3_perspectives": [
+        "defender"
+      ]
+    },
+    {
+      "id": "ssl-1",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "ECCCrypto",
+      "line": 49,
+      "category": "crypto",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ssl-2",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "AuthData",
+      "line": 82,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ssl-3",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "CCGAuthenticator",
+      "line": 49,
+      "category": "network",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "lmp-1",
+      "apk": "ai.pleos.llm.model.provider",
+      "class": "PromptsContentProvider",
+      "line": 62,
+      "category": "intent",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "lmp-2",
+      "apk": "ai.pleos.llm.model.provider",
+      "class": "LLMModelProviderReceiver",
+      "line": 43,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ssl-4",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "HMGAuthenticator$HmgUserInfo",
+      "line": 365,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 2,
+      "stage3_class": "TP",
+      "stage3_perspectives": [
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ssl-5",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "SyncConfigsProvider",
+      "line": 83,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ssl-6",
+      "apk": "ai.pleos.sync.syslog",
+      "class": "SysLogService",
+      "line": 76,
+      "category": "network",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ucl1-1",
+      "apk": "UnCrackable-Level1",
+      "class": "C0005a",
+      "line": 15,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ucl1-2",
+      "apk": "UnCrackable-Level1",
+      "class": "C0000a",
+      "line": 15,
+      "category": "crypto",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ucl1-3",
+      "apk": "UnCrackable-Level1",
+      "class": "C0005a",
+      "line": 17,
+      "category": "crypto",
+      "stage1_severity": "low",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "low",
+      "stage3_consensus_count": 2,
+      "stage3_class": "TP",
+      "stage3_perspectives": [
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ucl3-1",
+      "apk": "UnCrackable-Level3",
+      "class": "MainActivity",
+      "line": 25,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    }
+  ],
+  "summary": {
+    "stage1_to_stage2": {
+      "high→FP": 3,
+      "high→TP": 6,
+      "low→TP": 2,
+      "medium→FP": 1,
+      "medium→TP": 7
+    },
+    "stage2_to_stage3": {
+      "FP→uncertain": 4,
+      "TP→TP": 2,
+      "TP→strong-TP": 12,
+      "TP→uncertain": 1
+    },
+    "stage1_to_stage3": {
+      "high→TP": 1,
+      "high→strong-TP": 5,
+      "high→uncertain": 3,
+      "low→TP": 1,
+      "low→uncertain": 1,
+      "medium→strong-TP": 7,
+      "medium→uncertain": 1
+    },
+    "fp_flow": {
+      "fp_at_stage2_gt": 4,
+      "fp_correctly_filtered_at_stage3": 4,
+      "fp_incorrectly_promoted_at_stage3": 0
+    },
+    "tp_flow": {
+      "tp_at_stage2_gt": 15,
+      "tp_kept_at_stage3": 14,
+      "tp_lost_at_stage3": 1
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "measurement_id": "R3.a",
+  "description": "Native lib (.so) inventory across 207 system APKs extracted from PleOS Connect v2.0.5 emulator",
+  "measured_at": "2026-05-06",
+  "overall": {
+    "n": 207,
+    "with_native": 22,
+    "pct": 10.6,
+    "total_so": 221
+  },
+  "by_origin": {
+    "PleOS": {
+      "n": 28,
+      "with_native": 14,
+      "pct": 50.0,
+      "total_so": 184
+    },
+    "AOSP": {
+      "n": 174,
+      "with_native": 6,
+      "pct": 3.4,
+      "total_so": 15
+    },
+    "third-party": {
+      "n": 5,
+      "with_native": 2,
+      "pct": 40.0,
+      "total_so": 22
+    }
+  },
+  "top_native_apks": [
+    {
+      "apk": "ai.pleos.playground.caas",
+      "so_count": 62,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.maps.android.navigation.app",
+      "so_count": 44,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.ambientai",
+      "so_count": 24,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "com.antutu.benchmark.full.lite",
+      "so_count": 20,
+      "origin": "third-party"
+    },
+    {
+      "apk": "ai.umos.appmarket",
+      "so_count": 12,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.pleos.playground.account",
+      "so_count": 8,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.drivingview",
+      "so_count": 8,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.inputmethod",
+      "so_count": 8,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.pleos.sync.syslog",
+      "so_count": 4,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.callandmessage",
+      "so_count": 4,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "ai.umos.sync.internal",
+      "so_count": 4,
+      "origin": "PleOS"
+    },
+    {
+      "apk": "android.ext.services",
+      "so_count": 3,
+      "origin": "AOSP"
+    },
+    {
+      "apk": "com.android.providers.media.module",
+      "so_count": 3,
+      "origin": "AOSP"
+    },
+    {
+      "apk": "com.android.webview",
+      "so_count": 3,
+      "origin": "AOSP"
+    },
+    {
+      "apk": "ai.umos.car.evs",
+      "so_count": 2,
+      "origin": "PleOS"
+    }
+  ],
+  "methodology": "zipfile namelist filter on '.so'. APK origin classified by package prefix (ai.umos.* / ai.pleos.* = PleOS; com.android.* / android.* / com.google.* = AOSP; other = third-party)."
+}

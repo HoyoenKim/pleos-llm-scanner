@@ -23,8 +23,12 @@ data/decompiled/
 data/reports/*.json
 data/reports/*.md
 # Exception: meta-analysis aggregation tables (no PleOS source, GT-derived only)
-!data/reports/aaos_mapping_table_*
-!data/reports/tara_artifact_*
+!data/reports/aaos_mapping_table*
+!data/reports/tara_artifact*
+# Exception: RQ measurement artifacts (deterministic from GT + stage3_ensemble + APK metadata)
+!data/reports/stage_transitions*
+!data/reports/perspective_agreement*
+!data/reports/native_lib_inventory*
 
 # PPT — private until report-finalisation review
 *.pptx
