@@ -2,7 +2,7 @@
 
 > 본 보고서의 6 차트 — Stage 1/2/3 측정값 + 베이스라인 비교 + 난독화 분포 + Ablation.
 > 산출 스크립트: `src/viz/plot_metrics.py` (matplotlib 3.10.8, Malgun Gothic). 산출 PNG: `data/viz/`.
-> finding ID 정의는 [`report_v0.9.md`](report_v0.9.md) 의 Notation 섹션 참조.
+> finding ID 정의는 [`01_report.md`](01_report.md) 의 Notation 섹션 참조.
 
 ## 차트 인덱스
 

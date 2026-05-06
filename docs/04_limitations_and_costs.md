@@ -174,7 +174,7 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 | **시간** | APK 1개 ~40분, 3 APK ~2시간 | manual 대비 3x 단축 / fully-batch 자동화 가능 |
 | **비용** | Claude Code 정액제 안 | 산업 적용 시 enterprise plan + radar2/Ghidra 통합 필요 |
 | **재현성** | scripts + GT JSON deterministic | LLM의 비결정성은 stage 3 합의가 흡수 |
-| **이식성** | 60~70% OS-독립 ([`docs/generalization_assessment.md`](generalization_assessment.md)) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
+| **이식성** | 60~70% OS-독립 ([`docs/01_report.md (§ 6)`](generalization_assessment.md)) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
 
 ---
 
@@ -190,11 +190,11 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 
 ## 5. 연결 산출물
 
-- `docs/report_v0.9.md` 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 노트
+- `docs/01_report.md` 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 노트
 - `docs/archive/phase_b4c_mastg_baseline_20260430.md` (L1 boundary 증거)
 - `docs/archive/phase_c_deobf_baseline_20260430.md` (L4 hand-crafted caveat)
 - `docs/archive/phase_b4c2_baselines_20260430.md` (운영 시간 cost 비교)
-- `docs/generalization_assessment.md` (이식성 trade-off)
+- `docs/01_report.md (§ 6)` (이식성 trade-off)
 
 ## 변경 이력
 

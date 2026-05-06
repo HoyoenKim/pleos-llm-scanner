@@ -112,7 +112,7 @@
 2. **GT corpus**: `data/ground_truth/combined_labels.json` (n=19, self 15 + MASTG 4)
 3. **AAOS / MASVS / TARA 매핑 표**: `data/reports/aaos_mapping_table.{md,json}`
 4. **TARA 시나리오 + Risk Matrix**: `data/reports/tara_artifact.{md,json}`
-5. **사례 연구 5건**: `docs/case_studies.md`
+5. **사례 연구 5건**: `docs/02_case_studies.md`
 6. **6개 시각화 차트**: `data/viz/01~06_*.png`
 
 ## 1. 연구 배경 및 목표
@@ -385,7 +385,7 @@ Boot 등은 본 corpus 미해당 → Future Work.
 
 ### 4.3 사례 연구 5건 (G7)
 
-상세는 [`docs/case_studies.md`](case_studies.md). 요약:
+상세는 [`docs/02_case_studies.md`](case_studies.md). 요약:
 
 | Case | Finding | 의의 |
 |---|---|---|
@@ -399,38 +399,150 @@ Boot 등은 본 corpus 미해당 → Future Work.
 
 ## 5. 통합 아키텍처 권고 (G6 보강)
 
-상세는 `docs/integration_architecture.md`. 본 학기 산출물을 PleOS 운영
-라이프사이클에 어떻게 통합할 수 있는지 권고:
+본 학기 산출물을 PleOS 차량 SW 개발 라이프사이클에 어떻게 통합할 수 있는지 권고. 본 절은 **권고/설계** 수준이며 실제 통합 구축은 PleOS 운영팀의 결정 + 별도 구현 단계가 필요.
+
+### 5.1 전체 흐름
 
 ```
-DEV (소스 + Gradle)
-  → CI/CD (pleos-llm-scanner: jadx + LLM stage 1/2/3 + AAOS/TARA mapping)
-    → PR Gate (Critical=0, High≤N)
-      → TARA Workflow (자산 카탈로그 → Threat Scenarios → Risk Matrix → Treatment)
-        → OTA Gating (서명 + Staged rollout)
-          → Production Vehicle (telemetry → 다시 TARA로 피드백)
+[1] DEV (소스 + Gradle)
+    Kotlin/Java 소스 → Gradle build → APK
+    (선택) ProGuard/R8 활성화로 식별자 난독화
+
+[2] CI/CD — pleos-llm-scanner 통합 진입점
+    APK 빌드 직후, PR 머지 전에 자동 실행
+    a. scripts/decompile.sh APK → jadx 디컴파일
+    b. src/deobf/entropy.py → 난독화 수준 측정
+    c. (HIGH 난독화일 때만) Stage 0 LLM 이름 복원
+    d. configs/keywords.yaml grep → priority class 큐
+    e. Stage 1 LLM → finding 후보
+    f. Stage 2 caller 분석 + (선택) AST 룰
+    g. Stage 3 multi-perspective consensus
+    h. src/aaos_map.py → AAOS / MASVS 매핑
+    i. src/tara_generate.py → TARA 시나리오 + Risk Matrix
+
+[3] PR Gate (권고 정책)
+    Critical risk count = 0     → 머지 차단 (block)
+    High risk count > N         → 리뷰 강제 + Mitigation plan 첨부
+    Medium / Low                → comment-only (정보성)
+    난독화 수준 HIGH > X%        → 디컴파일 결과 동결 + 별도 분석
+
+[4] TARA 통합 흐름
+    Threat Scenarios → Risk Matrix → Treatment 결정
+    Treatment 결정이 변경되면 PR Gate 정책의 N 값 자동 갱신
+    Telemetry 로 들어온 incident → Scenarios 에 새 evidence 추가
+
+[5] OTA Gating (권고)
+    Gate 통과한 빌드만 서명
+    Staged rollout (1% → 10% → 100%)
+    각 단계에서 telemetry 로 이상 발생 시 자동 rollback
+    rollback 트리거 데이터는 다시 TARA Scenarios 로 피드백
 ```
 
-본 학기 PoC는 정적 분석 + AAOS/TARA 매핑까지. 운영 통합은 PleOS-internal LLM
-endpoint 정의 후 (Future Work).
+### 5.2 본 학기 PoC vs 운영 전환
+
+| 측면 | 본 학기 PoC | 운영 전환 시 |
+|---|---|---|
+| 분석 엔진 | Claude Code 인터랙티브 세션 | API 통합 (CI/CD trigger) — 단, 외부 LLM API 미보유로 본 학기는 권고에 머무름 |
+| 트리거 | 사용자 명시 ("X.apk 분석해줘") | PR 이벤트 / nightly batch / OTA pre-flight |
+| 결과 저장 | `data/reports/` 로컬 파일 | Artifact server + GitHub Actions output / Slack notification |
+| GT 라벨링 | self_labels.json 수동 | regression set + 자동 diff (전 커밋 대비 신규/사라진 finding) |
+| TARA 통합 | Static 매핑 표 | 동적 — 신규 finding 이 기존 시나리오 갱신/생성 |
+| OTA 게이팅 | 권고만 | gate policy + 자동 sign reject |
+| 모델 버전 관리 | Claude Code 모델 업데이트 | prompt-as-code + version-pinned Claude model |
+
+### 5.3 MVP — 최소 비용 통합 권고
+
+PleOS 운영팀이 본 파이프라인을 최소 비용으로 활용하려면:
+
+1. **GitHub Actions 에 정적 부분만 통합** (외부 LLM 호출 없이): `src/deobf/entropy.py`, keyword grep, `src/eval.py`/`ablation.py`, `src/aaos_map.py`, `src/tara_generate.py` 모두 결정론적이라 PR 마다 자동. LLM 분석만 사람이 트리거.
+2. **차량 LLM (PleOS-internal) 활성화 시 Stage 1/2/3 자동화**: 본 파이프라인의 prompts 를 그대로 호출, 외부 송출 없이 in-vehicle 또는 internal cloud 에서 분석 완결. 본 학기 환경 제약 (외부 LLM API 없음) 이 풀림.
+3. **후속 학기에 Androidmeda 통합**: Apache 2.0 라이선스, deobfuscation 모듈만 fork → 본 entropy 측정과 cross-check.
+
+### 5.4 IP 보호 주의사항
+
+- 본 학기 GitHub repo 는 scaffold 만 공개. `data/apks/`, `data/decompiled/`, `data/reports/` 의 per-APK 보고서는 gitignored.
+- 운영 통합 시에도 PleOS APK 소스가 외부 LLM API 에 송출되지 않도록 차단 필수. 현재는 환경 제약으로 자연스럽게 만족, 향후 cloud LLM 도입 시 별도 가드 필요.
+- TARA 산출물 (자산 카탈로그, 위협 시나리오) 은 contract IP — repo public commit 대상에서 제외, 보고서에만 포함.
 
 ---
 
 ## 6. 일반화 평가 (G9)
 
-상세는 `docs/generalization_assessment.md`. 요약:
+본 절은 PleOS (Android 14 + AAOS 변형) 환경에서 검증한 정적 분석 파이프라인이 **QNX / Linux 기반 IVI** 같은 다른 차량용 OS 로 일반화 가능한지를 평가한다. 평가는 (1) 도구 / (2) 키워드 카테고리 / (3) AAOS 매핑 / (4) TARA 자산의 4축으로 진행.
 
-| 차원 | QNX | AGL (Linux IVI) | 평가 |
+### 6.1 OS-종속 vs OS-독립 컴포넌트
+
+| 컴포넌트 | OS-독립 | OS-종속 (Android/AAOS) | 비고 |
 |---|---|---|---|
-| 분석 방법론 | High | High | OS 무관, 그대로 |
-| 평가 프레임워크 | High | High | GT 라벨 스키마만 동일 |
-| TARA 통합 | High | High | ISO/SAE 21434 기반 |
-| 키워드 카테고리 | Medium | Medium | 6 중 4 OS-독립 |
-| 매핑 yaml | Medium | Medium | 형식 동일, 내용 swap |
-| 디컴파일 도구 | Low | Low | jadx → Ghidra/IDA, ELF parser |
+| `scripts/decompile.sh` | ✗ | jadx (Java/Kotlin → DEX/APK 전용) | QNX/Linux 는 ELF |
+| `src/deobf/entropy.py` | ✓ | — | 식별자 entropy 는 OS-독립 |
+| `configs/prompts/stage1_detect.md` | 부분 | 일부 Android API 언급 | 룰 기반 보강 가능 |
+| `configs/prompts/stage0_deobfuscate.md` | ✓ | — | 이름 복원은 OS-독립 |
+| `src/eval.py` / `src/ablation.py` | ✓ | — | GT 라벨 스키마만 동일 |
+| `configs/keywords.yaml` | 부분 | Android-specific 패턴 (`android:exported` 등) | 카테고리는 보편 |
+| `configs/aaos_mapping.yaml` | ✗ | AAOS 섹션 번호 | OS별 가이드라인으로 swap |
+| `src/tara_generate.py` | ✓ | — | ISO/SAE 21434 는 OS-독립 |
+| `src/aaos_map.py` | 부분 | — | mapping yaml 만 swap |
+| `src/viz/plot_metrics.py` | ✓ | — | 차트 |
 
-총 swap 작업량 추정: **2-3주**. 본 학기 환경 셋업 (~1주)에 비해 대형 작업이지만
-방법론은 그대로 활용 가능.
+**결론**: 약 60~70% 는 OS-독립. swap 이 필요한 부분은 (a) 디컴파일 도구 체인, (b) 키워드 룰셋, (c) 매핑 yaml.
+
+### 6.2 QNX 환경으로의 swap 비용
+
+| 항목 | Android (PleOS) | QNX |
+|---|---|---|
+| 바이너리 형식 | DEX/APK (Java/Kotlin) | ELF (C/C++ 주력, 일부 Java/Qt) |
+| 권한 모델 | UID + Manifest permission | POSIX user/group + RBAC + adaptive policies |
+| IPC 모델 | Intent / ContentProvider / Binder | QNX message passing (channels) |
+| 자격증명 저장 | Android Keystore | (구현체) HSM / TEE / 파일 |
+| 가이드라인 | AAOS Security | QNX Security Reference Manual |
+
+| 작업 | 예상 작업량 |
+|---|---|
+| 디컴파일러 → Ghidra/IDA Pro 로 변경 | 2~3일 |
+| QNX-specific 키워드 룰셋 | 1주 |
+| QNX Security Reference Manual 매핑 yaml | 3~5일 |
+| TARA 자산 카탈로그 수정 (process-level isolation 강화) | 2일 |
+| DDS 보안 / mixed-criticality 격리 카테고리 추가 | 1주 |
+| **합계** | **2~3주** (본 학기 환경 셋업 ~1주 대비) |
+
+### 6.3 AGL (Automotive Grade Linux) 으로의 swap 비용
+
+AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 모델. AGL 은 systemd + smack + cgroup 기반 보안으로 Android 의 SELinux 와 유사 컨셉. C++ / Qt / HTML5 위주.
+
+| 작업 | 예상 작업량 |
+|---|---|
+| 디컴파일러 → 소스 직접 분석 (오픈소스 위주) | 1주 |
+| AGL-specific 키워드 룰셋 | 3~5일 |
+| AGL Security Best Practices 매핑 yaml | 3일 |
+| Process / IPC 모델 (DBus, AFB) 카테고리 추가 | 1주 |
+| **합계** | **2~3주** |
+
+### 6.4 보편 finding vs OS-specific finding
+
+**OS 변경에 그대로 작동**:
+- hardcoded credential (`ssl-5`, `ucl1-1`) — KDF passphrase 는 OS 무관
+- plaintext network (`ssl-6`) — gRPC / TCP / DDS 모두 적용
+- weak crypto (`ucl1-2`) — AES/DES/MD5 식별은 OS 무관
+- 차량 syslog 평문 — IVI 도메인 보편
+
+**Android-specific, QNX/AGL 외삽 불가**:
+- `lmp-1` (PromptsContentProvider exported) — Android Compose / Hilt / ContentProvider 모델 강의존
+- `vc-3/4` 의 4중 차단 분석 — Android Compose Navigation 구조 특화
+
+### 6.5 일반화 종합 평가
+
+| 차원 | 일반화 가능성 | 근거 |
+|---|---|---|
+| 분석 방법론 (Multi-stage + ensemble) | **High** | 룰 + LLM 흐름은 OS 무관 |
+| 평가 프레임워크 (P/R/F1 + Ablation) | **High** | GT 라벨 스키마만 동일하면 됨 |
+| TARA 통합 흐름 | **High** | ISO/SAE 21434 기반 |
+| 키워드 카테고리 | **Medium** | 6 카테고리 중 4 OS-독립, 2 swap |
+| 가이드라인 매핑 yaml | **Medium** | 형식 동일, 내용 swap |
+| 디컴파일 도구 체인 | **Low** | jadx → Ghidra/IDA 로 전체 swap |
+| AAOS-specific finding (Compose Nav 등) | **Low** | Android-only, 외삽 불가 |
+
+**총평**: 단계별 흐름과 측정 프레임워크는 OS 변경에 강건하다. swap 작업량은 2~3주 추정. 단 Android-specific finding 은 OS 별 등가물을 별도 라벨링 필요. 실제 수치 측정은 Future Work — PleOS 측정값 (P 78.9% → 100%, F1 0.882 → 0.966) 이 AGL 등에서 어떤 수치로 떨어지는지 정량 비교해야 일반화의 비용/효과가 결정.
 
 ---
 

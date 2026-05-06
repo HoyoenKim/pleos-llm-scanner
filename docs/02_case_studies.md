@@ -4,7 +4,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 
 본 문서는 본 파이프라인이 발견한 18개 라벨 중 초기 계획서의 5건 사례 연구
 카테고리에 매핑되는 대표 finding을 케이스 카드로 정리한다. 각 카드는 실제 측정값과
-재현 가능한 evidence path를 포함한다. (finding ID 정의는 [`report_v0.9.md`](report_v0.9.md) 의 Notation 섹션 참조)
+재현 가능한 evidence path를 포함한다. (finding ID 정의는 [`01_report.md`](01_report.md) 의 Notation 섹션 참조)
 
 | # | 카테고리 | Finding | APK | 심각도 | Risk |
 |---|---|---|---|---|---|
