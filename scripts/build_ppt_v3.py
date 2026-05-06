@@ -7,8 +7,10 @@ Build PPT v3 — 9주차 종합본 (Phase A~C + Stage 2.b + Phase B-4.c.2 측정
 
 총 16 슬라이드 + 차트 6개 (data/viz/01~06_*.png).
 
-산출: ../pptx/v3/자율주행연구프로젝트1_9주차_2025311610_김호연_v3.pptx
+작성자/소속/제출 파일명은 `scripts/_author.json` (gitignored) 에서 로드한다.
+없으면 `_author.example.json` 의 placeholder로 폴백 — 실제 제출 전 _author.json 만들 것.
 """
+import json
 from pathlib import Path
 
 from pptx import Presentation
@@ -16,6 +18,18 @@ from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
+
+
+def _load_author() -> dict:
+    here = Path(__file__).parent
+    p = here / "_author.json"
+    if not p.exists():
+        p = here / "_author.example.json"
+    with p.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+AUTHOR = _load_author()
 
 # Theme — Ocean Gradient
 NAVY = RGBColor(0x21, 0x29, 0x5C)         # midnight (slide bg dark variant)
@@ -160,10 +174,10 @@ def build():
                 "LLM-based Decompiler Analysis for IVI Security on PleOS",
                 size=15, bold=False, color=TEAL, italic=True)
     add_textbox(s, 0.6, 5.85, 12.0, 0.4,
-                "김호연 (2025311610)  ·  연세대학교 전기전자공학과  ·  Computational Intelligence Lab",
+                f"{AUTHOR['author_name']} ({AUTHOR['student_id']})  ·  {AUTHOR['institution']}  ·  {AUTHOR['lab']}",
                 size=13, color=WHITE)
     add_textbox(s, 0.6, 6.30, 12.0, 0.4,
-                "현대자동차 계약학과 육성형 연구과제 — PleOS TARA 및 실차 보안 취약점 점검",
+                AUTHOR['project_subtitle'],
                 size=11, color=TEAL)
     add_textbox(s, 0.6, 6.95, 12.0, 0.3,
                 "2026-1학기  ·  2026-04-30 작성  ·  Phase A~C 측정 결과 종합",
@@ -688,7 +702,8 @@ def build():
                 size=11, color=TEAL, italic=True, align=PP_ALIGN.CENTER)
     page_footer(s, 16, total)
 
-    out_path = Path(__file__).parent.parent.parent / "pptx" / "v3" / "자율주행연구프로젝트1_9주차_2025311610_김호연_v3.pptx"
+    out_name = f"{AUTHOR['ppt_basename']}_{AUTHOR['student_id']}_{AUTHOR['author_name']}_v3.pptx"
+    out_path = Path(__file__).parent.parent.parent / "pptx" / "v3" / out_name
     out_path.parent.mkdir(parents=True, exist_ok=True)
     prs.save(out_path)
     print(f"Wrote: {out_path}")

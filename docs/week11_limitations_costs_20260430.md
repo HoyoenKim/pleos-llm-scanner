@@ -14,10 +14,10 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 
 | # | 한계 | 근본 원인 (1차) | 근본 원인 (2차, 환경) | 측정 증거 |
 |---|---|---|---|---|
-| L1 | **네이티브 코드 분석 불가** | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope finding 0건 (`docs/phase_b4c_mastg_baseline_20260430.md`) |
+| L1 | **네이티브 코드 분석 불가** | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope finding 0건 (`docs/archive/phase_b4c_mastg_baseline_20260430.md`) |
 | L2 | **표본 크기 작음 (n=19)** ← 2026-04-30 부분 해소 (n=18→19, UnCrackable-Level3 추가) | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined n=19 측정. 추가 sample 도입은 Future Work |
 | L3 | **Multi-LLM ensemble (D3=A) 미구현** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | D3 결정을 (A) → (B)로 전환 (`CLAUDE.md` 의사결정 기록) |
-| L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat (`docs/phase_c_deobf_baseline_20260430.md`) |
+| L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat (`docs/archive/phase_c_deobf_baseline_20260430.md`) |
 | L5 | ~~Stage 3 ensemble의 MASTG 미평가~~ ✅ **2026-04-30 해소** | ucl1-1/2/3 + ucl3-1 stage 3 ensemble 평가 추가 완료 | — | ablation A.3 ≥3/3 F1 0.783 → **0.889** (combined n=19), B ≥2/3 F1 0.952 → **0.966** |
 
 ### 1.2 L1 — 네이티브 코드 분석 불가 (가장 중요한 한계)
@@ -193,9 +193,9 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 ## 5. 연결 산출물
 
 - `docs/report_v0.9_20260430.md` 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 노트
-- `docs/phase_b4c_mastg_baseline_20260430.md` (L1 boundary 증거)
-- `docs/phase_c_deobf_baseline_20260430.md` (L4 hand-crafted caveat)
-- `docs/phase_b4c2_baselines_20260430.md` (운영 시간 cost 비교)
+- `docs/archive/phase_b4c_mastg_baseline_20260430.md` (L1 boundary 증거)
+- `docs/archive/phase_c_deobf_baseline_20260430.md` (L4 hand-crafted caveat)
+- `docs/archive/phase_b4c2_baselines_20260430.md` (운영 시간 cost 비교)
 - `docs/generalization_assessment_20260430.md` (이식성 trade-off)
 
 ## 변경 이력

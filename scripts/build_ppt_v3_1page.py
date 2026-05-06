@@ -9,16 +9,29 @@
 기존 v1 (2026-04-29 작성, n=12 시점)을 base로 사용 — 동일 폰트/레이아웃 유지.
 2026-04-30 시점 측정값 (combined n=18 + Phase B-4.c.2 + Phase C entropy)을 반영.
 
-산출: ../pptx/v3/자율주행연구프로젝트1_9주차_2025311610_김호연_v3.pptx
+작성자/제출 파일명은 `scripts/_author.json` (gitignored) 에서 로드.
 """
+import json
 import shutil
 from pathlib import Path
 
 from pptx import Presentation
 
+
+def _load_author() -> dict:
+    here = Path(__file__).parent
+    p = here / "_author.json"
+    if not p.exists():
+        p = here / "_author.example.json"
+    with p.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+AUTHOR = _load_author()
 ROOT = Path(__file__).parent.parent.parent
-SRC = ROOT / "pptx" / "자율주행연구프로젝트1_9주차_2025311610_김호연.pptx"
-DST = ROOT / "pptx" / "v3" / "자율주행연구프로젝트1_9주차_2025311610_김호연_v3.pptx"
+_PPT_FILENAME = f"{AUTHOR['ppt_basename']}_{AUTHOR['student_id']}_{AUTHOR['author_name']}.pptx"
+SRC = ROOT / "pptx" / _PPT_FILENAME
+DST = ROOT / "pptx" / "v3" / f"{AUTHOR['ppt_basename']}_{AUTHOR['student_id']}_{AUTHOR['author_name']}_v3.pptx"
 
 
 # 16 paragraphs, indexed 0~15. v1 keeps numbered headers as two runs ("1) " + title).

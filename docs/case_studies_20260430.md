@@ -122,7 +122,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels_20260430.json
 - Stage 2 caller + Stage 2.b deep-link audit 합쳐서 **FP CONFIRMED**.
 - 측정값으로 정량화: stage 1 P 77.8% → stage 3 ≥2/3 P 100% (+22.2%p, n=18).
   PPT 9주차 가설 0.93 도달.
-- 산출: `docs/stage2b_deeplink_verification_20260430.md`.
+- 산출: `docs/archive/stage2b_deeplink_verification_20260430.md`.
 
 **교훈**:
 - Permission API + system UID 만 보고 HIGH 단정 X.

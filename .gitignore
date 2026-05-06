@@ -34,3 +34,11 @@ pptx/
 # Local-only logs / temp
 *.log
 .tmp/
+
+# Internal working notes (Claude Code 작업 가이드 + 진척 추적, public 비공개)
+CLAUDE.md
+progress.md
+next.md
+
+# Local identity (학번/이름/소속) — scripts 가 import 함. example 파일만 commit
+scripts/_author.json

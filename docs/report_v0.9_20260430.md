@@ -350,7 +350,7 @@ endpoint 정의 후 (Future Work).
 | 설정 | `pleos-llm-scanner/configs/{keywords,aaos_mapping}.yaml`, `result_schema.json` |
 | GT | `pleos-llm-scanner/data/ground_truth/{self_labels_20260429,combined_labels_20260430}.json`, `mastg/*.labels.json` |
 | 보고서 (per-APK) | `data/reports/{ai.umos.vehiclecontrol,ai.pleos.sync.syslog,ai.pleos.llm.model.provider,UnCrackable-Level1,r2pay-v1.0}_<DATE>.{md,json}` |
-| 보고서 (Phase) | `docs/{phase_b4c_mastg_baseline,phase_b4c2_baselines,phase_c_deobf_baseline}_20260430.md`, `docs/stage2b_deeplink_verification_20260430.md`, `docs/ablation_results_20260429.md`, `docs/viz_20260430.md` |
+| 보고서 (Phase) | `docs/archive/{phase_b4c_mastg_baseline,phase_b4c2_baselines,phase_c_deobf_baseline}_20260430.md`, `docs/archive/stage2b_deeplink_verification_20260430.md`, `docs/archive/ablation_results_20260429.md`, `docs/viz_20260430.md` |
 | 보고서 (Phase D 신규) | `docs/{case_studies,integration_architecture,generalization_assessment,report_v0.9}_20260430.md`, `data/reports/{aaos_mapping_table,tara_artifact}_20260430.{md,json}` |
 | 시각화 | `data/viz/01~06_*.png` |
 | 추적 | `progress.md`, `next.md`, `CLAUDE.md` (root) |
