@@ -6,7 +6,7 @@ Outputs (data/viz/*.png):
 - 01_category_distribution.png   : finding 카테고리 분포 (combined n=18)
 - 02_apk_severity_heatmap.png    : APK × severity 히트맵
 - 03_fp_rate_trend.png           : 1차/2차/3차 오탐률 (PPT 가설 vs 실측)
-- 04_deobf_accuracy_trend.png    : 난독화 정확도 추이 (PPT 가설 vs 실측)
+- 04_deobf_accuracy_trend.png    : Corpus별 난독화 분포 + LLM rename 정확도 (단일 측정, 시간축 아님)
 - 05_ablation_bars.png           : A 변형 + B threshold sensitivity
 - 06_entropy_distribution.png    : 6 APK 의 obfuscation composite score 분포
 
@@ -117,7 +117,7 @@ def chart_severity_heatmap() -> None:
 
 # ---------------------------------------------------------------- 03 FP rate trend
 def chart_fp_rate_trend() -> None:
-    stages = ["1차", "2차", "3차"]
+    stages = ["Stage 1\n(LLM 1차)", "Stage 2\n(caller 검증)", "Stage 3\n(≥2/3 합의)"]
     ppt_hyp = [25.0, 12.0, 7.0]
     actual_pleos = [26.7, 0.0, 0.0]   # n=15
     actual_combined_stage1 = [22.2, 0.0, 0.0]  # n=18 (stage2/3는 L5 해소 후 combined n=18 측정)
@@ -126,11 +126,11 @@ def chart_fp_rate_trend() -> None:
     fig, ax = plt.subplots(figsize=(8.0, 4.4))
     b1 = ax.bar(x - width, ppt_hyp, width, label="PPT 가설", color="#a0a0a0")
     b2 = ax.bar(x, actual_pleos, width, label="실측 PleOS-only n=15", color="#3673a4")
-    b3 = ax.bar(x + width, actual_combined_stage1, width, label="실측 combined n=18 (stage1만)", color="#3a7d44")
+    b3 = ax.bar(x + width, actual_combined_stage1, width, label="실측 combined n=18", color="#3a7d44")
     ax.set_ylabel("False Positive Rate (%)")
     ax.set_xticks(x)
     ax.set_xticklabels(stages)
-    ax.set_title("단계별 1차/2차/3차 오탐률 — PPT 가설 vs 실측")
+    ax.set_title("Stage별 오탐률 — PPT 가설 vs 실측 (x축은 검증 단계, 시간 아님)")
     ax.set_ylim(0, 30)
     ax.set_axisbelow(True)
     ax.grid(axis="y", linestyle=":", alpha=0.5)
@@ -148,33 +148,59 @@ def chart_fp_rate_trend() -> None:
     plt.close(fig)
 
 
-# ---------------------------------------------------------------- 04 deobf accuracy trend
+# ---------------------------------------------------------------- 04 deobf accuracy by corpus
 def chart_deobf_accuracy_trend() -> None:
-    weeks = ["5주차", "6주차", "8주차"]
-    ppt_hyp = [40, 65, 78]
-    actual = [100, 100, 100]  # UnCrackable Level1/2 n=17 exact match (조건부)
-    x = np.arange(len(weeks))
-    width = 0.35
-    fig, ax = plt.subplots(figsize=(7.5, 4.2))
-    b1 = ax.bar(x - width / 2, ppt_hyp, width, label="PPT 가설", color="#a0a0a0")
-    b2 = ax.bar(x + width / 2, actual, width, label="실측 (UnCrackable Level1/2 n=17)", color="#3a7d44")
-    ax.axhline(y=100, color="#999", linestyle=":", linewidth=0.8)
-    ax.set_ylabel("난독화 정확도 (%)")
+    """
+    이전 버전은 시간축(5/6/8주차)에 단일 측정값(2026-04-30 n=17)을 세 번 그려
+    추이가 있는 것처럼 보이게 하는 misleading 시각화였다 (사용자 지적, 2026-05-06).
+    재설계: corpus별 HIGH 난독화 비율 + 측정된 corpus의 LLM rename 정확도 annotation.
+    PPT 가설 78%는 caption에만 명시 — 측정값과 다른 축이라 같이 막대로 그리지 않음.
+    """
+    apks = [
+        # (label, HIGH ratio %, origin, rename n, exact %)
+        ("UnCrackable-L1\n(MASTG)",        50.0, "MASTG", 11,   100.0),
+        ("UnCrackable-L2\n(MASTG)",        40.0, "MASTG",  6,   100.0),
+        ("r2pay-v1.0\n(MASTG)",             0.0, "MASTG", None, None),
+        ("VehicleControl\n(PleOS)",         0.2, "PleOS", None, None),
+        ("SyncSyslog\n(PleOS)",             0.4, "PleOS", None, None),
+        ("LLMModelProvider\n(PleOS)",       0.0, "PleOS", None, None),
+    ]
+    x = np.arange(len(apks))
+    fig, ax = plt.subplots(figsize=(9.0, 4.8))
+    colors = ["#3a7d44" if a[2] == "MASTG" else "#3673a4" for a in apks]
+    ax.bar(x, [a[1] for a in apks], color=colors, alpha=0.75, width=0.65)
+    ax.set_ylabel("HIGH 난독화 클래스 비율 (%)")
     ax.set_xticks(x)
-    ax.set_xticklabels(weeks)
-    ax.set_ylim(0, 110)
-    ax.set_title("난독화 정확도 추이 — PPT 가설 vs 실측 (조건부, hand-crafted MASTG corpus)")
+    ax.set_xticklabels([a[0] for a in apks], fontsize=9)
+    ax.set_ylim(0, 70)
+    ax.set_title("Corpus별 난독화 분포 + LLM 이름 복원 정확도 (측정된 corpus만)")
     ax.set_axisbelow(True)
     ax.grid(axis="y", linestyle=":", alpha=0.5)
-    ax.legend(loc="upper left", frameon=False)
-    for bars in (b1, b2):
-        for b in bars:
-            h = b.get_height()
-            ax.text(b.get_x() + b.get_width() / 2, h + 1.2, f"{int(h)}%", ha="center", fontsize=9)
+
+    for i, (_, ratio, _origin, n, acc) in enumerate(apks):
+        ax.text(i, ratio + 1.5, f"{ratio:.1f}%", ha="center", fontsize=9, color="#333")
+        if n is None:
+            ax.text(i, ratio + 7, "정확도\n측정 X", ha="center", va="bottom",
+                    fontsize=8, color="#888", style="italic")
+        else:
+            ax.text(i, ratio + 7, f"rename n={n}\nexact {acc:.0f}%",
+                    ha="center", va="bottom", fontsize=8.5,
+                    bbox=dict(boxstyle="round,pad=0.28", fc="#fff7da",
+                              ec="#c4861f", lw=0.7))
+
+    legend_handles = [
+        Patch(facecolor="#3a7d44", alpha=0.75, label="MASTG (OWASP, hand-crafted)"),
+        Patch(facecolor="#3673a4", alpha=0.75, label="PleOS (실제 IVI APK)"),
+    ]
+    ax.legend(handles=legend_handles, loc="upper right", frameon=False, fontsize=9)
+
     ax.text(
-        0.99, -0.18,
-        "PleOS APK 3종은 HIGH 난독화 0.2~0.4%로 측정 대상 자체가 부족 — corpus-level finding (가정과 다름)",
-        transform=ax.transAxes, ha="right", va="center", fontsize=7.5, color="#666",
+        0.5, -0.22,
+        "단일 측정 (2026-04-30, 합계 n=17 exact 100%). 시간 추이 아님. "
+        "PPT 가설 5/6/8주차 40→65→78%는 reference로만 사용 — 측정 표본이 hand-crafted MASTG anti-tamper helper에 한정되어 upper-bound. "
+        "PleOS는 HIGH 0.2~0.4%로 측정 대상 자체가 거의 없음.",
+        transform=ax.transAxes, ha="center", va="center", fontsize=7.8, color="#666",
+        wrap=True,
     )
     fig.savefig(OUT_DIR / "04_deobf_accuracy_trend.png")
     plt.close(fig)
