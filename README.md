@@ -22,7 +22,7 @@ APK ──► jadx --deobf ──► keyword filter (configs/keywords.yaml)
 
 ## Documentation
 
-측정값·분석·통합 문서는 [`docs/`](docs/)에 정리되어 있다. 통합 보고서: [`docs/report_v0.9_20260430.md`](docs/report_v0.9_20260430.md). 디렉토리 인덱스: [`docs/README.md`](docs/README.md).
+측정값·분석·통합 문서는 [`docs/`](docs/)에 정리되어 있다. 통합 보고서: [`docs/report_v0.9.md`](docs/report_v0.9.md). 디렉토리 인덱스: [`docs/README.md`](docs/README.md).
 
 ## Directory layout
 

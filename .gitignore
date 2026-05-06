@@ -42,3 +42,6 @@ next.md
 
 # Local identity (학번/이름/소속) — scripts 가 import 함. example 파일만 commit
 scripts/_author.json
+
+# Raw measurement notes (시점 스냅샷) — 보고서 인용용 로컬 보관, public 비공개
+docs/archive/

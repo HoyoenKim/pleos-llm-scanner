@@ -41,7 +41,7 @@
 2. **GT corpus**: `data/ground_truth/combined_labels_20260430.json` (n=19, self 15 + MASTG 4)
 3. **AAOS / MASVS / TARA 매핑 표**: `data/reports/aaos_mapping_table_20260430.{md,json}`
 4. **TARA 시나리오 + Risk Matrix**: `data/reports/tara_artifact_20260430.{md,json}`
-5. **사례 연구 5건**: `docs/case_studies_20260430.md`
+5. **사례 연구 5건**: `docs/case_studies.md`
 6. **6개 시각화 차트**: `data/viz/01~06_*.png`
 
 ---
@@ -238,7 +238,7 @@ asset_criticality=Severe + attack_feasibility=High 조합.
 
 ### 4.3 사례 연구 5건 (G7)
 
-상세는 `docs/case_studies_20260430.md`. 요약:
+상세는 `docs/case_studies.md`. 요약:
 
 | Case | Finding | 의의 |
 |---|---|---|
@@ -252,7 +252,7 @@ asset_criticality=Severe + attack_feasibility=High 조합.
 
 ## 5. 통합 아키텍처 권고 (G6 보강)
 
-상세는 `docs/integration_architecture_20260430.md`. 본 학기 산출물을 PleOS 운영
+상세는 `docs/integration_architecture.md`. 본 학기 산출물을 PleOS 운영
 라이프사이클에 어떻게 통합할 수 있는지 권고:
 
 ```
@@ -271,7 +271,7 @@ endpoint 정의 후 (Future Work).
 
 ## 6. 일반화 평가 (G9)
 
-상세는 `docs/generalization_assessment_20260430.md`. 요약:
+상세는 `docs/generalization_assessment.md`. 요약:
 
 | 차원 | QNX | AGL (Linux IVI) | 평가 |
 |---|---|---|---|
@@ -350,7 +350,7 @@ endpoint 정의 후 (Future Work).
 | 설정 | `pleos-llm-scanner/configs/{keywords,aaos_mapping}.yaml`, `result_schema.json` |
 | GT | `pleos-llm-scanner/data/ground_truth/{self_labels_20260429,combined_labels_20260430}.json`, `mastg/*.labels.json` |
 | 보고서 (per-APK) | `data/reports/{ai.umos.vehiclecontrol,ai.pleos.sync.syslog,ai.pleos.llm.model.provider,UnCrackable-Level1,r2pay-v1.0}_<DATE>.{md,json}` |
-| 보고서 (Phase) | `docs/archive/{phase_b4c_mastg_baseline,phase_b4c2_baselines,phase_c_deobf_baseline}_20260430.md`, `docs/archive/stage2b_deeplink_verification_20260430.md`, `docs/archive/ablation_results_20260429.md`, `docs/viz_20260430.md` |
+| 보고서 (Phase, raw notes) | `docs/archive/{phase_b4c_mastg_baseline,phase_b4c2_baselines,phase_c_deobf_baseline}_20260430.md`, `docs/archive/stage2b_deeplink_verification_20260430.md`, `docs/archive/ablation_results_20260429.md` (모두 local-only, gitignored), `docs/viz.md` |
 | 보고서 (Phase D 신규) | `docs/{case_studies,integration_architecture,generalization_assessment,report_v0.9}_20260430.md`, `data/reports/{aaos_mapping_table,tara_artifact}_20260430.{md,json}` |
 | 시각화 | `data/viz/01~06_*.png` |
 | 추적 | `progress.md`, `next.md`, `CLAUDE.md` (root) |

@@ -192,11 +192,11 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 
 ## 5. 연결 산출물
 
-- `docs/report_v0.9_20260430.md` 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 노트
+- `docs/report_v0.9.md` 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 노트
 - `docs/archive/phase_b4c_mastg_baseline_20260430.md` (L1 boundary 증거)
 - `docs/archive/phase_c_deobf_baseline_20260430.md` (L4 hand-crafted caveat)
 - `docs/archive/phase_b4c2_baselines_20260430.md` (운영 시간 cost 비교)
-- `docs/generalization_assessment_20260430.md` (이식성 trade-off)
+- `docs/generalization_assessment.md` (이식성 trade-off)
 
 ## 변경 이력
 
