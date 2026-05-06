@@ -47,5 +47,5 @@ PPT 10/12주차 deliverable. 측정 기록(archive/)을 묶어 보고서·발표
 
 - 측정 데이터: `../data/ground_truth/`, `../data/reports/`(gitignored, meta-analysis 표는 예외), `../data/deobf/`, `../data/viz/`
 - 결정론 스크립트: `../src/eval.py`, `../src/ablation.py`, `../src/aaos_map.py`, `../src/tara_generate.py`, `../src/deobf/entropy.py`, `../src/viz/plot_metrics.py`
-- 프롬프트: `../configs/prompts/{stage1_detect,stage_b_deobfuscate,stage3_attacker,stage3_defender,stage3_domain_expert,stage3_ensemble_rule}.md`
+- 프롬프트: `../configs/prompts/{stage1_detect,stage0_deobfuscate,stage3_attacker,stage3_defender,stage3_domain_expert,stage3_consensus}.md`
 - 매핑 데이터: `../configs/keywords.yaml`, `../configs/aaos_mapping.yaml`

@@ -94,7 +94,7 @@ APK
  └─ scripts/decompile.sh (jadx 1.5.5 --deobf)
      └─ data/decompiled/<apk>/sources/...
          └─ src/deobf/entropy.py (Shannon entropy)
-             └─ HIGH 난독화? → configs/prompts/stage_b_deobfuscate.md (LLM 이름 복원)
+             └─ HIGH 난독화? → configs/prompts/stage0_deobfuscate.md (LLM 이름 복원)
          └─ configs/keywords.yaml grep (priority queue)
              └─ Stage 1 LLM (configs/prompts/stage1_detect.md)
                  → finding 후보 (JSON schema 강제, configs/result_schema.json)
@@ -103,7 +103,7 @@ APK
                          (configs/prompts/stage3_attacker.md
                         + stage3_defender.md
                         + stage3_domain_expert.md
-                        + stage3_ensemble_rule.md)
+                        + stage3_consensus.md)
                          └─ src/aaos_map.py + src/tara_generate.py
                              → data/reports/<apk>_<DATE>.{md,json}
                              → data/reports/aaos_mapping_table_<DATE>.md
@@ -175,7 +175,7 @@ B 변형 (합의 임계 sensitivity, combined n=19):
 
 ### 3.4 난독화 정확도 (G4)
 
-UnCrackable Level1/2의 sg.vantagepoint 패키지에 stage_b_deobfuscate 프롬프트 적용:
+UnCrackable Level1/2의 sg.vantagepoint 패키지에 stage0_deobfuscate 프롬프트 적용:
 - n=17 (6 class + 11 method) — **exact match 100%**
 - PPT 8주차 가설 78% 도달 (조건부 — hand-crafted MASTG corpus).
 
@@ -346,7 +346,7 @@ endpoint 정의 후 (Future Work).
 | 분류 | 경로 |
 |---|---|
 | 코드 (deterministic) | `pleos-llm-scanner/src/{eval,ablation,aaos_map,tara_generate}.py`, `src/deobf/entropy.py`, `src/viz/plot_metrics.py` |
-| 프롬프트 | `pleos-llm-scanner/configs/prompts/stage1_detect.md`, `stage3_{attacker,defender,domain_expert,ensemble_rule}.md`, `stage_b_deobfuscate.md` |
+| 프롬프트 | `pleos-llm-scanner/configs/prompts/stage1_detect.md`, `stage3_{attacker,defender,domain_expert,ensemble_rule}.md`, `stage0_deobfuscate.md` |
 | 설정 | `pleos-llm-scanner/configs/{keywords,aaos_mapping}.yaml`, `result_schema.json` |
 | GT | `pleos-llm-scanner/data/ground_truth/{self_labels_20260429,combined_labels_20260430}.json`, `mastg/*.labels.json` |
 | 보고서 (per-APK) | `data/reports/{ai.umos.vehiclecontrol,ai.pleos.sync.syslog,ai.pleos.llm.model.provider,UnCrackable-Level1,r2pay-v1.0}_<DATE>.{md,json}` |

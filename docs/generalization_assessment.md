@@ -14,7 +14,7 @@ _작성일: 2026-04-30_
 | `scripts/decompile.sh` | ✗ | jadx (Java/Kotlin → DEX/APK 전용) | QNX/Linux는 ELF |
 | `src/deobf/entropy.py` | ✓ | — | 식별자 entropy는 OS-독립 |
 | `configs/prompts/stage1_detect.md` | 부분 | 일부 Android API 언급 | 룰 기반 보강 가능 |
-| `configs/prompts/stage_b_deobfuscate.md` | ✓ | — | 이름 복원은 OS-독립 |
+| `configs/prompts/stage0_deobfuscate.md` | ✓ | — | 이름 복원은 OS-독립 |
 | `src/eval.py` / `src/ablation.py` | ✓ | — | GT 라벨 스키마만 동일 |
 | `configs/keywords.yaml` | 부분 | Android-specific 패턴 (`android:exported`, `Context.getSystemService`) | 카테고리는 보편 |
 | `configs/aaos_mapping.yaml` | ✗ | AAOS 섹션 번호 | OS별 가이드라인으로 swap 필요 |

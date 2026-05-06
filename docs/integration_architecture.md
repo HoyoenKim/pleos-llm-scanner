@@ -55,7 +55,7 @@ flowchart LR
     APK가 빌드된 직후, PR 머지 전에 본 파이프라인 자동 실행
     a. scripts/decompile.sh APK → jadx 디컴파일
     b. src/deobf/entropy.py → 난독화 수준 측정
-    c. (HIGH 난독화일 때만) configs/prompts/stage_b_deobfuscate.md → LLM 이름 복원
+    c. (HIGH 난독화일 때만) configs/prompts/stage0_deobfuscate.md → LLM 이름 복원
     d. configs/keywords.yaml grep → priority class 큐
     e. Stage 1 LLM (configs/prompts/stage1_detect.md) → finding 후보
     f. Stage 2 caller 분석 + (선택) AST 룰 (regex 자동, AST는 Phase C.2)

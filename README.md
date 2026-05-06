@@ -13,7 +13,7 @@ APK ──► jadx --deobf ──► keyword filter (configs/keywords.yaml)
     ──► stage 1: single-pass LLM detection      (configs/prompts/stage1_detect.md)
     ──► stage 2: caller analysis                (manifest exported / Hilt graph / regex / AST)
     ──► stage 3: multi-prompt ensemble          (attacker / defender / domain expert)
-    ──► consensus rule                          (configs/prompts/stage3_ensemble_rule.md)
+    ──► consensus rule                          (configs/prompts/stage3_consensus.md)
     ──► reports                                 (data/reports/, gitignored)
     ──► evaluation                              (src/eval.py against data/ground_truth/)
     ──► ablation                                (src/ablation.py)
@@ -37,11 +37,11 @@ pleos-llm-scanner/
 │   ├── result_schema.json     # 보고서 JSON 스키마
 │   └── prompts/
 │       ├── stage1_detect.md
-│       ├── stage_b_deobfuscate.md
+│       ├── stage0_deobfuscate.md
 │       ├── stage3_attacker.md
 │       ├── stage3_defender.md
 │       ├── stage3_domain_expert.md
-│       └── stage3_ensemble_rule.md
+│       └── stage3_consensus.md
 ├── scripts/
 │   ├── pull_apks.sh           # `adb shell pm list packages -s` 일괄 추출
 │   └── decompile.sh           # jadx --deobf 래퍼

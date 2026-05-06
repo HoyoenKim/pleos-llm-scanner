@@ -1,8 +1,8 @@
-# Stage B — Obfuscation Pre-processing Prompt
+# Stage 0 — Deobfuscation Preprocessing Prompt
 
-> Input: a single decompiled Java class file (jadx output) with high obfuscation score (composite ≥ 0.7 from `src/deobf/entropy.py`).
-> Goal: emit a semantic name suggestion + 1-line role description, plus per-method/per-field renames where confident.
-> The renamings will feed `jadx --rename-XXX` re-decompile, or be applied as a `sed`/AST rewrite to the source tree.
+> **Pipeline position**: preprocessing, runs **before** Stage 1.
+> **Trigger**: classes whose composite obfuscation score ≥ 0.7 (from `src/deobf/entropy.py`). Skip the entire stage if the class is below threshold.
+> **Goal**: emit a semantic class name + 1-line role description + per-method / per-field renames with confidence scores. Output feeds either `jadx --rename-XXX` for a second decompile pass, or a `sed` / AST rewrite of the source tree.
 
 ## Context provided
 
@@ -45,7 +45,7 @@ You will receive:
 - **Method signature shape**: `boolean isXxx()` → predicate; `byte[] decryptYyy(byte[], byte[])` → crypto wrapper; `boolean check…()` → detector.
 - **Imports decode intent**: `javax.crypto.Cipher` ⇒ crypto wrapper. `java.io.File` + `getenv("PATH")` ⇒ root/file-existence check. `Debug.isDebuggerConnected` ⇒ debug detector.
 - **Caller context**: if `MainActivity.onCreate` calls `C0002c.m2a() || C0002c.m3b() || C0002c.m4c()` and the dialog is `"Root detected!"`, you can name the class `RootDetector` and methods `checkSuInPath`, `checkBuildTags`, `checkSuFiles` based on each method body.
-- **Symmetry hint**: if a class is one of `a/b/c/d` siblings with similar bodies and one is "DebugDetector", the others are likely sibling detectors. But don't over-extrapolate — verify by reading.
+- **Symmetry hint**: if a class is one of `a/b/c/d` siblings with similar bodies and one is `DebugDetector`, the others are likely sibling detectors. But don't over-extrapolate — verify by reading.
 - **Library matches**: known third-party packages (`com.scottyab.rootbeer`, `okhttp3.*`, etc.) keep their original names; do **not** rename them.
 
 ## Confidence calibration
@@ -60,7 +60,7 @@ You will receive:
 - Do **not** rename framework classes (jadx will sometimes leave `androidx.*` partly de-obfuscated; ignore them — heuristic filter already drops them but stay defensive).
 - Do **not** rename when the only signal is "it's a 1-letter identifier" — you need *positive* evidence of role.
 - Do **not** invent imports or behavior not visible in the source. If a method body is just `return null;` or has a single inscrutable JNI call, your confidence cap is the **class** identifier (e.g. you can name the class but leave method names alone).
-- Do **not** add Korean / non-ASCII characters to suggested names — keep them Java-identifier valid (`[A-Za-z_$][A-Za-z0-9_$]*`).
+- Do **not** add non-ASCII characters to suggested names — keep them Java-identifier valid (`[A-Za-z_$][A-Za-z0-9_$]*`).
 
 ## Examples (UnCrackable-Level1 — for calibration)
 

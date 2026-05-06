@@ -64,7 +64,7 @@
 | 항목 | 기존 표기 (가설) | 수정 권장 |
 |---|---|---|
 | 3차 앙상블 | Claude + GPT-4 (멀티 LLM 앙상블) | **D3=(B) 단일 LLM 다중 프롬프트 앙상블** — 동일 Claude Opus 4.7 + 공격자/방어자/도메인 전문가 시각 3종. 외부 환경 제약 명시 (외부 유료 API 미보유, Claude Code 단일 모델 세션 한계) |
-| FP 12 → 7% | 가설 | **Phase 미진척 — 측정 후 갱신**. 합의 규칙은 `configs/prompts/stage3_ensemble_rule.md` 참조 |
+| FP 12 → 7% | 가설 | **Phase 미진척 — 측정 후 갱신**. 합의 규칙은 `configs/prompts/stage3_consensus.md` 참조 |
 | 시각화 | 차트/히트맵 | Phase 미진척 — Future Work |
 
 ### 9주차 PPT — 최종 성능 평가 + Ablation + 베이스라인 비교 (현재 주차)
