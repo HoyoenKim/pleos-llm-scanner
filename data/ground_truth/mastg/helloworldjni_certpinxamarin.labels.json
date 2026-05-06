@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1",
+  "labeled_at": "2026-05-06",
+  "labeler": "self (Claude Code Stage 1 inspection of MASTG public corpus)",
+  "scope": "MASTG Samples — HelloWord-JNI + certificatePinningXamarin. Both have negligible Java-side surface (native or .NET-side core logic). Used as additional boundary cases extending UnCrackable-Level2 / r2pay-v1.0 evidence for limit L1 (Java-only pipeline). No in-scope findings expected.",
+  "label_values": {
+    "is_real": "true | false | uncertain",
+    "true_severity": "high | medium | low | none (when is_real=false)"
+  },
+  "in_scope_findings": [],
+  "out_of_scope_known_issues": [
+    {
+      "apk": "HelloWord-JNI",
+      "issue": "Core message generation lives in libnative-lib.so via System.loadLibrary(\"native-lib\") + native stringFromJNI(). Java side is a one-line bridge.",
+      "masvs": "MASVS-CODE / MASVS-RESILIENCE",
+      "note": "android:debuggable=\"true\" in manifest is a hardening concern but outside the 6 in-scope categories (crypto/network/permission/intent/hardcoded/reflection_dynamic)."
+    },
+    {
+      "apk": "certificatePinningXamarin",
+      "issue": "Xamarin app — core pinning logic compiled into App1.dll (.NET CIL inside resources/assemblies/). Java side is mono runtime bindings only, no certificate-validation code in Java/Kotlin.",
+      "masvs": "MASVS-NETWORK-3 (pinning), MASVS-CODE",
+      "note": "Pinning verification happens entirely on the .NET side, outside scope of jadx + Java-only static analysis."
+    }
+  ],
+  "labels": [],
+  "summary": {
+    "n": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "uncertain": 0,
+    "boundary_evidence": "Both APKs add to L1 (Java-only) pipeline boundary count. Neither produced any in-scope finding from Stage 1 analysis. They join UnCrackable-Level2 (libfoo.so anti-tamper) and r2pay-v1.0 (libnative-lib.so token gen) as native-bound / non-Java-bound pipeline boundary cases."
+  }
+}

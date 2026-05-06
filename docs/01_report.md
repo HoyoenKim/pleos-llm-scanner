@@ -277,16 +277,18 @@ OWASP MASTG의 UnCrackable-Level1/2 의 `sg.vantagepoint` 패키지 (anti-tamper
 
 ### 3.5 외부 GT 베이스라인 및 pipeline boundary (G8)
 
-self GT (PleOS 자체 라벨)만으로 평가하면 self-referential bias가 생길 수 있다. 이를 완화하기 위해 외부 정답이 공개된 OWASP MASTG Crackmes 3종을 도입하였다.
+self GT (PleOS 자체 라벨)만으로 평가하면 self-referential bias가 생길 수 있다. 이를 완화하기 위해 외부 정답이 공개된 OWASP MASTG sample 6종을 도입하였다 (2026-05-06 까지의 누계).
 
 | Sample | in-scope finding | 결과 |
 |---|---|---|
-| UnCrackable-Level1 | 3건 | 모두 TP. 단, MASTG-only n=4의 일부이므로 일반화 성능으로 해석하지 않음 |
-| UnCrackable-Level2 | 0건 | 핵심 검증 로직이 `libfoo.so` 의 native method, Java 측엔 anti-tamper만 |
-| r2pay-v1.0 | 0건 | token 생성이 `libnative-lib.so`, Java 측은 wrapper |
-| UnCrackable-Level3 | 1건 | XOR key hardcoded finding 추가 |
+| UnCrackable-Level1 | 3건 | 모두 TP. 단, in-scope n=4 의 일부라 일반화 성능으로 해석하지 않음. |
+| UnCrackable-Level3 | 1건 | XOR key hardcoded finding (HIGH). |
+| UnCrackable-Level2 | 0건 | 핵심 검증 로직이 `libfoo.so` 의 native method, Java 측엔 anti-tamper만. **Boundary 1**. |
+| r2pay-v1.0 | 0건 | token 생성이 `libnative-lib.so`, Java 측은 wrapper. **Boundary 2**. |
+| HelloWord-JNI | 0건 | `System.loadLibrary("native-lib")` + native `stringFromJNI()`. Java 측은 한 줄 bridge. **Boundary 3** (2026-05-06 추가). |
+| certificatePinningXamarin | 0건 | Xamarin / .NET 앱. 핵심 pinning 로직은 `App1.dll` (CIL) 안. Java 측은 mono runtime binding 만. **Boundary 4** (2026-05-06 추가, 다른 axis: native 가 아니라 .NET runtime). |
 
-**해석**: 본 pipeline은 Java/Kotlin layer의 Android framework misuse, exported component, hardcoded secret, plaintext communication 탐지에는 유용하지만, native library에 핵심 검증 로직이 숨겨진 경우에는 구조적 blind spot을 가진다. 따라서 PleOS 적용 시 Java/Kotlin layer scanner와 native binary scanner를 분리된 stage로 구성해야 한다.
+**해석**: 본 pipeline 은 Java/Kotlin layer 의 Android framework misuse, exported component, hardcoded secret, plaintext communication 탐지에는 유용하지만, **검증 로직이 native lib (`*.so`) 또는 다른 runtime (.NET CIL) 안에 숨겨진 경우에는 구조적 blind spot 을 가진다**. 본 학기 외부 corpus 6 sample 중 **4 건 (66.7%)** 이 boundary case 로 in-scope finding 0 건. 따라서 PleOS 적용 시 Java/Kotlin layer scanner 와 native/non-Java binary scanner 를 분리된 stage 로 구성해야 한다 — 한계 L1 의 강한 정량 evidence.
 
 ### 3.6 RQ 직접 측정값 (2026-05-06 추가)
 
