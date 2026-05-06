@@ -2,21 +2,21 @@
   "point": {
     "stage_filter": "stage1",
     "totals": {
-      "tp": 15,
+      "tp": 24,
       "fp": 4,
       "uncertain": 0,
       "fn": 0,
-      "labelled": 19,
+      "labelled": 28,
       "unlabelled_findings": 0
     },
     "metrics_lenient": {
-      "precision": 0.7894736842105263,
-      "false_positive_rate": 0.21052631578947367,
+      "precision": 0.8571428571428571,
+      "false_positive_rate": 0.14285714285714285,
       "recall": 1.0
     },
     "metrics_strict": {
-      "precision": 0.7894736842105263,
-      "false_positive_rate": 0.21052631578947367,
+      "precision": 0.8571428571428571,
+      "false_positive_rate": 0.14285714285714285,
       "recall": 1.0
     },
     "per_apk": {
@@ -49,11 +49,17 @@
         "fp": 0,
         "fn": 0,
         "uncertain": 0
+      },
+      "InsecureBankv2": {
+        "tp": 9,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
       }
     },
     "per_category": {
       "network": {
-        "tp": 2,
+        "tp": 4,
         "fp": 2,
         "fn": 0,
         "uncertain": 0
@@ -65,19 +71,19 @@
         "uncertain": 0
       },
       "intent": {
-        "tp": 5,
+        "tp": 9,
         "fp": 0,
         "fn": 0,
         "uncertain": 0
       },
       "crypto": {
-        "tp": 3,
+        "tp": 4,
         "fp": 0,
         "fn": 0,
         "uncertain": 0
       },
       "hardcoded": {
-        "tp": 5,
+        "tp": 7,
         "fp": 0,
         "fn": 0,
         "uncertain": 0
@@ -90,31 +96,31 @@
     "n_iter": 1000,
     "ci": 0.95,
     "seed": 42,
-    "n_labels": 19,
+    "n_labels": 28,
     "stage_filter": "stage1",
     "metrics": {
       "precision_lenient": {
-        "mean": 0.7897368421052631,
-        "ci_low": 0.5789473684210527,
-        "ci_high": 0.9473684210526315,
+        "mean": 0.8581428571428571,
+        "ci_low": 0.7142857142857143,
+        "ci_high": 0.9642857142857143,
         "n_valid": 1000
       },
       "precision_strict": {
-        "mean": 0.7897368421052631,
-        "ci_low": 0.5789473684210527,
-        "ci_high": 0.9473684210526315,
+        "mean": 0.8581428571428571,
+        "ci_low": 0.7142857142857143,
+        "ci_high": 0.9642857142857143,
         "n_valid": 1000
       },
       "fp_rate_lenient": {
-        "mean": 0.21026315789473682,
-        "ci_low": 0.05263157894736842,
-        "ci_high": 0.42105263157894735,
+        "mean": 0.14185714285714285,
+        "ci_low": 0.03571428571428571,
+        "ci_high": 0.2857142857142857,
         "n_valid": 1000
       },
       "fp_rate_strict": {
-        "mean": 0.21026315789473682,
-        "ci_low": 0.05263157894736842,
-        "ci_high": 0.42105263157894735,
+        "mean": 0.14185714285714285,
+        "ci_low": 0.03571428571428571,
+        "ci_high": 0.2857142857142857,
         "n_valid": 1000
       },
       "recall": {
@@ -124,15 +130,15 @@
         "n_valid": 1000
       },
       "f1_lenient": {
-        "mean": 0.8794024181505852,
-        "ci_low": 0.7333333333333334,
-        "ci_high": 0.972972972972973,
+        "mean": 0.9222628053461112,
+        "ci_low": 0.8333333333333333,
+        "ci_high": 0.9818181818181818,
         "n_valid": 1000
       },
       "f1_strict": {
-        "mean": 0.8794024181505852,
-        "ci_low": 0.7333333333333334,
-        "ci_high": 0.972972972972973,
+        "mean": 0.9222628053461112,
+        "ci_low": 0.8333333333333333,
+        "ci_high": 0.9818181818181818,
         "n_valid": 1000
       }
     }

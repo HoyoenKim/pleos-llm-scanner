@@ -1,12 +1,13 @@
 {
   "schema_version": "0.1",
-  "labeled_at": "2026-04-30",
+  "labeled_at": "2026-05-07",
   "labeler": "self (PleOS APKs) + external OWASP MASTG (UnCrackable-Level1 baseline)",
-  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1, added 2026-04-30). Total n=19.",
+  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1, added 2026-04-30) + insecurebankv2.labels.json (n=9, added 2026-05-07 — external Java-side vuln corpus). Total n=28.",
   "merged_from": [
     "data/ground_truth/self_labels.json",
     "data/ground_truth/mastg/uncrackable_level1.labels.json",
-    "data/ground_truth/mastg/uncrackable_level3.labels.json"
+    "data/ground_truth/mastg/uncrackable_level3.labels.json",
+    "data/ground_truth/insecurebankv2.labels.json"
   ],
   "labels": [
     {
@@ -221,6 +222,114 @@
       "true_severity": "high",
       "source": "mastg",
       "masvs": "MASVS-CRYPTO-1, MASVS-STORAGE-2"
+    },
+    {
+      "id": "ib2-1",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.DoLogin",
+      "line": 51,
+      "stage1_severity": "high",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Hardcoded `http://` for login POST — canonical InsecureBankv2 vuln (insecure transport). MITM credential capture trivial.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-2",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.DoLogin",
+      "line": 115,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Cleartext logging of username:password on successful login. Any READ_LOGS-holding app harvests credentials. Canonical InsecureBankv2 'Insecure Logging' vuln.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-3",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.CryptoClass",
+      "line": 22,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "32-byte ASCII string used as AES-256 key. APK reverse → key → decrypt all stored ciphertexts. Canonical InsecureBankv2 'Hardcoded Crypto Key' vuln.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-4",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.CryptoClass",
+      "line": 23,
+      "stage1_severity": "high",
+      "stage1_category": "crypto",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Fixed all-zero IV with AES-CBC — deterministic encryption, chosen-plaintext attacks. MASVS-CRYPTO-1 violation.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-5",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.MyBroadCastReceiver",
+      "line": 32,
+      "stage1_severity": "high",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Exported broadcast receiver SMSes decrypted password to caller-supplied phone number. Direct credential exfiltration via untrusted broadcast extra. Canonical InsecureBankv2 'Vulnerable Broadcast Receiver' vuln.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-6",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.AndroidManifest",
+      "line": 64,
+      "stage1_severity": "high",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "TrackUserContentProvider exported without read/write permission — any installed app reads tracked logins. Privacy leak.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-7",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.AndroidManifest",
+      "line": 68,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Receiver exported without `android:permission`. Severity raised (Stage 1 medium → true high) because the action `theBroadcast` triggers the credential-SMS flow above. Stage 1 alone called this medium — it's actually high once cross-class dataflow is considered.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-8",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.AndroidManifest",
+      "line": 49,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "Multiple post-login activities exported=true (PostLogin / DoTransfer / ViewStatement / ChangePassword). Bypass of login flow possible — known InsecureBankv2 design issue. Reported as a single grouped finding.",
+      "source": "insecurebankv2"
+    },
+    {
+      "id": "ib2-9",
+      "apk": "InsecureBankv2",
+      "class": "com.android.insecurebankv2.ViewStatement",
+      "line": 30,
+      "stage1_severity": "medium",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "WebView JavaScriptEnabled=true on an exported activity. Combined with insecure HTTP load (statement endpoint), XSS / token-exfil sink. Confidence 0.7 was appropriate at Stage 1.",
+      "source": "insecurebankv2"
     }
   ],
   "summary": {

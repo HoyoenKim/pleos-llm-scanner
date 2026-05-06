@@ -1,30 +1,36 @@
-# R1.b — Bootstrap CI for Stage 1 metrics (n=19)
+# R1.b — Bootstrap CI for Stage 1 metrics
 
-_Measured: 2026-05-06 / scope: combined GT n=19 (PleOS self 15 + MASTG 4)_
+_Latest measurement: 2026-05-07 / scope: combined GT n=28 (PleOS self 15 + MASTG 4 + InsecureBankv2 9)_
 
 ## 방법
 
-`src/eval.py --bootstrap 1000 --bootstrap-ci 0.95 --bootstrap-seed 42` 실행. Non-parametric percentile bootstrap — 19 라벨을 with-replacement 1000 회 resample → metric 분포 산출 → 2.5th / 97.5th percentile 로 95% CI.
+`src/eval.py --bootstrap 1000 --bootstrap-ci 0.95 --bootstrap-seed 42`. Non-parametric percentile bootstrap — n 라벨을 with-replacement 1000 회 resample → metric 분포 산출 → 2.5th / 97.5th percentile 로 95% CI.
 
-## 결과
+## 결과 비교 (R1.d 표본 확장 효과)
 
-| Metric | Point estimate | Bootstrap mean | 95% CI low | 95% CI high | n_valid |
-|---|---:|---:|---:|---:|---:|
-| Precision (lenient) | **78.9%** | 79.0% | **57.9%** | **94.7%** | 1000 |
-| Precision (strict) | 78.9% | 79.0% | 57.9% | 94.7% | 1000 |
-| FP rate (lenient) | 21.1% | 21.0% | 5.3% | 42.1% | 1000 |
-| FP rate (strict) | 21.1% | 21.0% | 5.3% | 42.1% | 1000 |
-| Recall | 100.0% | 100.0% | 100.0% | 100.0% | 1000 |
-| F1 (lenient) | **88.2%** | 87.9% | **73.3%** | **97.3%** | 1000 |
-| F1 (strict) | 88.2% | 87.9% | 73.3% | 97.3% | 1000 |
+| Metric | n=19 (5/6) | n=28 (5/7) | Δ point | Δ CI 폭 |
+|---|---|---|---|---|
+| Precision (lenient) point | 78.9% | **85.7%** | +6.8%p | — |
+| Precision 95% CI | [57.9%, 94.7%] (폭 36.8%p) | **[71.4%, 96.4%]** (폭 25.0%p) | — | **−11.8%p** |
+| F1 (lenient) point | 88.2% | **92.2%** | +4.0%p | — |
+| F1 95% CI | [73.3%, 97.3%] (폭 24.0%p) | **[83.3%, 98.2%]** (폭 14.9%p) | — | **−9.1%p** |
+| FP rate (lenient) point | 21.1% | **14.3%** | −6.8%p | — |
+| FP rate 95% CI | [5.3%, 42.1%] (폭 36.8%p) | **[3.6%, 28.6%]** (폭 25.0%p) | — | **−11.8%p** |
+| Recall | 100% (CI 100%) | 100% (CI 100%) | 0 | 0 |
 
-(Recall CI 가 [100%, 100%] 인 이유: 본 GT 가 stage 1 reports 의 superset 이라 모든 라벨이 reports 에 매칭됨 → resample 시에도 FN=0 유지. 외부 corpus 확장으로 GT 가 reports 보다 큰 superset 이 되면 CI 폭 발생.)
+## 새 corpus (InsecureBankv2)
+
+InsecureBankv2 (Android-InsecureBankv2 master prebuilt APK) 도입으로:
+- 추가 finding 9 건 (모두 TP — InsecureBankv2 는 의도된 vuln 학습용 corpus)
+- 카테고리 분포: intent 4 / hardcoded 2 / crypto 1 / network 2
+- 외부 정답이 명확히 문서화된 corpus 라 self-label bias 추가 완화
 
 ## RQ1 implication
 
-- **±15%p 가량의 CI 폭** (Precision lenient 57.9% → 94.7%, F1 73.3% → 97.3%) 이 n=19 표본 작음의 직접 정량 시각화.
-- Point estimate 78.9% / 88.2% 는 95% CI 안에서만 의미 있다 — Stage 1 의 "평균적 Precision 80% 근처" 라는 주장은 가능하지만 "정확히 78.9%" 는 우연성 영향 큼.
-- FP rate 의 CI [5.3%, 42.1%] 는 한 가지 finding 의 라벨 reshuffle 만으로도 큰 변동. 11주차에 n ≥ 30 (DIVA / InsecureBankv2 / 추가 MASTG) 으로 확장 시 CI 폭 ↓ 예상.
+표본을 19 → 28 로 확장한 결과:
+- **CI 폭이 약 1/3 줄어듦** (Precision / FP rate 36.8%p → 25.0%p, F1 24.0%p → 14.9%p). 본 학기 처음으로 n 증가 → CI 좁힘 의 직접 측정.
+- Precision lenient lower bound 가 57.9% → **71.4%** 로 olympic. 즉 corpus 가 n=28 가까울 때 Precision 의 통계적 보장 근거가 71.4% 이상.
+- 12주차 추가 표본 확장 시 CI 폭 추가 감소 가능. n=40 부터는 통계적 보고서 신뢰성 sub. 
 
 ## 재현
 
@@ -36,10 +42,18 @@ python src/eval.py \
               'data/reports/ai.pleos.llm.model.provider_20260429.json' \
               'data/reports/UnCrackable-Level1_20260430.json' \
               'data/reports/UnCrackable-Level3_20260430.json' \
+              'data/reports/InsecureBankv2_20260507.json' \
     --by-stage stage1 \
     --bootstrap 1000 \
     --bootstrap-ci 0.95 \
     --bootstrap-seed 42
 ```
 
-deterministic (seed 42 고정) — 동일 commit 에서 동일 결과.
+deterministic (seed 42) — 동일 commit 에서 동일 결과.
+
+## 변경 이력
+
+| 날짜 | n | Precision | F1 | CI 폭 (Precision) |
+|---|---:|---:|---:|---:|
+| 2026-05-06 | 19 | 78.9% | 88.2% | 36.8%p |
+| 2026-05-07 | 28 | **85.7%** | **92.2%** | **25.0%p** (−11.8%p) |

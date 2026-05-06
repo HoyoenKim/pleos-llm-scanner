@@ -90,21 +90,27 @@
 
 단, 본 보고서의 정량값은 **combined corpus n=19에 대한 초기 feasibility 결과**이다. 따라서 아래 수치는 일반화 성능이라기보다, 현재 corpus에서 관찰된 pipeline 동작과 한계를 보여주는 측정값으로 해석해야 한다.
 
-### 핵심 측정값 (combined n=19 = PleOS 자체 라벨 15건 + OWASP MASTG 외부 corpus 4건)
+### 핵심 측정값 (combined n=28 = PleOS 자체 라벨 15 + OWASP MASTG 4 + InsecureBankv2 9)
 
-| 지표 | PPT 가설 / 목표 | 제한된 corpus 실측 | 해석 |
+| 지표 | PPT 가설 / 목표 | 측정값 | 해석 |
 |---|---|---|---|
-| 1차 후보 기준 FP 비율 (Stage 1) | 25% | **21.1%** | 초기 목표 대비 낮게 관찰. 단, `FP/(TP+FP)` 기준 |
-| 3차 후보 기준 FP 비율 (Stage 3 ≥2/3) | 7% | **0%** | reported finding 기준 FP 0건. 단, n=19라 일반화 주장 불가 |
-| Precision (Full Pipeline) | 0.93 | **1.00** (≥2/3 합의) | 제한 corpus에서 관찰된 값 |
-| F1 (Stage 1) | — | **0.882** | 초기 탐지 단계의 baseline |
-| F1 (Stage 3 ≥2/3) | — | **0.966** | 다수결 consensus 적용 후 관찰값 |
-| 분석 대상 축소율 | 30~40% | **99.49%** (1,765 → 9 priority class) | triage efficiency 지표. 제외 class의 full-audit recall은 미검증 |
-| 난독화 이름 복원 정확도 | 78% (8주차) | **100%** (UnCrackable n=17 exact) | hand-crafted MASTG corpus에서의 upper-bound 성격 |
+| 1차 후보 기준 FP 비율 (Stage 1) | 25% | **14.3% (n=28)** | 초기 목표 대비 낮게 관찰. n=19 → n=28 확장 후 21.1% → 14.3%. 95% CI [3.6%, 28.6%]. |
+| 3차 후보 기준 FP 비율 (Stage 3 ≥2/3) | 7% | **0% (n=19)** | Stage 3 평가는 n=19 corpus 한정 (InsecureBankv2 의 Stage 3 ensemble 평가는 Future Work). |
+| Precision (Stage 1) | 0.93 (Full Pipeline 가설) | **0.857 (n=28)** | n=19 → n=28 확장 후 0.789 → 0.857. 95% CI [0.714, 0.964]. |
+| Precision (Stage 3 ≥2/3, n=19) | — | **1.00** | 제한된 PleOS+MASTG corpus 한정 — 일반화 주장 불가. |
+| F1 (Stage 1) | — | **0.922 (n=28)** | 95% CI [0.833, 0.982]. n=19 → n=28 확장으로 CI 폭 24%p → 15%p. |
+| F1 (Stage 3 ≥2/3, n=19) | — | **0.966** | n=19 한정. |
+| 분석 대상 축소율 | 30~40% | **99.49%** (1,765 → 9 priority class) | triage efficiency 지표. 제외 class의 full-audit recall 은 미검증. |
+| 난독화 이름 복원 정확도 | 78% (8주차) | **100%** (UnCrackable n=17 exact) | hand-crafted MASTG corpus 에서의 upper-bound 성격. |
 
 > **Metric note**: 본 보고서의 ‘오탐률’은 전체 non-vulnerable code element 대비 false positive rate가 아니라, LLM이 report한 finding 후보 중 FP의 비율인 `FP / (TP + FP)`로 정의한다. 엄밀히는 false discovery rate에 가깝다.
 
-> **Update history**: 2026-04-30 초안은 n=18 (Stage 1 F1 0.875 / Stage 3 ≥2/3 F1 0.952). 같은 날 두 가지 보강으로 n=19 / F1 0.882 / 0.966 으로 갱신하였다: (1) 외부 corpus(UnCrackable-Level1) finding 3건에 Stage 3 multi-perspective consensus 평가를 적용, (2) UnCrackable-Level3 sample (XOR-key 챌린지) 디컴파일 + Stage 1 적용으로 finding 1건 (ucl3-1, hardcoded XOR key, HIGH) 추가.
+> **Update history**:
+>
+> - 2026-04-30 초안 n=18 (Stage 1 F1 0.875 / Stage 3 ≥2/3 F1 0.952).
+> - 2026-04-30 같은 날 n=19 갱신: 외부 corpus (UnCrackable-Level1) 의 Stage 3 multi-perspective consensus 평가 적용 + UnCrackable-Level3 sample 추가 (ucl3-1, hardcoded XOR key, HIGH). Stage 1 F1 0.882 / Stage 3 ≥2/3 F1 0.966.
+> - 2026-05-06 R1.b bootstrap CI 도입. n=19 corpus 의 95% CI 측정으로 표본 작음 약점 정량화.
+> - **2026-05-07 R1.d 표본 확장 — n=28**. 외부 의도적 취약 corpus InsecureBankv2 도입 (9 finding 모두 TP). Stage 1 Precision 78.9% → 85.7%, F1 0.882 → 0.922. CI 폭 약 1/3 감소.
 
 ### 핵심 산출물
 
@@ -311,16 +317,16 @@ self GT (PleOS 자체 라벨)만으로 평가하면 self-referential bias가 생
 
 **해석**: Stage 3 합의 임계가 단순 noise 가 아니라 정확한 filtering 임을 직접 입증. 단 표본 우연성 배제는 R1.b bootstrap CI / R1.d 표본 확장 (n ≥ 30) 후 가능. 산출: [`data/reports/stage_transitions.{md,json}`](../data/reports/stage_transitions.md).
 
-**R1.b 후속 — Bootstrap CI** (2026-05-06 추가): `src/eval.py` 에 non-parametric percentile bootstrap (`--bootstrap N` 옵션) 도입. n=19 라벨을 with-replacement 1000 회 resample 한 결과:
+**R1.b 후속 — Bootstrap CI** (2026-05-06 도입, 2026-05-07 갱신): `src/eval.py` 에 non-parametric percentile bootstrap (`--bootstrap N` 옵션) 도입. with-replacement 1000 회 resample.
 
-| Metric | Point | Bootstrap mean | 95% CI |
-|---|---:|---:|---|
-| Precision (lenient) | 78.9% | 79.0% | [57.9%, 94.7%] |
-| F1 (lenient) | 88.2% | 87.9% | [73.3%, 97.3%] |
-| FP rate (lenient) | 21.1% | 21.0% | [5.3%, 42.1%] |
-| Recall | 100.0% | 100.0% | [100.0%, 100.0%] |
+| Metric | n=19 (초기) | **n=28 (R1.d 표본 확장 후)** | Δ |
+|---|---|---|---|
+| Precision (lenient) | 78.9% / CI [57.9%, 94.7%] | **85.7% / CI [71.4%, 96.4%]** | +6.8%p / CI 폭 −11.8%p |
+| F1 (lenient) | 88.2% / CI [73.3%, 97.3%] | **92.2% / CI [83.3%, 98.2%]** | +4.0%p / CI 폭 −9.1%p |
+| FP rate (lenient) | 21.1% / CI [5.3%, 42.1%] | **14.3% / CI [3.6%, 28.6%]** | −6.8%p / CI 폭 −11.8%p |
+| Recall | 100% | 100% | — |
 
-±15%p 가량의 CI 폭이 n=19 표본 작음의 통계적 약점을 직접 시각화. 11주차 표본 확장 (R1.d, n ≥ 30) 후 CI 폭이 줄어들지 측정 예정. 산출: [`data/reports/bootstrap_ci.{md,json}`](../data/reports/bootstrap_ci.md).
+**핵심 발견**: 표본 19 → 28 확장만으로 **CI 폭이 약 1/3 줄어든다** (Precision / FP rate 36.8%p → 25.0%p, F1 24.0%p → 14.9%p). 본 학기 처음으로 "n 증가 → CI 좁힘" 의 직접 측정값 확보 — RQ1 의 actionable insight: **n ≥ 30 corpus 부터는 보고서의 정량 주장이 통계적으로 더 신뢰 가능**. 산출: [`data/reports/bootstrap_ci.{md,json}`](../data/reports/bootstrap_ci.md).
 
 #### 3.6.2 RQ2 — Perspective disagreement (multi-prompt diversity 진단)
 
