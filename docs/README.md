@@ -25,17 +25,9 @@ PPT 10/12주차 deliverable. 측정 기록(archive/)을 묶어 보고서·발표
 |---|---|
 | [week11_limitations_costs.md](week11_limitations_costs.md) | **한계 + 운영 비용**. L1 native 분석 불가 / L2 표본 작음 / L3 multi-LLM ensemble 미구현 / L4 hand-crafted MASTG / L5 stage3 MASTG 미평가(해소). APK 1개당 시간/메모리/비용 추정 + 트레이드오프. |
 
-## 측정 기록 (`archive/` — local-only, gitignored)
+## Raw 측정 노트 (`archive/`, local-only)
 
-각 단계의 raw 측정 노트로, 보고서 본문이 인용하는 1차 출처. **GitHub에는 push되지 않으며 작성자 로컬에만 보관**한다 (시점 스냅샷이라 갱신하지 않음, 파일명에 작성일 유지). 필요 시 작성자에게 문의.
-
-| 단계 | 파일 (local) | 무엇 |
-|---|---|---|
-| Phase B-2.b | `archive/stage2b_deeplink_verification_20260430.md` | VehicleControl FP 4건을 4중 차단 동선으로 FP CONFIRMED. multi-stage 검증 효과 입증. |
-| Phase B-4 | `archive/ablation_results_20260429.md` | A 변형(Stage ablation) + B 변형(합의 임계 ≥1/2/3) F1 측정. ≥2/3가 default 적합. |
-| Phase B-4.c | `archive/phase_b4c_mastg_baseline_20260430.md` | OWASP MASTG corpus 도입 → combined n=18 stage1 F1 0.875. Java-only pipeline boundary 정량. |
-| Phase B-4.c.2 | `archive/phase_b4c2_baselines_20260430.md` | 4종 baseline 비교. ③/④의 정량 측정 부재 = 본 연구의 차별 gap. |
-| Phase C | `archive/phase_c_deobf_baseline_20260430.md` | 난독화 전처리. UnCrackable Level1/2 n=17 exact 100%. PleOS HIGH 0.2~0.4% corpus-level finding. |
+각 측정 시점의 raw 노트 5종 (caller-chain verification, ablation results, 외부 corpus 도입, baseline 비교, 난독화 전처리). **GitHub 에는 push 되지 않으며 작성자 로컬에만 보관** 한다 — 시점 스냅샷이라 갱신하지 않고 파일명에 작성일을 유지. 본 보고서 본문이 인용하는 1차 출처. 필요 시 작성자에게 문의.
 
 ## 파일명 컨벤션
 

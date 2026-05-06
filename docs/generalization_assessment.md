@@ -113,7 +113,7 @@ AGL은 PleOS와 더 가깝다:
 | 디컴파일 도구 체인 | **Low** | jadx → Ghidra/IDA로 전체 swap |
 | AAOS-specific finding (Compose Nav, ContentProvider) | **Low** | Android-only, 외삽 불가 |
 
-**총평**: 본 파이프라인의 **Phase A-D 흐름과 측정 프레임워크**는 OS 변경에 강건하며,
+**총평**: 본 파이프라인의 **단계별 흐름 (환경 → 다단계 검증 → 평가 → 통합) 과 측정 프레임워크**는 OS 변경에 강건하며,
 swap 작업량은 2-3주로 추정. 단, Android-specific finding은 그대로 옮기지 못하고
 OS별 등가물을 별도 라벨링해야 함.
 
@@ -142,5 +142,5 @@ OS별 등가물을 별도 라벨링해야 함.
 - **결과 데이터로서**: PleOS-specific — 직접 외삽 X, OS별 GT 라벨링 필요.
 - **TARA 산출물로서**: 형식과 흐름은 일반화, 자산 카탈로그는 IVI 도메인 공통적.
 
-PPT 12주차 "일반화 평가" 항목의 deliverable은 본 문서로 충족. 실제 수치 측정은
+초기 계획서의 "일반화 평가" 항목은 본 문서로 충족. 실제 수치 측정은
 Future Work.

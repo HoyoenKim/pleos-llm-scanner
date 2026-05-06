@@ -1,7 +1,8 @@
-# 시각화 지표 (2026-04-30, 8주차 lag 해소)
+# 시각화 지표 (2026-04-30)
 
-> Phase A~C + Stage 2.b + Phase B-4.c.2 측정 결과를 6 차트로 시각화.
+> 본 보고서의 6 차트 — Stage 1/2/3 측정값 + 베이스라인 비교 + 난독화 분포 + Ablation.
 > 산출 스크립트: `src/viz/plot_metrics.py` (matplotlib 3.10.8, Malgun Gothic). 산출 PNG: `data/viz/`.
+> finding ID 정의는 [`report_v0.9.md`](report_v0.9.md) 의 Notation 섹션 참조.
 
 ## 차트 인덱스
 
@@ -36,7 +37,7 @@
 - **1차**: PPT 25% / 실측 PleOS-only 26.7% / combined 22.2% — **PPT 가설 충족** (-2.8%p, combined 기준)
 - **2차**: PPT 12% / 실측 0% — caller 추적이 모든 FP 제거 (P-ceiling)
 - **3차**: PPT 7% / 실측 0% — 멀티 프롬프트 ≥2/3 합의에서도 동일
-- **caveat**: stage 2/3는 PleOS-only n=15 측정. MASTG 외부 GT는 stage 3 미평가 (Phase B-4.c.2 narrative)
+- **caveat**: Stage 2/3 는 일부 PleOS-only n=15 측정 시점의 수치. 외부 GT (MASTG) 까지 포함한 combined n=19 측정값은 Stage 3 ≥2/3 합의에서 P 100% / R 93.3% / F1 0.966.
 
 ### 04 Corpus별 난독화 분포 + LLM rename 정확도 (재설계 2026-05-06)
 
@@ -86,14 +87,13 @@ python src/viz/plot_metrics.py
 - `data/deobf/{6 APK}.json` (entropy 측정)
 - `docs/archive/ablation_results_20260429.md` + `docs/archive/phase_b4c_mastg_baseline_20260430.md` (ablation/baseline 측정)
 
-## 8주차 lag 해소 — 본 doc + chart로 PPT 8주차 deliverable 충족
+## 초기 계획서의 시각화 항목 충족 매트릭스
 
-PPT 8주차 항목:
-- ✅ 3차 교차 검증 — Stage 3 멀티 프롬프트 앙상블 (chart 03/05)
-- ✅ FP 12 → 7% — 측정 0% (chart 03)
-- ✅ **시각화** — chart 01~06 (이전 미진척 항목 해소)
-
-→ Phase D 진입 직전. **9주차까지 본체 deliverable 모두 충족 + 시각화 + 베이스라인 비교 완료**.
+| 초기 계획서 항목 | 본 doc / chart 위치 |
+|---|---|
+| 3차 교차 검증 시각화 | Stage 3 멀티 프롬프트 앙상블 — chart 03 / 05 |
+| 오탐률 12% → 7% 추이 | 측정값은 0% (chart 03) |
+| 차트 / 히트맵 | chart 01~06 6장 |
 
 
 ---

@@ -2,9 +2,9 @@
 
 _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/reports/_
 
-본 문서는 본 파이프라인이 발견한 18개 라벨 중 PPT 10주차 계획서의 5건 사례 연구
+본 문서는 본 파이프라인이 발견한 18개 라벨 중 초기 계획서의 5건 사례 연구
 카테고리에 매핑되는 대표 finding을 케이스 카드로 정리한다. 각 카드는 실제 측정값과
-재현 가능한 evidence path를 포함한다.
+재현 가능한 evidence path를 포함한다. (finding ID 정의는 [`report_v0.9.md`](report_v0.9.md) 의 Notation 섹션 참조)
 
 | # | 카테고리 | Finding | APK | 심각도 | Risk |
 |---|---|---|---|---|---|
@@ -68,7 +68,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 - ssl-5는 self GT, ucl1-1은 외부 OWASP 공식 challenge.
 - 두 케이스 모두 본 파이프라인 stage 1에서 **자동 탐지**.
 - ucl1-1은 OWASP가 의도적으로 박은 취약점이므로 본 파이프라인의 키워드 + LLM 1-pass가
-  외부 corpus에서도 작동함을 입증 — Phase B-4.c.
+  외부 corpus(OWASP MASTG)에서도 작동함을 입증.
 - self/MASTG 둘 다 동일 카테고리 (hardcoded → 4.2 Credential Protection)로 매핑됨 →
   AAOS 매핑 일관성 검증.
 
@@ -121,7 +121,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 - Stage 1 단독이면 FP 2건이 HIGH로 보고됨 (Precision 떨어뜨림).
 - Stage 2 caller + Stage 2.b deep-link audit 합쳐서 **FP CONFIRMED**.
 - 측정값으로 정량화: stage 1 P 77.8% → stage 3 ≥2/3 P 100% (+22.2%p, n=18).
-  PPT 9주차 가설 0.93 도달.
+  초기 계획서의 Precision 0.93 가설 도달.
 - 산출: `docs/archive/stage2b_deeplink_verification_20260430.md`.
 
 **교훈**:
@@ -152,7 +152,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 
 **발견 경로**:
 - Stage 1 키워드: `HttpURLConnection|OkHttp|Retrofit` 와 `TrustManager|HostnameVerifier`
-  로 검색. gRPC도 추가 키워드 후보 (Phase B-3.c에서 보강).
+  로 검색. gRPC도 추가 키워드 후보 (후속 보강 대상).
 - Code evidence:
   ```java
   ManagedChannelBuilder
@@ -161,9 +161,9 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
       .build();
   ```
 - Stage 1 LLM: "gRPC `.usePlaintext()` 호출 — 평문 채널 (MEDIUM)"
-- Phase B-3.c Stage 2 confirmation: SysLogService:76 위치 확인 + caller가 차량
+- Stage 2 confirmation: `SysLogService:76` 위치 확인 + caller가 차량
   syslog를 외부 proxy로 송출하는 경로임을 확인 → MEDIUM → HIGH 격상.
-- Stage 3 (B-3.c.3): attacker / defender / domain_expert 모두 TP 동의.
+- Stage 3: 시각 3종 (attacker / defender / domain_expert) 모두 TP 동의.
 
 **시나리오에서의 영향**:
 - 차량 syslog는 systemID, 네트워크 상태, 업데이트 history, 진단 코드를 포함.
@@ -290,7 +290,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 | 4 | lmp-1 (PromptsContentProvider) | HIGH → TP HIGH | 3.7 | High | IVI/LLM 도메인 특화 |
 | 5 | vc-6 (macAddress untrusted) | MEDIUM → TP HIGH (격상) | 3.7 | **Critical** | 차량 안전 직결 |
 
-5건은 PPT 10주차 deliverable의 5개 카테고리에 정확히 매핑되며, 모두 본 파이프라인이
+5건은 초기 계획서의 5개 사례 카테고리에 정확히 매핑되며, 모두 본 파이프라인이
 실제로 자동 탐지/검증한 라벨에서만 발췌 — 가짜 수치 없음.
 
 ## 재현 path

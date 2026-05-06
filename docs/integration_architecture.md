@@ -58,7 +58,7 @@ flowchart LR
     c. (HIGH 난독화일 때만) configs/prompts/stage0_deobfuscate.md → LLM 이름 복원
     d. configs/keywords.yaml grep → priority class 큐
     e. Stage 1 LLM (configs/prompts/stage1_detect.md) → finding 후보
-    f. Stage 2 caller 분석 + (선택) AST 룰 (regex 자동, AST는 Phase C.2)
+    f. Stage 2 caller 분석 + (선택) AST 룰 (regex 자동, AST는 Future Work)
     g. Stage 3 멀티 프롬프트 합의 (attacker / defender / domain_expert)
     h. src/aaos_map.py → AAOS / MASVS 매핑
     i. src/tara_generate.py → TARA 시나리오 + Risk Matrix
@@ -110,7 +110,7 @@ flowchart LR
    - 외부 송출 없이 in-vehicle 또는 internal cloud에서 분석 완결
    - 본 학기 환경 제약 (외부 LLM API 없음)이 풀림
 
-3. **Phase E + 후속 학기에 Androidmeda 통합** — Apache 2.0 라이선스로 deobf 모듈만
+3. **후속 학기에 Androidmeda 통합** — Apache 2.0 라이선스로 deobfuscation 모듈만
    import. 본 파이프라인의 entropy 측정 + Androidmeda의 deobf 결과를 cross-check.
 
 ## 5. 본 산출물의 데이터 흐름 (실제 measure 기반)
@@ -146,4 +146,4 @@ LLM stage 1/2/3은 본 학기에는 Claude Code 세션, 운영 시에는 PleOS-i
   결과 차트를 PR comment로 게시.
 - TARA 시나리오의 자동 갱신 — 신규 finding이 기존 scenario에 매칭되지 않을 때만
   사람 리뷰로 새 scenario 생성.
-- 본 학기 measurement (Phase A-D) 수치를 baseline 으로 운영 후 drift 모니터링.
+- 본 학기 측정 수치를 baseline 으로 운영 후 drift 모니터링.

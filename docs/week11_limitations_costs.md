@@ -1,8 +1,8 @@
-# 한계 근본 원인 분석 + 운영 비용 평가 (PPT 11주차 deliverable)
+# 한계 근본 원인 분석 + 운영 비용 평가
 
-_작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 분석 노트._
+_작성: 2026-04-30. 보고서 v0.9 의 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 분석 노트._
 
-본 문서는 Phase A~D를 통해 드러난 본 파이프라인의 **구조적 한계**와 그 **근본 원인**, 그리고 운영 시점에서의 **시간/비용 트레이드오프**를 정리한다. 향후 v1.0 보고서 / 발표 / 후속 연구의 input.
+본 문서는 본 파이프라인의 **구조적 한계**와 그 **근본 원인**, 그리고 운영 시점에서의 **시간/비용 트레이드오프** 를 정리한다. 향후 v1.0 보고서 / 발표 / 후속 연구의 input.
 
 ---
 
@@ -174,19 +174,17 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 | **시간** | APK 1개 ~40분, 3 APK ~2시간 | manual 대비 3x 단축 / fully-batch 자동화 가능 |
 | **비용** | Claude Code 정액제 안 | 산업 적용 시 enterprise plan + radar2/Ghidra 통합 필요 |
 | **재현성** | scripts + GT JSON deterministic | LLM의 비결정성은 stage 3 합의가 흡수 |
-| **이식성** | 60~70% OS-독립 (`docs/generalization_assessment_*`) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
+| **이식성** | 60~70% OS-독립 ([`docs/generalization_assessment.md`](generalization_assessment.md)) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
 
 ---
 
-## 4. 11주차 deliverable 매핑 (PPT 계획서 기준)
+## 4. 초기 계획서 항목 매핑
 
-| PPT 11주차 항목 | 본 문서 위치 | 충족 |
+| 초기 계획서 항목 | 본 문서 위치 | 충족 |
 |---|---|---|
 | 한계 근본 원인 분석 | §1 (5 한계 카테고리 × 근본 원인 / 영향 / 해결 경로) | ✅ |
 | 운영 비용 평가 | §2 (시간 / 금전 / 메모리 / 확장성) | ✅ |
 | 트레이드오프 정리 | §3 | ✅ |
-
-→ PPT 11주차 progress report 1페이지 작성 시 본 문서 참조.
 
 ---
 
