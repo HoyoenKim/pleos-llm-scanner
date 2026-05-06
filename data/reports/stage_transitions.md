@@ -1,6 +1,6 @@
 # R1.a — Stage 1 → Stage 2 → Stage 3 transition matrix
 
-_Measured: 2026-05-06 / scope: combined GT n=19 (PleOS self 15 + MASTG 4)_
+_Measured: 2026-05-06 / scope: combined GT n=28 (PleOS self 15 + MASTG 4)_
 
 ## 단계 정의
 
@@ -31,24 +31,33 @@ _Measured: 2026-05-06 / scope: combined GT n=19 (PleOS self 15 + MASTG 4)_
 | `ucl1-2` | UnCrackable-Level1 | `C0000a` | 15 | crypto | medium | **TP** | medium | **strong-TP** (3) |
 | `ucl1-3` | UnCrackable-Level1 | `C0005a` | 17 | crypto | low | **TP** | low | **TP** (2) |
 | `ucl3-1` | UnCrackable-Level3 | `MainActivity` | 25 | hardcoded | high | **TP** | high | **strong-TP** (3) |
+| `ib2-1` | InsecureBankv2 | `DoLogin` | 51 | network | high | **TP** | high | **strong-TP** (3) |
+| `ib2-2` | InsecureBankv2 | `DoLogin` | 115 | hardcoded | high | **TP** | high | **strong-TP** (3) |
+| `ib2-3` | InsecureBankv2 | `CryptoClass` | 22 | hardcoded | high | **TP** | high | **strong-TP** (3) |
+| `ib2-4` | InsecureBankv2 | `CryptoClass` | 23 | crypto | high | **TP** | high | **strong-TP** (3) |
+| `ib2-5` | InsecureBankv2 | `MyBroadCastReceiver` | 32 | intent | high | **TP** | high | **strong-TP** (3) |
+| `ib2-6` | InsecureBankv2 | `AndroidManifest` | 64 | intent | high | **TP** | high | **strong-TP** (3) |
+| `ib2-7` | InsecureBankv2 | `AndroidManifest` | 68 | intent | medium | **TP** | high | **strong-TP** (3) |
+| `ib2-8` | InsecureBankv2 | `AndroidManifest` | 49 | intent | medium | **TP** | medium | **TP** (2) |
+| `ib2-9` | InsecureBankv2 | `ViewStatement` | 30 | network | medium | **TP** | medium | **TP** (2) |
 
 ## Stage 1 severity → Stage 2 verdict
 
 | Stage 1 severity | Stage 2 verdict | count |
 |---|---|---:|
 | high | FP | 3 |
-| high | TP | 6 |
+| high | TP | 12 |
 | low | TP | 2 |
 | medium | FP | 1 |
-| medium | TP | 7 |
+| medium | TP | 10 |
 
 ## Stage 2 verdict → Stage 3 class
 
 | Stage 2 (GT) | Stage 3 class | count |
 |---|---|---:|
 | FP | uncertain | 4 |
-| TP | TP | 2 |
-| TP | strong-TP | 12 |
+| TP | TP | 4 |
+| TP | strong-TP | 19 |
 | TP | uncertain | 1 |
 
 ## FP / TP flow
@@ -56,8 +65,8 @@ _Measured: 2026-05-06 / scope: combined GT n=19 (PleOS self 15 + MASTG 4)_
 - Stage 2 에서 FP 로 라벨된 finding: **4건** (모두 PleOS VehicleControl)
   - Stage 3 에서 정상적으로 걸러짐 (clean/uncertain): **4건**
   - Stage 3 에서 잘못 promote 됨 (TP/strong-TP): **0건**
-- Stage 2 에서 TP 로 라벨된 finding: **15건**
-  - Stage 3 에서 유지 (TP/strong-TP): **14건**
+- Stage 2 에서 TP 로 라벨된 finding: **24건**
+  - Stage 3 에서 유지 (TP/strong-TP): **23건**
   - Stage 3 에서 손실 (clean/uncertain — 보고 누락): **1건**
 
 ## RQ1 implication

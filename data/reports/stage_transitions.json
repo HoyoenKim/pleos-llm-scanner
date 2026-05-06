@@ -2,7 +2,7 @@
   "measurement_id": "R1.a",
   "description": "Per-finding Stage 1 → Stage 2 (GT) → Stage 3 (consensus) verdict transitions",
   "measured_at": "2026-05-06",
-  "scope": "n=19 (combined GT)",
+  "scope": "n=28 (combined GT)",
   "rows": [
     {
       "id": "vc-1",
@@ -314,29 +314,181 @@
         "defender",
         "domain_expert"
       ]
+    },
+    {
+      "id": "ib2-1",
+      "apk": "InsecureBankv2",
+      "class": "DoLogin",
+      "line": 51,
+      "category": "network",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-2",
+      "apk": "InsecureBankv2",
+      "class": "DoLogin",
+      "line": 115,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-3",
+      "apk": "InsecureBankv2",
+      "class": "CryptoClass",
+      "line": 22,
+      "category": "hardcoded",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-4",
+      "apk": "InsecureBankv2",
+      "class": "CryptoClass",
+      "line": 23,
+      "category": "crypto",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-5",
+      "apk": "InsecureBankv2",
+      "class": "MyBroadCastReceiver",
+      "line": 32,
+      "category": "intent",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-6",
+      "apk": "InsecureBankv2",
+      "class": "AndroidManifest",
+      "line": 64,
+      "category": "intent",
+      "stage1_severity": "high",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-7",
+      "apk": "InsecureBankv2",
+      "class": "AndroidManifest",
+      "line": 68,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "high",
+      "stage3_consensus_count": 3,
+      "stage3_class": "strong-TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender",
+        "domain_expert"
+      ]
+    },
+    {
+      "id": "ib2-8",
+      "apk": "InsecureBankv2",
+      "class": "AndroidManifest",
+      "line": 49,
+      "category": "intent",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 2,
+      "stage3_class": "TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender"
+      ]
+    },
+    {
+      "id": "ib2-9",
+      "apk": "InsecureBankv2",
+      "class": "ViewStatement",
+      "line": 30,
+      "category": "network",
+      "stage1_severity": "medium",
+      "stage2_gt": "TP",
+      "stage2_true_severity": "medium",
+      "stage3_consensus_count": 2,
+      "stage3_class": "TP",
+      "stage3_perspectives": [
+        "attacker",
+        "defender"
+      ]
     }
   ],
   "summary": {
     "stage1_to_stage2": {
       "high→FP": 3,
-      "high→TP": 6,
+      "high→TP": 12,
       "low→TP": 2,
       "medium→FP": 1,
-      "medium→TP": 7
+      "medium→TP": 10
     },
     "stage2_to_stage3": {
       "FP→uncertain": 4,
-      "TP→TP": 2,
-      "TP→strong-TP": 12,
+      "TP→TP": 4,
+      "TP→strong-TP": 19,
       "TP→uncertain": 1
     },
     "stage1_to_stage3": {
       "high→TP": 1,
-      "high→strong-TP": 5,
+      "high→strong-TP": 11,
       "high→uncertain": 3,
       "low→TP": 1,
       "low→uncertain": 1,
-      "medium→strong-TP": 7,
+      "medium→TP": 2,
+      "medium→strong-TP": 8,
       "medium→uncertain": 1
     },
     "fp_flow": {
@@ -345,8 +497,8 @@
       "fp_incorrectly_promoted_at_stage3": 0
     },
     "tp_flow": {
-      "tp_at_stage2_gt": 15,
-      "tp_kept_at_stage3": 14,
+      "tp_at_stage2_gt": 24,
+      "tp_kept_at_stage3": 23,
       "tp_lost_at_stage3": 1
     }
   }

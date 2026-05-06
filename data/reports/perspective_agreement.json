@@ -2,42 +2,42 @@
   "measurement_id": "R2.a",
   "description": "Per-finding flag agreement across attacker / defender / domain_expert perspectives. Measures whether the multi-perspective ensemble produces diverse verdicts or converges trivially.",
   "measured_at": "2026-05-06",
-  "scope": "n=19 findings from data/reports/stage3_ensemble.json",
+  "scope": "n=28 findings from data/reports/stage3_ensemble.json",
   "flag_counts_per_perspective": {
-    "attacker": 12,
-    "defender": 19,
-    "domain_expert": 14
+    "attacker": 21,
+    "defender": 28,
+    "domain_expert": 21
   },
   "consensus_count_distribution": {
     "0": 0,
     "1": 5,
-    "2": 2,
-    "3": 12
+    "2": 4,
+    "3": 19
   },
   "pairwise": {
     "attacker-defender": {
-      "agree": 12,
-      "agree_pct": 63.2,
-      "both_flag": 12,
+      "agree": 21,
+      "agree_pct": 75.0,
+      "both_flag": 21,
       "only_attacker": 0,
       "only_defender": 7,
       "neither": 0,
       "cohens_kappa": 0.0
     },
     "attacker-domain_expert": {
-      "agree": 17,
-      "agree_pct": 89.5,
-      "both_flag": 12,
-      "only_attacker": 0,
+      "agree": 24,
+      "agree_pct": 85.7,
+      "both_flag": 19,
+      "only_attacker": 2,
       "only_domain_expert": 2,
       "neither": 5,
-      "cohens_kappa": 0.759
+      "cohens_kappa": 0.619
     },
     "defender-domain_expert": {
-      "agree": 14,
-      "agree_pct": 73.7,
-      "both_flag": 14,
-      "only_defender": 5,
+      "agree": 21,
+      "agree_pct": 75.0,
+      "both_flag": 21,
+      "only_defender": 7,
       "only_domain_expert": 0,
       "neither": 0,
       "cohens_kappa": 0.0

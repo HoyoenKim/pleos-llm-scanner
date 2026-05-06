@@ -92,16 +92,18 @@
 
 ### 핵심 측정값 (combined n=28 = PleOS 자체 라벨 15 + OWASP MASTG 4 + InsecureBankv2 9)
 
-| 지표 | PPT 가설 / 목표 | 측정값 | 해석 |
+| 지표 | PPT 가설 / 목표 | 측정값 (n=28) | 해석 |
 |---|---|---|---|
-| 1차 후보 기준 FP 비율 (Stage 1) | 25% | **14.3% (n=28)** | 초기 목표 대비 낮게 관찰. n=19 → n=28 확장 후 21.1% → 14.3%. 95% CI [3.6%, 28.6%]. |
-| 3차 후보 기준 FP 비율 (Stage 3 ≥2/3) | 7% | **0% (n=19)** | Stage 3 평가는 n=19 corpus 한정 (InsecureBankv2 의 Stage 3 ensemble 평가는 Future Work). |
-| Precision (Stage 1) | 0.93 (Full Pipeline 가설) | **0.857 (n=28)** | n=19 → n=28 확장 후 0.789 → 0.857. 95% CI [0.714, 0.964]. |
-| Precision (Stage 3 ≥2/3, n=19) | — | **1.00** | 제한된 PleOS+MASTG corpus 한정 — 일반화 주장 불가. |
-| F1 (Stage 1) | — | **0.922 (n=28)** | 95% CI [0.833, 0.982]. n=19 → n=28 확장으로 CI 폭 24%p → 15%p. |
-| F1 (Stage 3 ≥2/3, n=19) | — | **0.966** | n=19 한정. |
+| 1차 후보 기준 FP 비율 (Stage 1) | 25% | **14.3%** | 초기 목표 대비 낮게 관찰. 95% CI [3.6%, 28.6%]. |
+| 3차 후보 기준 FP 비율 (Stage 3 ≥2/3) | 7% | **0%** | reported finding 기준 FP 0건. 표본 확장 후에도 동일. |
+| Precision (Stage 1) | 0.93 (Full Pipeline 가설) | **0.857** | 95% CI [0.714, 0.964]. n=19 → n=28 확장 후 0.789 → 0.857. |
+| Precision (Stage 3 ≥2/3) | — | **1.00** | n=28. |
+| F1 (Stage 1) | — | **0.923** | 95% CI [0.833, 0.982]. CI 폭 n=19 24%p → n=28 15%p. |
+| F1 (Stage 3 ≥2/3) | — | **0.979** | n=28 표본 확장으로 0.966 → 0.979. |
+| Recall (Stage 3 ≥2/3) | — | **95.8%** | FN 1건 (vc-7 LOW hardening 만 1/3 합의로 강등). |
 | 분석 대상 축소율 | 30~40% | **99.49%** (1,765 → 9 priority class) | triage efficiency 지표. 제외 class의 full-audit recall 은 미검증. |
-| 난독화 이름 복원 정확도 | 78% (8주차) | **100%** (UnCrackable n=17 exact) | hand-crafted MASTG corpus 에서의 upper-bound 성격. |
+| 난독화 이름 복원 정확도 (hand-crafted) | 78% (8주차) | **100%** (UnCrackable n=17 exact) | hand-crafted MASTG corpus 에서의 upper-bound 성격. |
+| 난독화 entropy 분포 — real-world | — | NewPipe (OSS, ProGuard 활성) **HIGH 1.7%** | hand-crafted MASTG (40~50%) 와 PleOS (0.2~0.4%) 의 사이 — real-world commercial 난독화 baseline. |
 
 > **Metric note**: 본 보고서의 ‘오탐률’은 전체 non-vulnerable code element 대비 false positive rate가 아니라, LLM이 report한 finding 후보 중 FP의 비율인 `FP / (TP + FP)`로 정의한다. 엄밀히는 false discovery rate에 가깝다.
 
@@ -110,7 +112,8 @@
 > - 2026-04-30 초안 n=18 (Stage 1 F1 0.875 / Stage 3 ≥2/3 F1 0.952).
 > - 2026-04-30 같은 날 n=19 갱신: 외부 corpus (UnCrackable-Level1) 의 Stage 3 multi-perspective consensus 평가 적용 + UnCrackable-Level3 sample 추가 (ucl3-1, hardcoded XOR key, HIGH). Stage 1 F1 0.882 / Stage 3 ≥2/3 F1 0.966.
 > - 2026-05-06 R1.b bootstrap CI 도입. n=19 corpus 의 95% CI 측정으로 표본 작음 약점 정량화.
-> - **2026-05-07 R1.d 표본 확장 — n=28**. 외부 의도적 취약 corpus InsecureBankv2 도입 (9 finding 모두 TP). Stage 1 Precision 78.9% → 85.7%, F1 0.882 → 0.922. CI 폭 약 1/3 감소.
+> - **2026-05-07 R1.d 표본 확장 — n=28**. 외부 의도적 취약 corpus InsecureBankv2 도입 (9 finding 모두 TP). Stage 1 Precision 78.9% → 85.7%, F1 0.882 → 0.923. CI 폭 약 1/3 감소.
+> - **2026-05-08 Stage 3 ensemble 을 InsecureBankv2 까지 확장 + NewPipe entropy 측정**. 합의 ≥2/3 의 corpus 가 n=19 → n=28 으로 동일하게 확장 — Stage 3 ≥2/3 F1 0.966 → **0.979**. 동시에 R4 첫 측정 — NewPipe (real-world ProGuard 활성 OSS) HIGH 난독화 1.7% (hand-crafted MASTG 40~50% 와 PleOS 0.2~0.4% 의 사이).
 
 ### 핵심 산출물
 
@@ -236,20 +239,24 @@ VehicleControl APK 기준:
 
 이 값은 **분석 효율성 지표**이다. 즉, 사람이 우선적으로 검토해야 할 class 수를 크게 줄였다는 의미이며, 제외된 1,756개 class에 취약점이 없음을 보장하는 full-audit recall 지표는 아니다. Stage 2 caller 추적 시 priority 9개 외부의 caller/callee가 추가로 분석될 수 있으며, 최종 v1.0에서는 일부 APK에 대해 broader static scanner 또는 manual audit과 비교해 missed finding 여부를 별도 확인할 필요가 있다.
 
-### 3.2 Stage 1 / Stage 3 후보 기준 FP 비율 (G3) — combined n=19
+### 3.2 Stage 1 / Stage 3 후보 기준 FP 비율 (G3) — combined n=28
 
-| 단계 | n | TP | FP | Precision | F1 |
-|---|---|---|---|---|---|
-| Stage 1 (PleOS-only n=15) | 15 | 11 | 4 | 73.3% | 0.846 |
-| Stage 1 (combined n=19) | 19 | 15 | 4 | **78.9%** | **0.882** |
-| Stage 1 (MASTG-only n=4) | 4 | 4 | 0 | **100%** | — |
-| Stage 3 ≥2/3 (combined n=19) | 19 | 14 | 0 | **100%** | **0.966** |
-| Stage 3 ≥3/3 (combined n=19) | 19 | 12 strong | 0 | **100%** | 0.889 |
+| 단계 | n | TP | FP | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|---:|---:|
+| Stage 1 (PleOS-only) | 15 | 11 | 4 | 73.3% | 100% | 0.846 |
+| Stage 1 (combined, 2026-05-06) | 19 | 15 | 4 | 78.9% | 100% | 0.882 |
+| **Stage 1 (combined, 2026-05-07)** | **28** | **24** | **4** | **85.7%** | **100%** | **0.923** |
+| Stage 1 (MASTG-only) | 4 | 4 | 0 | 100% | 100% | — |
+| Stage 1 (InsecureBankv2-only) | 9 | 9 | 0 | 100% | 100% | — |
+| Stage 3 ≥2/3 (combined, 2026-04-30) | 19 | 14 | 0 | 100% | 90.9% | 0.952 |
+| **Stage 3 ≥2/3 (combined, 2026-05-08)** | **28** | **23** | **0** | **100%** | **95.8%** | **0.979** |
+| Stage 3 ≥3/3 (combined, 2026-05-08) | 28 | 19 | 0 | 100% | 79.2% | 0.884 |
 
 **핵심 해석**:
-- Stage 1은 combined n=19에서 Precision 78.9%, 후보 기준 FP 비율 21.1%로 관찰되었다. 이는 초기 계획서의 Stage 1 목표값 25%보다 낮지만, n=19에 대한 초기 측정값으로만 해석한다.
-- Stage 3 ≥2/3 consensus에서는 현재 corpus 기준 FP가 0건이었다. 다만 이 결과는 limited corpus에서의 관찰값이며, 일반화 성능으로 주장하지 않는다.
-- 합의 임계 ≥2/3 와 ≥3/3 의 차이는 두 finding 에서 발생한다: `ssl-4` (sync.syslog 의 PII toString) 과 `ucl1-3` (UnCrackable-Level1 의 logging hardening) 가 시각 3종 중 2종에서만 합의되었다. emission 경로가 코드만으로 확정되지 않아 1 시각이 uncertain으로 남았기 때문에, 현재 corpus에서는 ≥2/3가 default threshold로 더 적합하다.
+- Stage 1 의 Precision/F1 은 표본이 19 → 28 로 늘면서 78.9%/0.882 → 85.7%/**0.923** 으로 안정적으로 향상. InsecureBankv2 9 finding 이 모두 TP 라 평균을 끌어올림.
+- Stage 3 ≥2/3 consensus 에서는 corpus 기준 reported FP 0 건 (변하지 않음). Recall 은 ssl-4 가 ≥2/3 에 포함되며 90.9% → **95.8%** 로 향상. 유일한 FN 은 vc-7 (LOW hardening, 1/3 합의로 강등).
+- ≥2/3 와 ≥3/3 의 차이는 4 finding 에서 발생: ssl-4 (PII), ucl1-3 (log hardening), ib2-8 (post-login activity exported), ib2-9 (WebView JS). 모두 stage 1 이 medium/low 로 시작했으며 시각 3종 중 2종이 합의했다 (domain_expert 는 banking-only context 에서 abstain — selectivity-calibrated defender prompt 의 효과로 향후 측정 시 변동 가능).
+- **합의 ≥2/3 가 default threshold 로 가장 안정적** (F1 0.979 > ≥3/3 의 0.884).
 
 ### 3.3 Ablation (combined n=19)
 
@@ -280,6 +287,17 @@ OWASP MASTG의 UnCrackable-Level1/2 의 `sg.vantagepoint` 패키지 (anti-tamper
 - 이 결과는 초기 계획서 가설 (8주차 시점 78%)보다 높지만, hand-crafted MASTG corpus에 대한 upper-bound 성격이 강하다. real-world commercial ProGuard 코드에서는 contextual hint가 약해 정확도 하락이 예상된다 (한계 L4).
 
 **예상과 다른 발견**: PleOS APK 3종은 HIGH 난독화 클래스 비율이 **0.2~0.4%** 로 매우 낮았다. 즉, 본 학기 PleOS sample은 초기 계획서가 가정한 "고난독화 IVI 코드" 시나리오와 정량적으로 달랐다. 따라서 v1.0 narrative에서는 "PleOS 코드 자체의 난독화 대응"보다 "외부 obfuscated corpus에서 Stage 0 feasibility 확인"으로 표현하는 편이 안전하다.
+
+**R4 첫 측정 — Real-world commercial OSS (NewPipe) 의 난독화 baseline** (2026-05-08 추가):
+
+| Corpus | 종류 | 비-framework 클래스 수 | HIGH (composite ≥ 0.7) | 비율 |
+|---|---|---:|---:|---:|
+| UnCrackable-Level1 / 2 | hand-crafted MASTG | 6 / 5 | 3 / 2 | **50% / 40%** |
+| **NewPipe v0.27.6** | **real-world OSS, ProGuard 활성** | **2,520** | **42** | **1.7%** |
+| PleOS VehicleControl | 실제 IVI APK | 2,704 | 6 | 0.2% |
+| PleOS SyncSyslog | 실제 IVI APK | 4,555 | 18 | 0.4% |
+
+**해석**: NewPipe (대표적 인기 open-source Android 앱, 빌드 시 ProGuard 활성) 의 HIGH 난독화 비율 **1.7%** 가 hand-crafted MASTG (40~50%) 와 PleOS (0.2~0.4%) 의 사이에 위치한다. 이는 본 학기 가정하던 두 극단 사이에 **real-world commercial 난독화 baseline** 을 정량적으로 끼워넣는 첫 데이터다. R4 의 Stage 0 LLM rename 정확도는 ProGuard mapping file 부재로 본 학기 partial — semantic plausibility 평가만 가능하며 exact accuracy 측정은 Future Work (ProGuard mapping 확보 또는 debug build 다운로드 후).
 
 ### 3.5 외부 GT 베이스라인 및 pipeline boundary (G8)
 

@@ -6,18 +6,22 @@ Output of `src/deobf/entropy.py` (Shannon entropy + jadx pattern matching) on 7 
 
 | APK | Origin | Non-framework classes | HIGH (≥ 0.7) | HIGH ratio | Mean composite | Mean jadx_obf_ratio |
 |---|---|---:|---:|---:|---:|---:|
-| UnCrackable-Level1 | MASTG | 6 | 3 | **50.0%** | 0.618 | 0.695 |
-| UnCrackable-Level2 | MASTG | 5 | 2 | 40.0% | 0.529 | 0.507 |
-| UnCrackable-Level3 | MASTG | 7 | 0 | 0.0% | 0.114 | 0.000 |
-| r2pay-v1.0 | MASTG | 2 | 0 | 0.0% | 0.246 | 0.150 |
-| VehicleControl | PleOS | 2,704 | 6 | 0.2% | 0.051 | 0.003 |
+| UnCrackable-Level1 | MASTG (hand-crafted) | 6 | 3 | **50.0%** | 0.618 | 0.695 |
+| UnCrackable-Level2 | MASTG (hand-crafted) | 5 | 2 | 40.0% | 0.529 | 0.507 |
+| **NewPipe v0.27.6** | **real-world OSS** | **2,520** | **42** | **1.7%** | 0.120 | 0.080 |
+| UnCrackable-Level3 | MASTG (hand-crafted) | 7 | 0 | 0.0% | 0.114 | 0.000 |
+| r2pay-v1.0 | MASTG (hand-crafted) | 2 | 0 | 0.0% | 0.246 | 0.150 |
 | SyncSyslog | PleOS | 4,555 | 18 | 0.4% | 0.053 | 0.015 |
+| VehicleControl | PleOS | 2,704 | 6 | 0.2% | 0.051 | 0.003 |
 | LLMModelProvider | PleOS | 112 | 0 | 0.0% | 0.034 | 0.010 |
 
-### Corpus-level finding
+### Corpus-level finding (R4 첫 측정 추가, 2026-05-08)
 
-- **MASTG hand-crafted Crackmes** (UnCrackable-Level1 / Level2): high obfuscation density (40~50% HIGH) — used for upper-bound deobfuscation accuracy measurement (n=17, exact 100%).
-- **PleOS APKs**: HIGH ratio 0.2~0.4% — semantically meaningful class names retained. The original PPT plan assumed heavy obfuscation; the measurement contradicts that assumption.
+- **MASTG hand-crafted Crackmes** (UnCrackable-Level1 / Level2): high obfuscation density (40~50% HIGH) — Stage 0 LLM rename 의 upper-bound 측정용 (n=17, exact 100%).
+- **NewPipe (real-world OSS, ProGuard 활성)**: HIGH 1.7% — hand-crafted MASTG 와 PleOS 사이의 **real-world baseline**. R4 의 첫 정량 데이터.
+- **PleOS APKs**: HIGH 0.2~0.4% — semantic 클래스명 유지. 초기 계획서가 가정한 heavy obfuscation 시나리오와 정량적으로 다름.
+
+→ 본 학기 Stage 0 정확도는 hand-crafted MASTG 에서 100% (upper-bound), NewPipe 에서는 ProGuard mapping 부재로 semantic plausibility 평가만 partial. real-world floor 의 exact accuracy 는 Future Work.
 
 ## Files
 
@@ -33,7 +37,8 @@ Output of `src/deobf/entropy.py` (Shannon entropy + jadx pattern matching) on 7 
 ## Reproduce
 
 ```bash
-for d in UnCrackable-Level1 UnCrackable-Level2 UnCrackable-Level3 r2pay-v1.0 VehicleControl SyncSyslog LLMModelProvider; do
+for d in UnCrackable-Level1 UnCrackable-Level2 UnCrackable-Level3 r2pay-v1.0 \
+         VehicleControl SyncSyslog LLMModelProvider NewPipe; do
   python src/deobf/entropy.py "data/decompiled/$d" \
       --out "data/deobf/${d}.json" \
       --md  "data/deobf/${d}.md" \
