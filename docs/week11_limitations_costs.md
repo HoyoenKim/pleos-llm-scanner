@@ -16,7 +16,7 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 |---|---|---|---|---|
 | L1 | **네이티브 코드 분석 불가** | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope finding 0건 (`docs/archive/phase_b4c_mastg_baseline_20260430.md`) |
 | L2 | **표본 크기 작음 (n=19)** ← 2026-04-30 부분 해소 (n=18→19, UnCrackable-Level3 추가) | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined n=19 측정. 추가 sample 도입은 Future Work |
-| L3 | **Multi-LLM ensemble (D3=A) 미구현** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | D3 결정을 (A) → (B)로 전환 (`CLAUDE.md` 의사결정 기록) |
+| L3 | **멀티 모델 앙상블 미구현 (멀티 프롬프트로 대체)** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | 3차 검증 방식을 멀티 모델(Claude+GPT-4 가정) → 멀티 프롬프트(동일 모델 + 시각 3종)로 전환 |
 | L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat (`docs/archive/phase_c_deobf_baseline_20260430.md`) |
 | L5 | ~~Stage 3 ensemble의 MASTG 미평가~~ ✅ **2026-04-30 해소** | ucl1-1/2/3 + ucl3-1 stage 3 ensemble 평가 추가 완료 | — | ablation A.3 ≥3/3 F1 0.783 → **0.889** (combined n=19), B ≥2/3 F1 0.952 → **0.966** |
 
@@ -60,12 +60,12 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 2. **(중기)** DIVA, InsecureBankv2 같은 의도적 취약 Android 앱 도입. 이들은 Java 측에 다양한 vuln 있음.
 3. **(장기)** crowdsourced ground truth corpus 구축 — 외부 연구자 협업.
 
-### 1.4 L3 — Multi-LLM ensemble 미구현 (D3=A → B)
+### 1.4 L3 — 멀티 모델 앙상블 미구현 (멀티 프롬프트로 대체)
 
 #### 결정 history
-- 원래 PPT 가설: Claude + GPT-4 같은 multi-vendor ensemble (D3=A)
-- 환경 제약 (외부 유료 API 없음 정책 + Claude Code 단일 모델 세션) 발견 → D3=B (multi-prompt) 로 재결정
-- D3=B 결과: ≥2/3 합의에서 P 100% / Recall 90.9% / F1 0.952 — PPT 가설 0.93 도달·초과
+- 원래 PPT 가설: Claude + GPT-4 같은 multi-vendor ensemble
+- 환경 제약 (외부 유료 API 없음 정책 + Claude Code 단일 모델 세션) 발견 → 멀티 프롬프트(동일 모델 + 시각 3종)로 재결정
+- 멀티 프롬프트 결과: ≥2/3 합의에서 P 100% / Recall 90.9% / F1 0.952 — PPT 가설 0.93 도달·초과
 
 #### 그래도 남은 limitation
 - multi-vendor ensemble의 진짜 효과 (다른 모델이 같은 코드를 다르게 해석하는 disagreement) 측정 불가
@@ -96,7 +96,7 @@ _작성: 2026-04-30 / Phase D 1차 통과 후 작성. 보고서 v0.9의 7장 (Li
 - 0.783은 **artifact** — UnCrackable-Level1의 ucl1-1/2/3가 stage 3 ensemble JSON에 entry가 없어서 자동 FN으로 처리됨
 
 #### 해소 결과 (2026-04-30)
-- ucl1-1/2/3 + ucl3-1 4건에 attacker/defender/domain_expert 평가 추가 → `data/reports/stage3_ensemble_20260429.json` 갱신
+- ucl1-1/2/3 + ucl3-1 4건에 attacker/defender/domain_expert 평가 추가 → `data/reports/stage3_ensemble.json` 갱신
 - combined n=19 ablation 재실행 결과: A.3 ≥3/3 F1 **0.889** (이전 0.783 → +0.106), B ≥2/3 F1 **0.966** (이전 PleOS-only 0.952 → combined 향상)
 - ablation 표 일관성 회복
 

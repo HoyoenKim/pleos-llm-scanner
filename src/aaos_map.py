@@ -2,10 +2,11 @@
 
 Reads:
   - configs/aaos_mapping.yaml (category -> AAOS/MASVS/TARA mapping)
-  - data/ground_truth/combined_labels_20260430.json (18 findings)
+  - data/ground_truth/combined_labels.json (combined GT, n=19)
 
 Writes:
-  - data/reports/aaos_mapping_table_<DATE>.{md,json}
+  - data/reports/aaos_mapping_table.{md,json}  (overwritten each run; the md
+    body carries `_Generated: <ISO date>_` so the measurement date is preserved).
 
 Deterministic only. No LLM calls.
 """
@@ -26,7 +27,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = ROOT / "configs" / "aaos_mapping.yaml"
-GT = ROOT / "data" / "ground_truth" / "combined_labels_20260430.json"
+GT = ROOT / "data" / "ground_truth" / "combined_labels.json"
 OUT_DIR = ROOT / "data" / "reports"
 
 
@@ -151,9 +152,8 @@ def to_md(rows: list[dict[str, Any]]) -> str:
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     rows = build_rows()
-    today = date.today().strftime("%Y%m%d")
-    md_path = OUT_DIR / f"aaos_mapping_table_{today}.md"
-    json_path = OUT_DIR / f"aaos_mapping_table_{today}.json"
+    md_path = OUT_DIR / "aaos_mapping_table.md"
+    json_path = OUT_DIR / "aaos_mapping_table.json"
     md_path.write_text(to_md(rows), encoding="utf-8")
     json_path.write_text(json.dumps(rows, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"wrote: {md_path}")

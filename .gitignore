@@ -50,3 +50,7 @@ docs/archive/
 # PPT 빌드 스크립트 — 학기 보고용 산출물, 파이프라인 재현 무관 → 로컬 only
 scripts/build_ppt_v3.py
 scripts/build_ppt_v3_1page.py
+
+# Auto-regenerated per-APK summary md from entropy.py — JSON is source of truth
+data/deobf/*.md
+!data/deobf/README.md

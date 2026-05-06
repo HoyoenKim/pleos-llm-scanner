@@ -74,14 +74,14 @@ bash scripts/decompile.sh data/apks/<package>.apk
 
 # 4) 자동 평가 (Precision/Recall/F1)
 python src/eval.py \
-    --labels data/ground_truth/combined_labels_20260430.json \
+    --labels data/ground_truth/combined_labels.json \
     --reports 'data/reports/*.json'
 
 # 5) Ablation: stage 효과 + 합의 임계 sensitivity
 python src/ablation.py \
-    --labels data/ground_truth/combined_labels_20260430.json \
+    --labels data/ground_truth/combined_labels.json \
     --reports 'data/reports/*.json' \
-    --stage3  data/reports/stage3_ensemble_20260429.json
+    --stage3  data/reports/stage3_ensemble.json
 ```
 
 ## Privacy / IP boundary

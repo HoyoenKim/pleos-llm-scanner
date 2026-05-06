@@ -4,15 +4,15 @@
 > 새 버전이 필요하면 별도 파일로 (예: `<project>_5주차_<id>_<name>_v2.pptx`).
 >
 > 본 가이드는 **사용자가 직접 PPT 수정할 때 참고**하는 매핑 표. 수정 사유는 두 가지:
-> 1. **D3 결정 변경**: (A) 멀티 Claude 모델 → **(B) 멀티 프롬프트** (외부 환경 제약 명시)
+> 1. **3차 검증 방식 변경**: 멀티 모델(Claude+GPT-4) 가정 → **멀티 프롬프트**(동일 모델 + 시각 3종)로 대체. 외부 환경 제약 명시.
 > 2. **정량 수치를 가설에서 실측으로**: 1차 오탐률 25% → 40~50% 등
 
 ## 1. 변경 사유 요약
 
-### D3 변경 사유
+### 3차 검증 방식 변경 사유 (멀티 모델 → 멀티 프롬프트)
 - 본래 PPT는 "Claude + GPT-4 멀티 LLM 앙상블"을 가정 (4주차/8주차 PPT 등).
 - 환경 제약: 외부 유료 API 미보유 + Claude Code 단일 모델 세션 한계 (Phase B-2에서 발견).
-- 자체 자동화 가능한 (B) **단일 LLM × 다중 프롬프트** 앙상블로 대체.
+- 자체 자동화 가능한 **단일 LLM × 다중 프롬프트** 앙상블로 대체.
 - 시각 3종: 공격자 / 방어자 / IVI 도메인 전문가 — `pleos-llm-scanner/configs/prompts/stage3_*.md` 참조.
 
 ### 수치 갱신 사유
@@ -55,7 +55,7 @@
 | 항목 | 기존 표기 (가설) | 수정 권장 |
 |---|---|---|
 | 평가 프레임워크 | Precision/Recall/F1 측정 | **`src/eval.py` 작성 완료**. 실측: Precision = 0.60 (lenient) / 0.50 (strict), FP rate = 40% / 50%, Recall = 100% (GT 자체 라벨 superset이라 의미 약함) |
-| Ground truth | OWASP MASVS-MASTG + 자체 | **자체 라벨 12건 완료** (`data/ground_truth/self_labels_20260429.json`). MASTG 미도입 — Phase B-4.c로 진행 예정 |
+| Ground truth | OWASP MASVS-MASTG + 자체 | **자체 라벨 12건 완료** (`data/ground_truth/self_labels.json`). MASTG 미도입 — Phase B-4.c로 진행 예정 |
 | 전수 분석 | 207 APK 분석 완료 | **207 APK 추출 (4.3 GB) 완료, stage 1은 3 APK 만 진행** + Future Work 명시 |
 | 처리 시간 | 8~25분 / APK | **측정 시작** — VehicleControl: 디컴파일 ~2분 + grep ~10초 + LLM 분석 (인터랙티브, 클래스당 5~10분) |
 
@@ -63,7 +63,7 @@
 
 | 항목 | 기존 표기 (가설) | 수정 권장 |
 |---|---|---|
-| 3차 앙상블 | Claude + GPT-4 (멀티 LLM 앙상블) | **D3=(B) 단일 LLM 다중 프롬프트 앙상블** — 동일 Claude Opus 4.7 + 공격자/방어자/도메인 전문가 시각 3종. 외부 환경 제약 명시 (외부 유료 API 미보유, Claude Code 단일 모델 세션 한계) |
+| 3차 앙상블 | Claude + GPT-4 (멀티 LLM 앙상블) | **단일 LLM 다중 프롬프트 앙상블** — 동일 Claude Opus 4.7 + 공격자/방어자/도메인 전문가 시각 3종. 외부 환경 제약 명시 (외부 유료 API 미보유, Claude Code 단일 모델 세션 한계) |
 | FP 12 → 7% | 가설 | **Phase 미진척 — 측정 후 갱신**. 합의 규칙은 `configs/prompts/stage3_consensus.md` 참조 |
 | 시각화 | 차트/히트맵 | Phase 미진척 — Future Work |
 
@@ -79,7 +79,7 @@
 
 | 항목 | 기존 표기 (가설) | 수정 권장 |
 |---|---|---|
-| 멀티 LLM 앙상블 | Claude + GPT-4 | **단일 LLM 다중 프롬프트 앙상블 (D3=B)** + 외부 환경 제약 + Future Work에 멀티 모델 도입 명시 |
+| 멀티 LLM 앙상블 | Claude + GPT-4 | **단일 LLM 다중 프롬프트 앙상블** + 외부 환경 제약 + Future Work에 멀티 모델 도입 명시 |
 | 정량 수치 종합 | 가설 (PPT 4~14주) | **모든 정량 수치를 "가설"과 "실측" 두 컬럼으로 분리해 정직하게 제시**. 일부는 표본 작음 caveat 필요 |
 | 사례 연구 5건 | 가상 사례 | 실측 (현재까지 후보):  HIGH ① WebView setAllowFileAccess (잠정 FP — caller internal) ② AppPermissionManager grant/revoke (잠정 FP — Nav arg internal) ③ AuthData token leak (HIGH 잠재) ④ PromptsContentProvider exported (HIGH 확정 — LLM system prompt 노출) ⑤ LLMModelProviderReceiver no-permission (MEDIUM 확정 — 모델 파일 DoS) |
 
@@ -96,11 +96,11 @@
 | 처리 시간 8~25분 | 일부 측정 | "디컴파일 ~2분 + grep ~10초 + LLM 분석 ~5~10분/class. 인터랙티브 환경" |
 | 비용 $0.40~1.20 | **N/A (정액제)** | "Claude Code 정액제로 외부 LLM 비용 가설 무관" |
 
-## 4. D3 서술 변경 권장 문구
+## 4. 3차 검증 서술 변경 권장 문구
 
 PPT 안의 "다중 LLM 앙상블" 부분을 다음 표현으로 대체:
 
-> **단일 LLM 다중 프롬프트 앙상블 (D3=B)**: 외부 유료 LLM API 미보유 및 Claude Code 단일 모델 세션 환경 제약으로 다중 모델 cross-read는 본 연구 범위에서 자동화 불가. 대안으로 동일 모델(Claude Opus 4.7 1M context)에 다른 시각의 프롬프트 3종 — **공격자**·**방어자**·**IVI 도메인 전문가** — 을 적용하고 시각 간 일치만 TP로 채택. 모델 다양성 측면에서 (A) 멀티 모델 대비 약하나 자동화·재현성·정직성 측면에서 본 환경에 가장 적합. 다중 모델 도입은 Future Work.
+> **단일 LLM 다중 프롬프트 앙상블**: 외부 유료 LLM API 미보유 및 Claude Code 단일 모델 세션 환경 제약으로 다중 모델 cross-read는 본 연구 범위에서 자동화 불가. 대안으로 동일 모델(Claude Opus 4.7 1M context)에 다른 시각의 프롬프트 3종 — **공격자**·**방어자**·**IVI 도메인 전문가** — 을 적용하고 시각 간 일치만 TP로 채택. 모델 다양성 측면에서 멀티 모델 대비 약하나 자동화·재현성·정직성 측면에서 본 환경에 가장 적합. 다중 모델 도입은 Future Work.
 
 ## 5. Future Work 슬라이드 권장 항목
 
@@ -123,7 +123,7 @@ PPT 안의 "다중 LLM 앙상블" 부분을 다음 표현으로 대체:
 1. **카테고리별 정확도 격차** — `intent` + `hardcoded` 100% TP / `network` + `permission` 100% FP|uncertain. stage1 prompt의 카테고리별 약점 정량 식별 (PPT의 "단계별 검증 필요성" 논거)
 2. **Precision-Recall caveat** — Recall 100%은 self-GT가 stage1 superset이라 의미 약함. MASTG 도입 후 본 측정.
 3. **3 APK 비교 표** — VehicleControl(7) / sync.syslog(3) / llm.model.provider(2) findings 분포
-4. **D3 환경 제약 슬라이드** — (A) → (B) 결정 사유 + Future Work
+4. **3차 검증 환경 제약 슬라이드** — 멀티 모델 → 멀티 프롬프트 전환 사유 + Future Work
 5. **Phase 진행도 vs 계획** — PPT 4~5주차 Phase A·B-1·B-3 충족 / 6~14주차 일부 미진척 + 일정 재조정
 
 ## 7. 사용자 직접 작업 절차 권고

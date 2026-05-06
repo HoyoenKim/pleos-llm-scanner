@@ -38,9 +38,9 @@
 ### 핵심 산출물
 
 1. **GitHub public repo**: [`HoyoenKim/pleos-llm-scanner`](https://github.com/HoyoenKim/pleos-llm-scanner) (MIT)
-2. **GT corpus**: `data/ground_truth/combined_labels_20260430.json` (n=19, self 15 + MASTG 4)
-3. **AAOS / MASVS / TARA 매핑 표**: `data/reports/aaos_mapping_table_20260430.{md,json}`
-4. **TARA 시나리오 + Risk Matrix**: `data/reports/tara_artifact_20260430.{md,json}`
+2. **GT corpus**: `data/ground_truth/combined_labels.json` (n=19, self 15 + MASTG 4)
+3. **AAOS / MASVS / TARA 매핑 표**: `data/reports/aaos_mapping_table.{md,json}`
+4. **TARA 시나리오 + Risk Matrix**: `data/reports/tara_artifact.{md,json}`
 5. **사례 연구 5건**: `docs/case_studies.md`
 6. **6개 시각화 차트**: `data/viz/01~06_*.png`
 
@@ -126,7 +126,7 @@ APK
 
 ### 2.4 평가 프레임워크
 
-- **GT 라벨**: `data/ground_truth/self_labels_20260429.json` (n=15 PleOS) +
+- **GT 라벨**: `data/ground_truth/self_labels.json` (n=15 PleOS) +
   `data/ground_truth/mastg/uncrackable_level1.labels.json` (n=3 MASTG).
 - **측정 코드**: `src/eval.py` (Precision / Recall / F1) + `src/ablation.py`
   (A 변형 — stage 1/2/3, B 변형 — 합의 임계 1/3-2/3-3/3).
@@ -348,24 +348,22 @@ endpoint 정의 후 (Future Work).
 | 코드 (deterministic) | `pleos-llm-scanner/src/{eval,ablation,aaos_map,tara_generate}.py`, `src/deobf/entropy.py`, `src/viz/plot_metrics.py` |
 | 프롬프트 | `pleos-llm-scanner/configs/prompts/stage1_detect.md`, `stage3_{attacker,defender,domain_expert,ensemble_rule}.md`, `stage0_deobfuscate.md` |
 | 설정 | `pleos-llm-scanner/configs/{keywords,aaos_mapping}.yaml`, `result_schema.json` |
-| GT | `pleos-llm-scanner/data/ground_truth/{self_labels_20260429,combined_labels_20260430}.json`, `mastg/*.labels.json` |
+| GT | `pleos-llm-scanner/data/ground_truth/{self_labels,combined_labels}.json`, `mastg/*.labels.json` |
 | 보고서 (per-APK) | `data/reports/{ai.umos.vehiclecontrol,ai.pleos.sync.syslog,ai.pleos.llm.model.provider,UnCrackable-Level1,r2pay-v1.0}_<DATE>.{md,json}` |
 | 보고서 (Phase, raw notes) | `docs/archive/{phase_b4c_mastg_baseline,phase_b4c2_baselines,phase_c_deobf_baseline}_20260430.md`, `docs/archive/stage2b_deeplink_verification_20260430.md`, `docs/archive/ablation_results_20260429.md` (모두 local-only, gitignored), `docs/viz.md` |
-| 보고서 (Phase D 신규) | `docs/{case_studies,integration_architecture,generalization_assessment,report_v0.9}_20260430.md`, `data/reports/{aaos_mapping_table,tara_artifact}_20260430.{md,json}` |
+| 보고서 (Phase D 신규) | `docs/{case_studies,integration_architecture,generalization_assessment,report_v0.9}.md`, `data/reports/{aaos_mapping_table,tara_artifact}.{md,json}` |
 | 시각화 | `data/viz/01~06_*.png` |
 | 추적 | `progress.md`, `next.md`, `CLAUDE.md` (root) |
 | 공개 | [`HoyoenKim/pleos-llm-scanner`](https://github.com/HoyoenKim/pleos-llm-scanner) — MIT, scaffold만 |
 
-## Appendix B — 결정 사항 인덱스
+## Appendix B — 주요 결정 사항
 
-(자세히는 root `CLAUDE.md`의 의사결정 기록 표)
-
-| ID | 결정 | 이유 |
+| 항목 | 결정 | 이유 |
 |---|---|---|
-| D1 | PleOS Connect v2.0.5 x86_64 | 본 과제 정합성 |
-| D2 | 1차 분석 타겟 = `ai.umos.vehiclecontrol` | system UID + 13 위험 권한 + 차량 제어 |
-| D3 | (B) 멀티 프롬프트 — 단일 Opus 4.7, 3 시각 | 단일 모델 세션 제약 |
-| D4 | (c) self + OWASP MASTG | 베이스라인 + 특화 |
+| 에뮬레이터 이미지 | PleOS Connect v2.0.5 x86_64 | 본 과제 정합성 |
+| 1차 분석 타겟 APK | `ai.umos.vehiclecontrol` | system UID + 13 위험 권한 + 차량 제어 |
+| 3차 검증 방식 | 단일 LLM 다중 프롬프트 앙상블 (Claude Opus 4.7 + 시각 3종) | Claude Code 단일 모델 세션 제약 + 외부 유료 API 미보유 |
+| Ground truth 출처 | 자체 라벨링 + OWASP MASTG | 베이스라인 비교 + PleOS 특화 케이스 |
 
 ## Appendix C — PPT 계획서 vs 실측 정량 표
 

@@ -35,7 +35,7 @@
 
 - **1차**: PPT 25% / 실측 PleOS-only 26.7% / combined 22.2% — **PPT 가설 충족** (-2.8%p, combined 기준)
 - **2차**: PPT 12% / 실측 0% — caller 추적이 모든 FP 제거 (P-ceiling)
-- **3차**: PPT 7% / 실측 0% — D3=B ≥2/3 합의에서도 동일
+- **3차**: PPT 7% / 실측 0% — 멀티 프롬프트 ≥2/3 합의에서도 동일
 - **caveat**: stage 2/3는 PleOS-only n=15 측정. MASTG 외부 GT는 stage 3 미평가 (Phase B-4.c.2 narrative)
 
 ### 04 Corpus별 난독화 분포 + LLM rename 정확도 (재설계 2026-05-06)
@@ -60,12 +60,12 @@
 - A.2 stage 2 caller (P-ceiling): P 100% / R 100% / F1 1.000
 - A.3 stage 3 ≥3/3: P 100% / R 64.3% / F1 0.783 (artifact: stage3 ensemble은 self GT n=15에 한정 평가)
 
-**Variant B (PleOS-only n=15, D3=B 합의 임계)**:
+**Variant B (PleOS-only n=15, 멀티 프롬프트 합의 임계)**:
 - ≥1/3 (any flag): P 73.3% / R 100% / F1 0.846
 - **≥2/3 (default)**: P 100% / R 90.9% / **F1 0.952** ← PPT 가설 0.93 도달·초과
 - ≥3/3 (unanimous): P 100% / R 81.8% / F1 0.900
 
-→ **stage 2 caller 추적 + D3=B ≥2/3 합의가 정량 차별 동력** (P 73.3% → 100%, +26.7%p).
+→ **stage 2 caller 추적 + 멀티 프롬프트 ≥2/3 합의가 정량 차별 동력** (P 73.3% → 100%, +26.7%p).
 
 ### 06 Entropy 분포 (6 APK obfuscation composite)
 
@@ -82,14 +82,14 @@ python src/viz/plot_metrics.py
 ```
 
 데이터 출처:
-- `data/ground_truth/combined_labels_20260430.json` (n=18 GT)
+- `data/ground_truth/combined_labels.json` (n=18 GT)
 - `data/deobf/{6 APK}.json` (entropy 측정)
 - `docs/archive/ablation_results_20260429.md` + `docs/archive/phase_b4c_mastg_baseline_20260430.md` (ablation/baseline 측정)
 
 ## 8주차 lag 해소 — 본 doc + chart로 PPT 8주차 deliverable 충족
 
 PPT 8주차 항목:
-- ✅ 3차 교차 검증 — Stage 3 D3=B (chart 03/05)
+- ✅ 3차 교차 검증 — Stage 3 멀티 프롬프트 앙상블 (chart 03/05)
 - ✅ FP 12 → 7% — 측정 0% (chart 03)
 - ✅ **시각화** — chart 01~06 (이전 미진척 항목 해소)
 
@@ -110,7 +110,7 @@ PPT 8주차 항목:
 | 1차 오탐률 | 22.2% (n=18) | **21.1%** (n=19) | -1.1%p (가설 25% -3.9%p) |
 
 **해소 작업**:
-- L5: ucl1-1/2/3에 stage 3 multi-prompt 합의(attacker/defender/domain_expert) 평가 추가 → `data/reports/stage3_ensemble_20260429.json` 갱신
+- L5: ucl1-1/2/3에 stage 3 multi-prompt 합의(attacker/defender/domain_expert) 평가 추가 → `data/reports/stage3_ensemble.json` 갱신
 - L2 부분: UnCrackable-Level3 디컴파일 + Stage 1 → ucl3-1 (XOR 키 hardcoded HIGH) 추가, GT 라벨 + stage 3 평가 동시 진행
 
 **전체 재실행**: `src/eval.py`, `src/ablation.py`, `src/aaos_map.py`, `src/tara_generate.py`, `src/deobf/entropy.py` (UnCrackable-Level3 측정 추가), `src/viz/plot_metrics.py` 모두 자동 재생성됨.

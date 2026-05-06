@@ -18,9 +18,9 @@ B. Consensus-threshold sensitivity (multi-prompt ensemble)
 Usage
 -----
     python src/ablation.py \
-        --labels data/ground_truth/self_labels_20260429.json \
+        --labels data/ground_truth/combined_labels.json \
         --reports 'data/reports/*.json' \
-        --stage3  data/reports/stage3_ensemble_20260429.json
+        --stage3  data/reports/stage3_ensemble.json
 
 Output is a markdown table on stdout. Add `--json` for machine-readable form.
 """
@@ -236,7 +236,7 @@ def main() -> int:
               ("Recall", "Recall"), ("F1", "F1")]
     print(md_table(rows_A, cols_A))
 
-    print("\n## B - Consensus-threshold sensitivity (D3=B multi-prompt ensemble)\n")
+    print("\n## B - Consensus-threshold sensitivity (multi-prompt ensemble)\n")
     cols_B = [("threshold", "threshold"), ("accepted", "accepted"),
               ("TP", "TP"), ("FP", "FP"), ("FN", "FN"), ("unc", "unc"),
               ("P (lenient)", "P (lenient)"), ("FP-rate", "FP-rate"),
@@ -245,7 +245,7 @@ def main() -> int:
 
     print("\n## Notes")
     print("- A.2 simulates 'stage 2 caller analysis' by using self-GT `is_real==true` as the accepted set. The Recall is 100% by construction (every GT TP is accepted), so A.2 is a P-ceiling rather than a realistic ablation; useful as an upper bound for the caller-trace step in isolation.")
-    print("- B threshold curve shows the FP/Recall trade-off of the D3=B ensemble. Sample is small; OWASP MASTG corpus is needed for statistical significance.")
+    print("- B threshold curve shows the FP/Recall trade-off of the multi-prompt ensemble. Sample is small; OWASP MASTG corpus is needed for statistical significance.")
     return 0
 
 

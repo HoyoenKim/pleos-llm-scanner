@@ -1,6 +1,6 @@
 # TARA Artifact — PleOS IVI APK Static Analysis
 
-_Generated: 2026-04-30 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
+_Generated: 2026-05-06 (auto from `configs/aaos_mapping.yaml` + GT, TP-only)_
 
 > ISO/SAE 21434 흐름을 정적 분석 결과에 매핑한 산출물. Attack Feasibility 등급은 정적
 > 분석 단계의 추정치이며, 실차 시나리오 측정 후 갱신 필요.

@@ -1,6 +1,6 @@
 # PleOS IVI 정적 분석 — 사례 연구 5건
 
-_작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels_20260430.json + data/reports/_
+_작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/reports/_
 
 본 문서는 본 파이프라인이 발견한 18개 라벨 중 PPT 10주차 계획서의 5건 사례 연구
 카테고리에 매핑되는 대표 finding을 케이스 카드로 정리한다. 각 카드는 실제 측정값과
@@ -295,6 +295,6 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels_20260430.json
 
 ## 재현 path
 
-각 사례는 `data/ground_truth/combined_labels_20260430.json`의 라벨 + 본 GT가 가리키는
+각 사례는 `data/ground_truth/combined_labels.json`의 라벨 + 본 GT가 가리키는
 `data/decompiled/<apk>/sources/<class>` 의 line으로 추적 가능. 외부 corpus
 (UnCrackable Level1)는 `data/apks/_mastg/owasp-mastg/Samples/Android/.../` 경로.

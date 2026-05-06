@@ -228,6 +228,6 @@
       ]
     },
     "ppt_hypothesis_1차_오탐률": "25% — n=15 측정 결과 28.6% (lenient) / 33.3% (strict). PPT 가설에 매우 근접. 표본 작음 caveat 유지. intent+hardcoded+crypto 100% TP, network 50% TP (1/2), permission 0/0 (대상 없음).",
-    "computed_by": "src/eval.py against data/ground_truth/self_labels_20260429.json + data/reports/*.json"
+    "computed_by": "src/eval.py against data/ground_truth/self_labels.json + data/reports/*.json"
   }
 }

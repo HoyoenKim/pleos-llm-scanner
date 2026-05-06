@@ -5,10 +5,10 @@ ISO/SAE 21434 흐름을 단순화한 자동 생성기:
 
 입력:
   - configs/aaos_mapping.yaml (asset/threat 카테고리 + finding 매핑)
-  - data/ground_truth/combined_labels_20260430.json (ground truth, TP only)
+  - data/ground_truth/combined_labels.json (ground truth, TP only)
 
 출력:
-  - data/reports/tara_artifact_<DATE>.{md,json}
+  - data/reports/tara_artifact.{md,json}  (overwritten each run; 본문에 generated date 메타 포함)
 
 본 산출물은 PleOS 계약과제의 TARA 단계와 본 정적 분석 파이프라인을 연결하는
 정량 근거 자료로 활용. Attack Feasibility 등급은 정적 분석 단계의 추정치이며
@@ -31,7 +31,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 CFG = ROOT / "configs" / "aaos_mapping.yaml"
-GT = ROOT / "data" / "ground_truth" / "combined_labels_20260430.json"
+GT = ROOT / "data" / "ground_truth" / "combined_labels.json"
 OUT_DIR = ROOT / "data" / "reports"
 
 
@@ -256,9 +256,8 @@ def main() -> None:
     mapping, gt = _load()
     asset_meta = mapping.get("tara", {}).get("asset_categories", {})
     scenarios = build_threat_scenarios(mapping, gt)
-    today = date.today().strftime("%Y%m%d")
-    md = OUT_DIR / f"tara_artifact_{today}.md"
-    js = OUT_DIR / f"tara_artifact_{today}.json"
+    md = OUT_DIR / "tara_artifact.md"
+    js = OUT_DIR / "tara_artifact.json"
     md.write_text(to_md(scenarios, asset_meta), encoding="utf-8")
     js.write_text(
         json.dumps({"scenarios": scenarios, "generated": str(date.today())}, indent=2, ensure_ascii=False),

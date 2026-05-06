@@ -1,6 +1,6 @@
 # AAOS / MASVS / TARA Mapping Table
 
-_Generated: 2026-04-30 (deterministic from `configs/aaos_mapping.yaml` + GT)_
+_Generated: 2026-05-06 (deterministic from `configs/aaos_mapping.yaml` + GT)_
 
 **n = 19** (PleOS self 15 + MASTG 4)
 

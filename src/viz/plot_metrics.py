@@ -248,7 +248,7 @@ def chart_ablation_bars() -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(b_labels)
     ax.set_ylabel("값 (%)")
-    ax.set_title("Variant B — D3=B 합의 임계 sensitivity (combined n=18, L5 해소)")
+    ax.set_title("Variant B — 멀티 프롬프트 합의 임계 sensitivity (combined n=18)")
     ax.legend(loc="lower left", frameon=False, fontsize=9)
     ax.set_axisbelow(True)
     ax.grid(axis="y", linestyle=":", alpha=0.4)

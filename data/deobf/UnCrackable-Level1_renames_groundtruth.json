@@ -1,6 +1,6 @@
 {
   "apks": ["UnCrackable-Level1", "UnCrackable-Level2"],
-  "purpose": "Manual ground truth for stage B (deobfuscation) — accepted-set rather than single-string. Each rename target is graded as exact / semantic / partial / mismatch against the LLM output in UnCrackable-Level{1,2}_renames_20260430.json.",
+  "purpose": "Manual ground truth for Stage 0 (deobfuscation) — accepted-set rather than single-string. Each rename target is graded as exact / semantic / partial / mismatch against the LLM output in UnCrackable-Level{1,2}_renames.json.",
   "labeled_at": "2026-04-30",
   "labeler": "self (Claude Code review of OWASP MASTG canonical solution + post-decompile reading)",
   "grading_rubric": {

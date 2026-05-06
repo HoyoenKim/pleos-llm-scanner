@@ -7,7 +7,7 @@ Inputs
 - One or more report JSON files: data/reports/*.json
   (schema: see configs/result_schema.json — single-pass output produced by the LLM analyzer)
 - One ground-truth JSON file: data/ground_truth/<name>.labels.json
-  (schema: see data/ground_truth/self_labels_20260429.json)
+  (schema: see data/ground_truth/self_labels.json)
 
 Outputs
 -------
@@ -19,7 +19,7 @@ Outputs
 
 Usage
 -----
-    python src/eval.py --labels data/ground_truth/self_labels_20260429.json \
+    python src/eval.py --labels data/ground_truth/combined_labels.json \
                        --reports data/reports/*.json [--by-stage stage1|stage2]
 """
 from __future__ import annotations

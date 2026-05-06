@@ -2,9 +2,9 @@
   "schema_version": "0.1",
   "labeled_at": "2026-04-30",
   "labeler": "self (PleOS APKs) + external OWASP MASTG (UnCrackable-Level1 baseline)",
-  "scope": "Combined ground truth = self_labels_20260429.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1, 2026-04-30 추가). Total n=19.",
+  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1, added 2026-04-30). Total n=19.",
   "merged_from": [
-    "data/ground_truth/self_labels_20260429.json",
+    "data/ground_truth/self_labels.json",
     "data/ground_truth/mastg/uncrackable_level1.labels.json",
     "data/ground_truth/mastg/uncrackable_level3.labels.json"
   ],

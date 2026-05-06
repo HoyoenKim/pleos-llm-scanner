@@ -132,7 +132,7 @@ tara:
       label: "Elevation of Privilege"
       description: "권한 상승 (system UID 컴포넌트 통한 권한 조작)"
 
-# Finding-level 매핑 (combined_labels_20260430.json의 18 finding을 자산/위협으로 재매핑)
+# Finding-level 매핑 (combined_labels.json의 18 finding을 자산/위협으로 재매핑)
 finding_tara_assignments:
   vc-1:  {asset: "diagnostic_data", threats: ["I"], note: "WebView setAllowFileAccess — TP였다면 LFI 가능. FP CONFIRMED (Stage 2.b OTA-trusted source)"}
   vc-2:  {asset: "diagnostic_data", threats: ["T"], note: "WebView loadUrl 미검증 — FP CONFIRMED (4중 차단)"}
