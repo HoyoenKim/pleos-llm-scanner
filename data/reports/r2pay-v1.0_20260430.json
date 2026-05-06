@@ -1,0 +1,34 @@
+{
+  "apk": "r2pay-v1.0",
+  "apk_origin": "OWASP MASTG / Crackmes / Android / Level_04 (Radare2 r2pay-v1.0 — fictional payment crackme)",
+  "version_code": null,
+  "version_name": "1.0",
+  "platform_uid": null,
+  "analyzed_at": "2026-04-30T00:00:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "decompiled_files": 334,
+  "scope_note": "Pipeline boundary case — like UnCrackable-Level2 but with stronger Java-side anti-tamper. Token generation is entirely native (gXftm3iswpkVgBNDUp in libnative-lib.so). Java side adds RootBeer-based root detection + intentional ArithmeticException ('1337/0') as a tamper-response. None of the patterns map to result_schema.json category enum. Stage 1 in-scope findings = 0.",
+  "priority_classes": [
+    "re.pwnme.MainActivity"
+  ],
+  "results": [],
+  "negative_confirmations": [
+    "Token generation runs in native-lib (libnative-lib.so) via gXftm3iswpkVgBNDUp(byte[], byte). Java side passes input + flag, receives byte array — no plaintext crypto in Java.",
+    "RootBeer (com.scottyab.rootbeer) used for root detection — a third-party utility, not a vulnerability in itself. Library is properly invoked with both `isRooted()` and the native-side `isRootedWithBusyBoxCheck()` path.",
+    "Anti-tamper response: int i = 1337 / 0 (ArithmeticException) + np.notify() on a fresh NullPointerException — both intentional crash-by-side-effect patterns. Not in category enum.",
+    "No Cipher / MessageDigest / SecretKeySpec / KeyStore in Java. No HTTP / WebView / external network. No hardcoded secrets at the regex tier (no AKIA*, sk_live_*, PRIVATE KEY block).",
+    "No exported components. ContentProvider/Receiver/Service definitions absent."
+  ],
+  "out_of_scope_findings": [
+    "Native PIN/amount validation in libnative-lib.so. Recoverable via radare2 / Ghidra binary analysis. — MASVS-CRYPTO-1 / MASVS-AUTH-2.",
+    "Tamper-response design: 1337/0 + NullPointerException.notify() patterns can be patched with Frida (replace System.exit / hook Throwable). — MASVS-RESILIENCE-3.",
+    "RootBeer's root-detection heuristics are bypassable via standard root-cloaking tools (MagiskHide, Zygisk). — MASVS-RESILIENCE-3."
+  ],
+  "stats": {
+    "total_findings": 0,
+    "by_severity": {"high": 0, "medium": 0, "low": 0},
+    "by_category": {}
+  }
+}

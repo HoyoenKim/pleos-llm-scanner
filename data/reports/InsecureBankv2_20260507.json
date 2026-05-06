@@ -1,0 +1,163 @@
+{
+  "apk": "InsecureBankv2",
+  "package": "com.android.insecurebankv2",
+  "version_code": 1,
+  "version_name": "1.0",
+  "platform_uid": null,
+  "analyzed_at": "2026-05-07T10:00:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "scope_note": "External intentionally-vulnerable corpus from dineshshetty/Android-InsecureBankv2 (master branch prebuilt APK). Adopted to expand combined GT beyond MASTG, providing Java-side vuln density comparable to PleOS APKs. Intentional vulnerabilities are documented in the upstream README + various MASTG / OWASP MASTG references.",
+  "results": [
+    {
+      "class": "com.android.insecurebankv2.DoLogin",
+      "source_file": "com/android/insecurebankv2/DoLogin.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-05-07T10:00:00+09:00",
+      "findings": [
+        {
+          "line": 51,
+          "category": "network",
+          "severity": "high",
+          "title": "Cleartext HTTP protocol hardcoded for login traffic",
+          "evidence": "String protocol = \"http://\";",
+          "rationale": "Login credentials are POSTed via HttpClient with `protocol + serverip + ':' + serverport + '/login'` (line 98). HTTP is unencrypted, allowing MITM credential capture on any non-HTTPS path.",
+          "confidence": 0.95,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": []
+        },
+        {
+          "line": 115,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "Cleartext credentials logged on successful login",
+          "evidence": "Log.d(\"Successful Login:\", \", account=\" + DoLogin.this.username + \":\" + DoLogin.this.password);",
+          "rationale": "Username + password concatenated into logcat. Any app with READ_LOGS (or a developer connected via adb) can recover credentials. Persistent on device until log buffer rotates.",
+          "confidence": 0.98,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "com.android.insecurebankv2.CryptoClass",
+      "source_file": "com/android/insecurebankv2/CryptoClass.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-05-07T10:00:00+09:00",
+      "findings": [
+        {
+          "line": 22,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "Hardcoded AES key string in source code",
+          "evidence": "String key = \"This is the super secret key 123\";",
+          "rationale": "32-byte ASCII literal used directly as AES-256 key (CryptoClass.aes256encrypt/decrypt). APK reverse engineering yields the key, allowing decryption of all stored ciphertexts (e.g. SharedPreferences `superSecurePassword`).",
+          "confidence": 0.99,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        },
+        {
+          "line": 23,
+          "category": "crypto",
+          "severity": "high",
+          "title": "All-zero IV constant for AES-CBC",
+          "evidence": "byte[] ivBytes = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};",
+          "rationale": "AES-CBC with a fixed all-zero IV makes encryption deterministic across calls, enabling chosen-plaintext attacks and revealing whether two ciphertexts encrypt the same plaintext. CBC requires a fresh random IV per message.",
+          "confidence": 0.98,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "com.android.insecurebankv2.MyBroadCastReceiver",
+      "source_file": "com/android/insecurebankv2/MyBroadCastReceiver.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-05-07T10:00:00+09:00",
+      "findings": [
+        {
+          "line": 32,
+          "category": "intent",
+          "severity": "high",
+          "title": "Exported receiver SMSes the decrypted password to a caller-supplied number",
+          "evidence": "smsManager.sendTextMessage(textPhoneno, null, textMessage, null, null);",
+          "rationale": "Manifest declares `<receiver android:exported='true'>` for action `theBroadcast`. Any installed app can broadcast `theBroadcast` with extras `phonenumber` and `newpass` (line 17-18). The receiver decrypts the stored password and texts it to the attacker-supplied phone number — direct credential exfiltration via SMS.",
+          "confidence": 0.99,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "com.android.insecurebankv2.AndroidManifest",
+      "source_file": "AndroidManifest.xml",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-05-07T10:00:00+09:00",
+      "findings": [
+        {
+          "line": 64,
+          "category": "intent",
+          "severity": "high",
+          "title": "Exported ContentProvider with no read/write permission",
+          "evidence": "<provider android:name=\"...TrackUserContentProvider\" android:exported=\"true\" android:authorities=\"...\"/>",
+          "rationale": "TrackUserContentProvider is exported without `android:readPermission` / `writePermission`. Any installed app can `query` / `insert` / `update` / `delete` records — login tracking + privacy leak.",
+          "confidence": 0.97,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        },
+        {
+          "line": 68,
+          "category": "intent",
+          "severity": "medium",
+          "title": "Exported broadcast receiver with no permission",
+          "evidence": "<receiver android:name=\"...MyBroadCastReceiver\" android:exported=\"true\"><intent-filter><action android:name=\"theBroadcast\"/></intent-filter></receiver>",
+          "rationale": "Receiver registered without `android:permission`. Combined with the action `theBroadcast`, any app can trigger the SMS-with-credential flow (see MyBroadCastReceiver finding above).",
+          "confidence": 0.97,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        },
+        {
+          "line": 49,
+          "category": "intent",
+          "severity": "medium",
+          "title": "Multiple internal activities marked exported=true (PostLogin / DoTransfer / ViewStatement / ChangePassword)",
+          "evidence": "<activity android:name=\"...PostLogin\" android:exported=\"true\"/>  (and 3 sibling activities)",
+          "rationale": "These activities are post-login UI — should not be reachable from arbitrary external apps. Exported entry allows an attacker to launch them directly with crafted Intent extras, bypassing the login flow.",
+          "confidence": 0.85,
+          "aaos_mapping": "3.7 Permission Model",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "com.android.insecurebankv2.ViewStatement",
+      "source_file": "com/android/insecurebankv2/ViewStatement.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-05-07T10:00:00+09:00",
+      "findings": [
+        {
+          "line": 30,
+          "category": "network",
+          "severity": "medium",
+          "title": "WebView with JavaScript enabled in financial-statement view",
+          "evidence": "mWebView.getSettings().setJavaScriptEnabled(true);",
+          "rationale": "ViewStatement is exported (per manifest) and serves a WebView with JavaScript enabled. Combined with caller-supplied URL data, this is a XSS / credential-exfil sink via the financial statement screen.",
+          "confidence": 0.7,
+          "aaos_mapping": "5.1 Communication Security",
+          "verified_by": []
+        }
+      ]
+    }
+  ],
+  "stage1_summary": {
+    "n_findings": 9,
+    "by_severity": {"high": 6, "medium": 3, "low": 0},
+    "by_category": {"network": 2, "crypto": 1, "hardcoded": 2, "intent": 4}
+  }
+}

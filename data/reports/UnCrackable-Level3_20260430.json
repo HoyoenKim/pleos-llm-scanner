@@ -1,0 +1,56 @@
+{
+  "apk": "UnCrackable-Level3",
+  "apk_origin": "OWASP MASTG / Crackmes / Android / Level_03",
+  "version_code": null,
+  "version_name": null,
+  "platform_uid": null,
+  "analyzed_at": "2026-04-30T16:00:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "decompiled_files": 6,
+  "scope_note": "Pipeline boundary case + 1 in-scope finding. Native lib (libfoo.so)에 핵심 검증 로직 + integrity check (classes.dex / libfoo.so CRC) + anti-tamper. 그러나 Java 측에 hardcoded XOR key 1개 (xorkey, MainActivity:25)가 존재하여 in-scope.",
+  "priority_classes": [
+    "sg.vantagepoint.uncrackable3.MainActivity",
+    "sg.vantagepoint.uncrackable3.CodeCheck",
+    "sg.vantagepoint.util.IntegrityCheck",
+    "sg.vantagepoint.util.RootDetection"
+  ],
+  "results": [
+    {
+      "class": "sg.vantagepoint.uncrackable3.MainActivity",
+      "source_file": "sg/vantagepoint/uncrackable3/MainActivity.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-30T16:00:00+09:00",
+      "findings": [
+        {
+          "line": 25,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "Hardcoded XOR key passed to native verification routine",
+          "evidence": "private static final String xorkey = \"pizzapizzapizzapizzapizz\";\n... init(xorkey.getBytes());",
+          "rationale": "24-byte XOR key 'pizzapizzapizzapizzapizz' is a static literal compiled into the APK. The key is forwarded to native init() at line 81, where libfoo.so uses it (presumably for CodeCheck.bar XOR-decrypt of stored ciphertext). APK reverse engineering yields the key immediately. MASVS-CRYPTO-1 / MASVS-STORAGE-2 violation. Note: even though the actual decrypt logic is in native (out-of-scope for Java pipeline), the key being on the Java side makes the secret recoverable without binary analysis.",
+          "confidence": 0.95,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    }
+  ],
+  "negative_confirmations": [
+    "CodeCheck.check_code → bar(byte[]) — native bridge, secret material in libfoo.so. Native verification scope-out (Phase D L1 limitation).",
+    "RootDetection (3 method) + IntegrityCheck.isDebuggable + Debug.isDebuggerConnected polling — anti-tamper, category enum 밖.",
+    "verifyLibs() — classes.dex / libfoo.so CRC integrity check. tamper detection 추가 layer, 우리 schema 미해당.",
+    "INTERNET 권한 / WebView / ContentProvider / 외부 통신 — 0건."
+  ],
+  "out_of_scope_findings": [
+    "Native CodeCheck verification logic in libfoo.so (XOR with hardcoded key + comparison). Recoverable via radare2 / Ghidra. Phase D L1 (radare2 통합) Future Work.",
+    "Anti-tamper bypass: integrity check + 3 root heuristics + debugger detection 모두 Frida hook 가능. MASVS-RESILIENCE-2/3."
+  ],
+  "stats": {
+    "total_findings": 1,
+    "by_severity": {"high": 1, "medium": 0, "low": 0},
+    "by_category": {"hardcoded": 1}
+  }
+}

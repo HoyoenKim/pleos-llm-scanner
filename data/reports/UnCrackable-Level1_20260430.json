@@ -1,0 +1,84 @@
+{
+  "apk": "UnCrackable-Level1",
+  "apk_origin": "OWASP MASTG / Crackmes / Android / Level_01 (vendor: Bernhard Mueller, Vantage Point Security)",
+  "version_code": null,
+  "version_name": null,
+  "platform_uid": null,
+  "analyzed_at": "2026-04-30T00:00:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "decompiled_files": 6,
+  "priority_classes": [
+    "sg.vantagepoint.uncrackable1.MainActivity",
+    "sg.vantagepoint.uncrackable1.C0005a",
+    "sg.vantagepoint.p000a.C0000a",
+    "sg.vantagepoint.p000a.C0001b",
+    "sg.vantagepoint.p000a.C0002c"
+  ],
+  "scope_note": "MASTG corpus baseline — 외부 ground truth로 PleOS pipeline 정확도 측정용. 본 APK의 모든 java source (6 files) 직접 분석 (priority filtering 우회). configs/keywords.yaml 카테고리 enum (crypto/network/permission/intent/hardcoded/reflection_dynamic) 안에 들어가는 vuln만 보고. anti-tamper(root/debug detection) findings는 Future Work로 카테고리 enum 확장 시 보고.",
+  "results": [
+    {
+      "class": "sg.vantagepoint.uncrackable1.C0005a",
+      "source_file": "sg/vantagepoint/uncrackable1/C0005a.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-30T00:00:00+09:00",
+      "findings": [
+        {
+          "line": 15,
+          "category": "hardcoded",
+          "severity": "high",
+          "title": "Hardcoded AES key + ciphertext in verification routine",
+          "evidence": "C0000a.m0a(m7b(\"8d127684cbc37c17616d806cf50473cc\"), Base64.decode(\"5UJiFctbmgbDoLXmpL12mkno8HT4Lv8dlat8FxR2GOc=\", 0))",
+          "rationale": "16-byte AES key (hex literal) and the ciphertext (base64 literal) baked into the verify routine. Any reverse-engineer can extract both, decrypt the ciphertext, and recover the secret string used for input validation. Static-string secret recovery is the canonical OWASP MASTG MASVS-CRYPTO-1 / MASVS-STORAGE-2 violation pattern.",
+          "confidence": 0.95,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        },
+        {
+          "line": 17,
+          "category": "crypto",
+          "severity": "low",
+          "title": "Crypto exception detail logged via Log.d",
+          "evidence": "Log.d(\"CodeCheck\", \"AES error:\" + e.getMessage());",
+          "rationale": "Crypto error message reaches logcat, which is readable by other apps holding READ_LOGS or by vendor diagnostics on production builds. Information disclosure of internal crypto state.",
+          "confidence": 0.55,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    },
+    {
+      "class": "sg.vantagepoint.p000a.C0000a",
+      "source_file": "sg/vantagepoint/p000a/C0000a.java",
+      "stage": "stage1",
+      "model": "claude-opus-4-7",
+      "analyzed_at": "2026-04-30T00:00:00+09:00",
+      "findings": [
+        {
+          "line": 15,
+          "category": "crypto",
+          "severity": "medium",
+          "title": "AES default mode (Cipher.getInstance(\"AES\") = ECB without IV)",
+          "evidence": "Cipher cipher = Cipher.getInstance(\"AES\");",
+          "rationale": "On Android, Cipher.getInstance(\"AES\") defaults to AES/ECB/PKCS5Padding — deterministic block cipher mode without IV. Identical plaintext blocks produce identical ciphertext blocks; pattern leakage. Note that the SecretKeySpec constructor's algorithm string \"AES/ECB/PKCS7Padding\" is ignored by the JCE provider — only the Cipher.getInstance argument matters. MASTG MASVS-CRYPTO-1.",
+          "confidence": 0.85,
+          "aaos_mapping": "4.2 Credential Protection",
+          "verified_by": []
+        }
+      ]
+    }
+  ],
+  "negative_confirmations": [
+    "MainActivity 진입 검증 (root/debug detection)은 카테고리 enum 안에 매칭자 없음 → stage1 보고 제외 (Future Work).",
+    "INTERNET / 외부 통신 호출 0건 (HttpClient/URL/OkHttp/Retrofit 미사용).",
+    "WebView 미사용. JavaScript bridge 없음.",
+    "ContentProvider / BroadcastReceiver / Service 정의 없음 (Activity 단일 + utility 클래스만)."
+  ],
+  "stats": {
+    "total_findings": 3,
+    "by_severity": {"high": 1, "medium": 1, "low": 1},
+    "by_category": {"hardcoded": 1, "crypto": 2}
+  }
+}

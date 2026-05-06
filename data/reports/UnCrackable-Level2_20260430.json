@@ -1,0 +1,37 @@
+{
+  "apk": "UnCrackable-Level2",
+  "apk_origin": "OWASP MASTG / Crackmes / Android / Level_02",
+  "version_code": null,
+  "version_name": null,
+  "platform_uid": null,
+  "analyzed_at": "2026-04-30T00:00:00+09:00",
+  "stage": "stage1",
+  "model": "claude-opus-4-7",
+  "decompiler": "jadx 1.5.5 (--deobf --show-bad-code)",
+  "decompiled_files": 283,
+  "scope_note": "Pipeline boundary case — secret material moved entirely into native lib (System.loadLibrary(\"foo\") + bar(byte[]) JNI). Java side has only anti-tamper / debugger-detection scaffolding, none of which falls in result_schema.json category enum. Stage 1 produces 0 in-scope findings — this is the honest negative result; the actual challenge content is reachable only via dynamic / native-binary analysis (Ghidra, IDA, frida-trace).",
+  "priority_classes": [
+    "sg.vantagepoint.uncrackable2.MainActivity",
+    "sg.vantagepoint.uncrackable2.CodeCheck",
+    "sg.vantagepoint.p023a.C0296a",
+    "sg.vantagepoint.p023a.C0297b"
+  ],
+  "results": [],
+  "negative_confirmations": [
+    "All token / secret material lives in native-lib (libfoo.so). Java-side bar(byte[]) is a thin JNI bridge with no plaintext key/ciphertext.",
+    "MainActivity onCreate runs root detection (C0297b.m2174a/m2175b/m2176c) + debug-flag check (C0296a.m2173a) + runtime-debugger polling (Debug.isDebuggerConnected). All are MASVS-RESILIENCE concerns — not in the current category enum.",
+    "No Cipher / MessageDigest / SecretKeySpec / IvParameterSpec / KeyStore usage in Java sources.",
+    "No HTTP / WebView / network library usage (INTERNET / external comms 0 hits).",
+    "No exported components beyond MainActivity + ContentProvider/Receiver/Service definitions absent.",
+    "No hardcoded API key / token / private key literals at the regex tier."
+  ],
+  "out_of_scope_findings": [
+    "Native key material in libfoo.so: AES key + ciphertext live in the .so as constants. Recoverable via static binary analysis (Ghidra disassembly or symbol inspection). Falls outside Java-side static-analysis pipeline scope. — MASVS-CRYPTO-1.",
+    "Anti-tamper bypass (root + debugger detection): all checks are pattern-matchable and easily bypassed via Frida/Xposed hooks. — MASVS-RESILIENCE-2/3."
+  ],
+  "stats": {
+    "total_findings": 0,
+    "by_severity": {"high": 0, "medium": 0, "low": 0},
+    "by_category": {}
+  }
+}
