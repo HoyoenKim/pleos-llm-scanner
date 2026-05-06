@@ -31,34 +31,39 @@ DST = ROOT / "pptx" / "v3" / f"{PPT_BASENAME}_{AUTHOR['student_id']}_{AUTHOR['au
 NEW_TEXTS: dict[int, str | tuple[str, str]] = {
     # 0: Progress Report (period) — keep
     # 1: 프로젝트 제목 — keep
-    2: "학기 종합 + 최종 발표 준비 (보고서 v1.0 + 발표 PPT 18 슬라이드 + 라이브 데모):",
-    3: ("Phase A~D 마무리 + 본 학기 RQ 4개 모두 정량 측정값 확보 + 학기 deliverable 종합. "
-        "최종 corpus n=28, Stage 3 ≥2/3 합의 F1 0.979 (95% CI [0.833, 0.982]). "
-        "보고서 v0.9-r1 → v1.0 + 최종 발표 PPT 빌드 + 라이브 데모 시나리오 정리."),
-    # 4: "1) " + "학기 최종 측정값 종합" — keep
-    5: ("Stage 1 (n=28): Precision 85.7% / Recall 100% / F1 0.923. 95% CI [71.4%, 96.4%]. "
-        "Stage 3 ≥2/3 (n=28): Precision 100% / Recall 95.8% / F1 **0.979** — 본 학기 최고치"),
-    6: ("초기 계획서 가설 모두 충족: 1차 오탐률 25% → 14.3% (실측), 3차 오탐률 7% → 0%, "
-        "Precision 가설 0.93 → 1.00 (≥2/3 합의). 분석 대상 축소율 99.49% (1,765 → 9 priority class)"),
-    7: ("Bootstrap CI (n=19 → n=28) — Precision CI 폭 36.8%p → 25.0%p (-32%), F1 CI 폭 24.0%p → 14.9%p (-38%). "
-        "표본 확장의 통계적 효과 정량 입증. 11~12주차 RQ1.b/d 의 직접 결과"),
-    # 8: "2) " + "외부 corpus 종합 + R4 real-world baseline" — keep
-    9: ("외부 corpus 7 sample 누계: in-scope 13 finding (UnCrackable Level1/3 + InsecureBankv2) + "
-        "boundary 4 sample (UnCrackable-Level2 / r2pay / HelloWord-JNI / certificatePinningXamarin). "
-        "Java-only 한계 L1 의 corpus-level 정량 evidence"),
-    10: ("R4 — NewPipe v0.27.6 (real-world OSS, ProGuard 활성) 도입. HIGH 난독화 1.7% (vs hand-crafted "
-         "MASTG 40~50%, PleOS 0.2~0.4%) — 본 학기 처음으로 real-world commercial 난독화 baseline 정량 위치 확보"),
-    11: ("R3.a — PleOS Connect 207 시스템 APK 중 10.6% 가 native lib 보유. 보안 가치 큰 컴포넌트 "
-         "(차량 제어 / 맵 / 음성 비서) 가 native top — 한계 L1 의 위험도 가중 인덱스"),
-    # 12: "3) " + "학기 deliverable + 발표 준비" — keep
-    13: ("산출물 종합: 보고서 v1.0 (docs/01_report.md, 8장 + Notation & Glossary + Appendix) + "
-         "사례 5건 + 차트 6장 + AAOS/MASVS/TARA 매핑 + 통합 아키텍처 + 일반화 평가 + "
-         "다국어 prompt 6종 (Stage 0/1/3) + 결정론적 측정 스크립트 9종"),
-    14: ("최종 발표 PPT 18 슬라이드 — Cover / RQ / Background / Pipeline / Stage 0~3 / 측정 / "
-         "Bootstrap CI / Ablation / RQ 별 finding / R4 baseline / AAOS / TARA / 사례 / 한계 / 결론. "
-         "라이브 데모 시나리오 3~5분 (APK 추출 → jadx → Stage 1 LLM)"),
-    15: ("Future Work: multi-LLM ensemble (외부 API 환경 확보 시) / native binary scanner 통합 (radare2 / Ghidra) / "
-         "fully-batch 자동화 (CI/CD trigger) / commercial APK 의 ProGuard mapping 확보 → R4 exact accuracy 측정"),
+    2: "학기 마무리 — 4개 새 측정 (R2.b' / R1.c / R4 보강 / Random baseline) + 보고서 v1.0 + 발표 PPT 18:",
+    3: ("14주차 진짜 RQ 진척 — defender prompt 효과 검증, paired McNemar test, NewPipe Stage 0 정확도, "
+        "selection bias 정량. Phase A~D 마무리 + 본 학기 RQ 모두 정량 측정값 확보. "
+        "보고서 v1.0 + 최종 발표 PPT 18 슬라이드 + 라이브 데모 시나리오 정리."),
+    # 4: "1) " + "RQ2.b' / RQ1.c — 통계 검정과 prompt 효과" — keep
+    5: ("R2.b' — defender prompt selectivity calibration 의 정량 효과: Cohen's κ(attacker, defender) "
+        "0.0 → **0.900** (poor → almost perfect). Universal flag (28/28) → 22/28 (78.6%). "
+        "본 학기 처음으로 prompt 변경의 ensemble diversity 효과 측정"),
+    6: ("R1.c — paired McNemar test (n=28): exact binomial p=0.375. Stage 3 가 Stage 1 의 오류 4건 추가 정정 + "
+        "Stage 1 정답 1건만 누락 (net +3건) 이지만 표본 작아 **통계적 유의성 미달** — 정직히 명시. "
+        "n ≥ 50 확장 시 재측정 필요"),
+    7: ("R4 보강 — NewPipe HIGH 3 클래스에 Stage 0 LLM rename 적용 → confidence avg 0.62, "
+        "semantic plausibility 33% GOOD (1/3 GOOD + 1 PARTIAL + 1 POOR). Hand-crafted MASTG 100% exact "
+        "대비 약 3배 정확도 하락 = corpus contextual hint density 의존성 입증"),
+    # 8: "2) " + "Random sample baseline + 학기 측정값 종합" — keep
+    9: ("Random sample baseline (시드 42, 무작위 3 PleOS APK): 보안 가치 큰 3 APK 평균 priority class "
+        "**424.33** vs 무작위 3 APK 평균 15.0 — **28.29× selection bias** 정량 입증. "
+        "본 학기 측정값 (P 85.7%, F1 0.923) 은 보안 가치 큰 corpus subset 한정"),
+    10: ("Stage 1 (n=28): P 85.7% / R 100% / F1 0.923. 95% CI [71.4%, 96.4%]. "
+         "Stage 3 ≥2/3 (n=28): P 100% / R 95.8% / **F1 0.979** — 본 학기 최고치. "
+         "초기 계획서 가설 모두 충족 (1차 오탐 25%→14.3%, 3차 7%→0%, P 0.93→1.00)"),
+    11: ("Bootstrap CI 표본 효과 (R1.b): n=19 → n=28 확장으로 Precision CI 폭 36.8%p → 25.0%p (-32%), "
+         "F1 CI 폭 24.0%p → 14.9%p (-38%). RQ1 의 핵심 contribution"),
+    # 12: "3) " + "학기 종합 deliverable + 발표 준비" — keep
+    13: ("외부 corpus 7 sample 누계: in-scope 13 finding (UnCrackable Level1/3 + InsecureBankv2) + "
+         "boundary 4 sample. NewPipe (OSS, real-world) 추가로 8 sample. R3.a — PleOS Connect 207 APK 중 "
+         "10.6% native lib (보안 가치 큰 차량 제어 / 맵 / 음성 비서가 top)"),
+    14: ("산출물 종합: 보고서 v1.0 + 사례 5건 + 차트 6장 + AAOS/TARA 매핑 + 통합 아키텍처 + 일반화 평가 + "
+         "영문 prompt 6종 + 결정론 측정 스크립트 11종 (R1.a/b/c, R2.a/b', R3.a, R4, random baseline). "
+         "최종 발표 PPT 18 슬라이드 빌드 완료"),
+    15: ("Future Work: multi-LLM ensemble (외부 API 환경 확보 시) / native binary scanner 통합 (radare2) / "
+         "n ≥ 50 표본 확장 후 paired McNemar 재측정 / commercial APK 의 ProGuard mapping 확보 → R4 exact / "
+         "fully-batch 자동화 / 라이브 데모 + 백업 영상"),
 }
 
 

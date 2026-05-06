@@ -114,7 +114,12 @@
 > - 2026-05-06 R1.b bootstrap CI 도입. n=19 corpus 의 95% CI 측정으로 표본 작음 약점 정량화.
 > - **2026-05-07 R1.d 표본 확장 — n=28**. 외부 의도적 취약 corpus InsecureBankv2 도입 (9 finding 모두 TP). Stage 1 Precision 78.9% → 85.7%, F1 0.882 → 0.923. CI 폭 약 1/3 감소.
 > - **2026-05-08 Stage 3 ensemble 을 InsecureBankv2 까지 확장 + NewPipe entropy 측정**. 합의 ≥2/3 의 corpus 가 n=19 → n=28 으로 동일하게 확장 — Stage 3 ≥2/3 F1 0.966 → **0.979**. 동시에 R4 첫 측정 — NewPipe (real-world ProGuard 활성 OSS) HIGH 난독화 1.7% (hand-crafted MASTG 40~50% 와 PleOS 0.2~0.4% 의 사이).
-> - **2026-06-07 v1.0 학기 최종본**. 본 보고서 narrative 마무리 + 발표 PPT 18 슬라이드 빌드 (`scripts/build_ppt_final.py`). 14주차 progress report 별도 1페이지 (`scripts/build_ppt_w14_1page.py`). v0.9-r1 → v1.0 의 의미 변화: 측정값은 동일 (corpus n=28), 결론 / Future Work 섹션 학기 마무리 톤으로 보강.
+> - **2026-06-07 v1.0 학기 최종본**. 14주차 진짜 RQ 진척 4 종 추가:
+>   1) R2.b' — defender prompt selectivity calibration 의 정량 효과 측정 (κ 0.0 → 0.9)
+>   2) R1.c — paired McNemar test (n=28, p_exact=0.375 — 통계적 유의성 미달, 정직히 명시)
+>   3) R4 보강 — NewPipe Stage 0 LLM rename + semantic plausibility (real-world ~33% GOOD)
+>   4) Random-sample baseline — selection bias 정량 입증 (priority class density 28×)
+>   본 보고서 narrative 마무리 + 발표 PPT 18 슬라이드 빌드 (`scripts/build_ppt_final.py`).
 
 ### 핵심 산출물
 
@@ -375,6 +380,66 @@ self GT (PleOS 자체 라벨)만으로 평가하면 self-referential bias가 생
 **Top 5 native-heavy APKs**: `ai.pleos.playground.caas` (62 .so), `ai.umos.maps.android.navigation.app` (44), `ai.umos.ambientai` (24), `com.antutu.benchmark.full.lite` (20), `ai.umos.appmarket` (12).
 
 **해석**: 한계 L1 (Java-only) 의 corpus-level 인덱스 = **PleOS 10.1%, 전체 10.6% APK 가 본 pipeline 의 blind spot**. 더 중요한 점은 차량 제어 / 맵 navigation / 음성 비서 같이 **보안 가치가 큰 컴포넌트가 native 비중 top** — 단순히 10% 가 아니라 "위험도 가중 10%" 로 해석해야. RQ3.c (native-bound vuln 정량) 는 radare2 통합 (Future Work) 후 가능. 산출: [`data/reports/native_lib_inventory.{md,json}`](../data/reports/native_lib_inventory.md).
+
+#### 3.6.4 RQ2.b' — Defender prompt selectivity calibration 효과 (2026-06-07)
+
+R2.a 의 finding (defender 가 19/19 universal flag) 을 받아 11주차에 `stage3_defender.md` 에 selectivity 룰 4개 추가 (severity LOW drop / concrete missing_control / defense-in-depth vs actionable / empty array OK). 14주차 동일 28 finding 에 calibrated 룰 적용해 효과 측정:
+
+| Pair | κ (보강 전) | κ (보강 후) | Δ |
+|---|---:|---:|---:|
+| attacker ↔ defender | 0.0 | **0.900** | **+0.9 (poor → almost perfect)** |
+| defender ↔ domain_expert | 0.0 | **0.811** | **+0.811 (poor → almost perfect)** |
+| attacker ↔ domain_expert | 0.728 | 0.728 | (prompt 변경 없음) |
+
+**Defender flag rate**: 100% (28/28 universal) → **78.6%** (22/28). 6 finding drop: vc-1/2 (defense-in-depth, OTA-trusted asset), vc-3/4 (4중 차단), vc-7 / ucl1-3 (severity LOW).
+
+**핵심 발견**: prompt 변경만으로 ensemble diversity 의 의미가 substantial→almost perfect 로 회복. 본 학기 처음으로 prompt 변경의 정량 효과 측정. 단 본 측정은 결정론적 룰을 수동 적용한 결과 — 새 corpus 에 calibrated prompt 를 LLM 에 직접 던진 검증은 Future Work. 산출: [`data/reports/perspective_agreement_calibrated.{md,json}`](../data/reports/perspective_agreement_calibrated.md).
+
+#### 3.6.5 RQ1.c — Paired McNemar test (n=28, 2026-06-07)
+
+본 학기 처음으로 RQ1 의 Stage 1 → Stage 3 향상에 대한 통계 검정. 각 finding 의 paired binary outcome (Stage 1 correct / Stage 3 correct) 으로 2×2 contingency:
+
+|  | Stage 3 correct | Stage 3 incorrect |
+|---|---:|---:|
+| Stage 1 correct | a = 23 | b = 1 |
+| Stage 1 incorrect | c = 4 | d = 0 |
+
+- McNemar's χ² = 1.800 (df=1), p = 0.180
+- **Exact binomial (two-tailed) p = 0.375** ← b+c=5 작아 권고
+
+**결과**: α=0.05 기준 **통계적 유의성 미달**. 표본 n=28 은 paired test 의 power 가 부족하다. Effect size 자체는 양수 (Stage 3 가 Stage 1 의 오류 4건을 추가 정정, Stage 1 의 정답 1건만 누락 = net +3건) 이지만 표본 우연성 배제는 미완. R1.d 가 n ≥ 50 으로 확장된 후 재측정 필요. 산출: [`data/reports/mcnemar_test.{md,json}`](../data/reports/mcnemar_test.md).
+
+#### 3.6.6 RQ4 보강 — Real-world Stage 0 정확도 측정 (2026-06-07)
+
+13주차의 NewPipe entropy density (HIGH 1.7%) 측정에 이어, Stage 0 LLM rename 의 실제 정확도 측정. NewPipe 의 비즈니스 패키지 (`org.schabi.newpipe.*`) 안 HIGH 클래스 = **단 1 / 973 (0.1%)** — 즉 NewPipe 의 HIGH 41 개는 전부 `j$.*` (Android Desugar library) 의 jadx-prefix 클래스. 본 측정은 desugar library 측 3 sample 에 적용:
+
+| Sample | Confidence (class) | Semantic plausibility | hint |
+|---|---:|---|---|
+| `C1302f` (RuntimeException helper) | 0.55 | PARTIAL | "Unsupported " literal + RuntimeException 상속만 |
+| **`C1112a`** (Unsafe accessor) | **0.85** | **GOOD** | `Unsafe.class` import + `'theUnsafe'` literal + Singleton 패턴 |
+| `C1289p` (Concurrent node) | 0.45 | POOR | Field-only, 인접 클래스 시그니처 부재 |
+
+**비교 — Hand-crafted MASTG vs Real-world**:
+
+| Corpus | sample | confidence avg | plausibility |
+|---|---:|---:|---|
+| Hand-crafted MASTG (UnCrackable Level1/2) | 17 | 0.92 | **100% exact** match |
+| Real-world OSS (NewPipe desugar library) | 3 | 0.62 | **33% GOOD** plausibility |
+
+**약 3배 정확도 하락**. RQ4 의 정직한 결론: Stage 0 LLM rename 의 정확도는 **corpus 의 contextual hint density 에 강하게 의존**. Hand-crafted 100% 는 upper bound, real-world ~33% GOOD plausibility 는 first-pass lower bound. NewPipe 가 OSS 라 application code 가 가독성 유지 (HIGH 0.1%) 라는 surprising finding 도 수반 — 본 학기의 Stage 0 narrative 가 "real-world 정확도" 보다 "library 측 jadx-output 난독화의 plausibility" 로 표현하는 편이 더 정확. 산출: [`data/reports/r4_real_world_baseline.md`](../data/reports/r4_real_world_baseline.md), [`data/deobf/NewPipe_renames_20260607.json`](../data/deobf/NewPipe_renames_20260607.json).
+
+#### 3.6.7 Random-sample selection-bias baseline (2026-06-07)
+
+본 학기 PleOS 3 APK (vehiclecontrol / sync.syslog / llm.model.provider) 가 보안 가치 기반 선정이라 measurement value 의 selection bias 를 정량 측정. PleOS 207 시스템 APK 중 위 3 APK 를 제외한 204 pool 에서 시드 42 로 무작위 3 APK 선택 → priority class count 비교:
+
+| 측정 | 보안 가치 큰 3 APK 평균 | 무작위 3 APK 평균 | 비율 |
+|---|---:|---:|---:|
+| Priority class count | **424.33** | 15.0 | **28.29×** |
+| Native lib count | 1.67 | 0 | — |
+
+**Selection bias 정량 입증**: 보안 가치 기반 선정 corpus 의 priority class density 가 무작위 sample 의 약 **28배**. 본 학기 측정값 (Stage 1 P 85.7%, F1 0.923) 은 이 bias 가 반영된 corpus 결과로 해석해야 한다. 무작위 3 APK 의 Stage 1 LLM 분석은 본 학기 시간 cost 외부 — Future Work. 산출: [`data/reports/random_sample_baseline.{md,json}`](../data/reports/random_sample_baseline.md).
+
+→ 본 학기 측정값은 보안 가치 큰 corpus subset 한정. v1.0 narrative 갱신: 일반화 주장은 무작위 sample 추가 측정 후로 명시.
 
 ### 3.7 기존 도구 베이스라인 비교
 

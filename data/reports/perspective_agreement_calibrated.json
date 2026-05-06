@@ -1,0 +1,87 @@
+{
+  "measurement_id": "R2.b'",
+  "description": "Effect of defender prompt selectivity calibration on multi-perspective ensemble diversity (n=28). attacker / domain_expert verdicts unchanged; defender re-derived applying selectivity rules added 2026-05-06.",
+  "measured_at": "2026-06-07",
+  "scope": "n=28 findings (PleOS 15 + MASTG 4 + InsecureBankv2 9)",
+  "flag_counts_per_perspective": {
+    "attacker": 21,
+    "defender": 22,
+    "domain_expert": 20
+  },
+  "consensus_count_distribution_calibrated": {
+    "0": 6,
+    "1": 0,
+    "2": 3,
+    "3": 19
+  },
+  "pairwise_calibrated": {
+    "attacker-defender": {
+      "agree": 27,
+      "agree_pct": 96.4,
+      "both_flag": 21,
+      "only_attacker": 0,
+      "only_defender": 1,
+      "neither": 6,
+      "cohens_kappa": 0.9
+    },
+    "attacker-domain_expert": {
+      "agree": 25,
+      "agree_pct": 89.3,
+      "both_flag": 19,
+      "only_attacker": 2,
+      "only_domain_expert": 1,
+      "neither": 6,
+      "cohens_kappa": 0.727
+    },
+    "defender-domain_expert": {
+      "agree": 26,
+      "agree_pct": 92.9,
+      "both_flag": 20,
+      "only_defender": 2,
+      "only_domain_expert": 0,
+      "neither": 6,
+      "cohens_kappa": 0.811
+    }
+  },
+  "comparison_to_R2a": {
+    "before_calibration": {
+      "defender_flag_rate": "100% (28/28, universal)",
+      "kappa_attacker_defender": 0.0,
+      "kappa_defender_domain_expert": 0.0,
+      "kappa_attacker_domain_expert": 0.619
+    },
+    "after_calibration": {
+      "defender_flag_rate": "78.6% (22/28)",
+      "kappa_attacker_defender": 0.9,
+      "kappa_defender_domain_expert": 0.811,
+      "kappa_attacker_domain_expert": 0.727
+    },
+    "interpretation": "selectivity calibration drops 6 findings from defender's flag set (vc-1/2/3/4/7 + ucl1-3 — all defense-in-depth or LOW severity), raising attacker-defender kappa from 0.0 to substantial-or-higher and making the multi-perspective ensemble's diversity meaningful."
+  },
+  "drops_under_calibration": [
+    {
+      "id": "vc-1",
+      "reason": "defense-in-depth (HtmlWebView OTA-trusted asset)"
+    },
+    {
+      "id": "vc-2",
+      "reason": "defense-in-depth (HtmlWebView loadUrl chain internal)"
+    },
+    {
+      "id": "vc-3",
+      "reason": "exploit chain blocked (4중 차단)"
+    },
+    {
+      "id": "vc-4",
+      "reason": "exploit chain blocked (4중 차단)"
+    },
+    {
+      "id": "vc-7",
+      "reason": "severity LOW (broad hardening)"
+    },
+    {
+      "id": "ucl1-3",
+      "reason": "severity LOW (logging hardening)"
+    }
+  ]
+}

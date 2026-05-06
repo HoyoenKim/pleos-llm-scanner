@@ -30,6 +30,8 @@ data/reports/*.md
 !data/reports/perspective_agreement*
 !data/reports/native_lib_inventory*
 !data/reports/bootstrap_ci*
+!data/reports/perspective_agreement_calibrated*
+!data/reports/r4_real_world_baseline*
 # Exception: external public corpus reports (no PleOS source — intentional vuln corpora)
 !data/reports/InsecureBankv2*
 !data/reports/UnCrackable-Level*
