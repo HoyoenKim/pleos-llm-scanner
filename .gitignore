@@ -40,8 +40,13 @@ CLAUDE.md
 progress.md
 next.md
 
-# Local identity (학번/이름/소속) — scripts 가 import 함. example 파일만 commit
+# Local identity (학번/이름/소속) — scripts 가 import 함
 scripts/_author.json
+scripts/_author.example.json
 
 # Raw measurement notes (시점 스냅샷) — 보고서 인용용 로컬 보관, public 비공개
 docs/archive/
+
+# PPT 빌드 스크립트 — 학기 보고용 산출물, 파이프라인 재현 무관 → 로컬 only
+scripts/build_ppt_v3.py
+scripts/build_ppt_v3_1page.py
