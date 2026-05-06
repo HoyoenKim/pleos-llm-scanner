@@ -1,0 +1,140 @@
+{
+  "point": {
+    "stage_filter": "stage1",
+    "totals": {
+      "tp": 15,
+      "fp": 4,
+      "uncertain": 0,
+      "fn": 0,
+      "labelled": 19,
+      "unlabelled_findings": 0
+    },
+    "metrics_lenient": {
+      "precision": 0.7894736842105263,
+      "false_positive_rate": 0.21052631578947367,
+      "recall": 1.0
+    },
+    "metrics_strict": {
+      "precision": 0.7894736842105263,
+      "false_positive_rate": 0.21052631578947367,
+      "recall": 1.0
+    },
+    "per_apk": {
+      "ai.umos.vehiclecontrol": {
+        "tp": 3,
+        "fp": 4,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "ai.pleos.sync.syslog": {
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "ai.pleos.llm.model.provider": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "UnCrackable-Level1": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "UnCrackable-Level3": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      }
+    },
+    "per_category": {
+      "network": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "permission": {
+        "tp": 0,
+        "fp": 2,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "intent": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "crypto": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      },
+      "hardcoded": {
+        "tp": 5,
+        "fp": 0,
+        "fn": 0,
+        "uncertain": 0
+      }
+    },
+    "unlabelled_findings_keys": []
+  },
+  "bootstrap": {
+    "method": "non-parametric percentile bootstrap on GT label set",
+    "n_iter": 1000,
+    "ci": 0.95,
+    "seed": 42,
+    "n_labels": 19,
+    "stage_filter": "stage1",
+    "metrics": {
+      "precision_lenient": {
+        "mean": 0.7897368421052631,
+        "ci_low": 0.5789473684210527,
+        "ci_high": 0.9473684210526315,
+        "n_valid": 1000
+      },
+      "precision_strict": {
+        "mean": 0.7897368421052631,
+        "ci_low": 0.5789473684210527,
+        "ci_high": 0.9473684210526315,
+        "n_valid": 1000
+      },
+      "fp_rate_lenient": {
+        "mean": 0.21026315789473682,
+        "ci_low": 0.05263157894736842,
+        "ci_high": 0.42105263157894735,
+        "n_valid": 1000
+      },
+      "fp_rate_strict": {
+        "mean": 0.21026315789473682,
+        "ci_low": 0.05263157894736842,
+        "ci_high": 0.42105263157894735,
+        "n_valid": 1000
+      },
+      "recall": {
+        "mean": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "n_valid": 1000
+      },
+      "f1_lenient": {
+        "mean": 0.8794024181505852,
+        "ci_low": 0.7333333333333334,
+        "ci_high": 0.972972972972973,
+        "n_valid": 1000
+      },
+      "f1_strict": {
+        "mean": 0.8794024181505852,
+        "ci_low": 0.7333333333333334,
+        "ci_high": 0.972972972972973,
+        "n_valid": 1000
+      }
+    }
+  }
+}

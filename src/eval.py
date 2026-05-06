@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import random
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -141,6 +142,107 @@ def fmt_pct(x: float | None) -> str:
     return "—" if x is None else f"{100 * x:.1f}%"
 
 
+def _percentile(values: list[float], p: float) -> float | None:
+    if not values:
+        return None
+    s = sorted(values)
+    idx = (len(s) - 1) * p / 100.0
+    f = int(idx)
+    c = min(f + 1, len(s) - 1)
+    return s[f] + (s[c] - s[f]) * (idx - f)
+
+
+def _f1(p: float | None, r: float | None) -> float | None:
+    if p is None or r is None or (p + r) == 0:
+        return None
+    return 2 * p * r / (p + r)
+
+
+def bootstrap_ci(labels: dict[str, Any], reports_idx: dict[tuple[str, str, int], dict[str, Any]],
+                 stage_filter: str | None, n_iter: int = 1000, ci: float = 0.95,
+                 seed: int = 42) -> dict[str, Any]:
+    """Resample the GT label set with replacement and recompute metrics N times.
+
+    Returns mean and percentile CI for each metric so a small-corpus point
+    estimate (e.g. F1 0.882 at n=19) can be reported alongside its uncertainty.
+    """
+    rng = random.Random(seed)
+    label_list = labels.get("labels", [])
+    n = len(label_list)
+    if n == 0:
+        return {"error": "no labels", "n_iter": n_iter, "ci": ci, "seed": seed}
+
+    keys = ("precision_lenient", "precision_strict",
+            "fp_rate_lenient", "fp_rate_strict",
+            "recall", "f1_lenient", "f1_strict")
+    samples: dict[str, list[float]] = {k: [] for k in keys}
+
+    for _ in range(n_iter):
+        resampled = [rng.choice(label_list) for _ in range(n)]
+        m = evaluate({**labels, "labels": resampled}, reports_idx, stage_filter)
+        ml, ms = m["metrics_lenient"], m["metrics_strict"]
+        for k, val in (("precision_lenient", ml["precision"]),
+                       ("precision_strict", ms["precision"]),
+                       ("fp_rate_lenient", ml["false_positive_rate"]),
+                       ("fp_rate_strict", ms["false_positive_rate"]),
+                       ("recall", ml["recall"])):
+            if val is not None:
+                samples[k].append(val)
+        for tag, mm in (("lenient", ml), ("strict", ms)):
+            f = _f1(mm["precision"], mm["recall"])
+            if f is not None:
+                samples[f"f1_{tag}"].append(f)
+
+    alpha = (1.0 - ci) / 2.0
+    lo, hi = alpha * 100.0, (1.0 - alpha) * 100.0
+    out: dict[str, Any] = {}
+    for k, vals in samples.items():
+        if vals:
+            out[k] = {
+                "mean": sum(vals) / len(vals),
+                "ci_low": _percentile(vals, lo),
+                "ci_high": _percentile(vals, hi),
+                "n_valid": len(vals),
+            }
+        else:
+            out[k] = None
+    return {
+        "method": "non-parametric percentile bootstrap on GT label set",
+        "n_iter": n_iter,
+        "ci": ci,
+        "seed": seed,
+        "n_labels": n,
+        "stage_filter": stage_filter,
+        "metrics": out,
+    }
+
+
+def print_bootstrap(b: dict[str, Any]) -> None:
+    if "error" in b:
+        print(f"\n=== bootstrap CI: {b['error']} ===")
+        return
+    print(f"\n=== bootstrap CI ({int(b['ci']*100)}%, n_iter={b['n_iter']}, "
+          f"seed={b['seed']}, n_labels={b['n_labels']}) ===")
+    rows = [
+        ("Precision (lenient)", "precision_lenient"),
+        ("Precision (strict)",  "precision_strict"),
+        ("FP rate (lenient)",   "fp_rate_lenient"),
+        ("FP rate (strict)",    "fp_rate_strict"),
+        ("Recall",              "recall"),
+        ("F1 (lenient)",        "f1_lenient"),
+        ("F1 (strict)",         "f1_strict"),
+    ]
+    print(f"  {'metric':<22} {'mean':>8} {'CI low':>8} {'CI high':>8}  n_valid")
+    for label, key in rows:
+        m = b["metrics"].get(key)
+        if m is None:
+            print(f"  {label:<22} {'—':>8} {'—':>8} {'—':>8}  0")
+        else:
+            print(f"  {label:<22} {fmt_pct(m['mean']):>8} {fmt_pct(m['ci_low']):>8} "
+                  f"{fmt_pct(m['ci_high']):>8}  {m['n_valid']}")
+    print("  ※ CI 가 넓을수록 표본 n 의 통계적 약점. n=19 에서는 ±5~10%p 폭이 흔함.")
+
+
 def print_summary(name: str, m: dict[str, Any]) -> None:
     t = m["totals"]
     print(f"\n=== {name} ===")
@@ -166,6 +268,13 @@ def main() -> int:
     p.add_argument("--by-stage", default=None, choices=["stage1", "stage2", "stage3"],
                    help="Restrict matched findings to one pipeline stage")
     p.add_argument("--json", action="store_true", help="Emit machine-readable JSON instead of human summary")
+    p.add_argument("--bootstrap", type=int, default=0, metavar="N",
+                   help="Run non-parametric bootstrap CI with N iterations (e.g. 1000). "
+                        "0 = disabled. Reports mean + 95%% CI for P/R/F1/FP-rate.")
+    p.add_argument("--bootstrap-ci", type=float, default=0.95,
+                   help="Bootstrap CI level (default 0.95).")
+    p.add_argument("--bootstrap-seed", type=int, default=42,
+                   help="Bootstrap RNG seed (default 42, deterministic).")
     args = p.parse_args()
 
     labels = load_json(Path(args.labels))
@@ -180,15 +289,25 @@ def main() -> int:
     reports_idx = index_findings(reports)
 
     overall = evaluate(labels, reports_idx, args.by_stage)
+    boot = None
+    if args.bootstrap > 0:
+        boot = bootstrap_ci(labels, reports_idx, args.by_stage,
+                            n_iter=args.bootstrap, ci=args.bootstrap_ci,
+                            seed=args.bootstrap_seed)
 
     if args.json:
-        print(json.dumps(overall, indent=2, ensure_ascii=False))
+        out = {"point": overall}
+        if boot is not None:
+            out["bootstrap"] = boot
+        print(json.dumps(out, indent=2, ensure_ascii=False))
     else:
         scope = f"stage={args.by_stage}" if args.by_stage else "all stages"
         print(f"# Evaluation ({scope})")
         print(f"#  labels: {args.labels}")
         print(f"#  reports: {len(reports)} file(s) → {len(reports_idx)} finding(s) indexed")
         print_summary("overall", overall)
+        if boot is not None:
+            print_bootstrap(boot)
 
     return 0
 

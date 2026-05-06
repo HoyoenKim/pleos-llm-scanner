@@ -309,6 +309,17 @@ self GT (PleOS 자체 라벨)만으로 평가하면 self-referential bias가 생
 
 **해석**: Stage 3 합의 임계가 단순 noise 가 아니라 정확한 filtering 임을 직접 입증. 단 표본 우연성 배제는 R1.b bootstrap CI / R1.d 표본 확장 (n ≥ 30) 후 가능. 산출: [`data/reports/stage_transitions.{md,json}`](../data/reports/stage_transitions.md).
 
+**R1.b 후속 — Bootstrap CI** (2026-05-06 추가): `src/eval.py` 에 non-parametric percentile bootstrap (`--bootstrap N` 옵션) 도입. n=19 라벨을 with-replacement 1000 회 resample 한 결과:
+
+| Metric | Point | Bootstrap mean | 95% CI |
+|---|---:|---:|---|
+| Precision (lenient) | 78.9% | 79.0% | [57.9%, 94.7%] |
+| F1 (lenient) | 88.2% | 87.9% | [73.3%, 97.3%] |
+| FP rate (lenient) | 21.1% | 21.0% | [5.3%, 42.1%] |
+| Recall | 100.0% | 100.0% | [100.0%, 100.0%] |
+
+±15%p 가량의 CI 폭이 n=19 표본 작음의 통계적 약점을 직접 시각화. 11주차 표본 확장 (R1.d, n ≥ 30) 후 CI 폭이 줄어들지 측정 예정. 산출: [`data/reports/bootstrap_ci.{md,json}`](../data/reports/bootstrap_ci.md).
+
 #### 3.6.2 RQ2 — Perspective disagreement (multi-prompt diversity 진단)
 
 시각 3종 (attacker / defender / domain_expert) 간 Cohen's κ 측정으로 ensemble 의 diversity 가 진짜인지 검증:
