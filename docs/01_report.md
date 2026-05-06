@@ -1,14 +1,14 @@
 # LLM 기반 디컴파일러 분석 및 PleOS 적용 방안 검토
 
-## 자율주행연구프로젝트1 — 중간 보고서 v0.9-r1
+## 자율주행연구프로젝트1 — 최종 보고서 v1.0
 
 | 항목 | 내용 |
 |---|---|
 | 작성자 | 김호연 |
 | 학기 | 2026-1 |
 | 연계과제 | 현대자동차 계약학과 육성형 연구과제 — PleOS TARA 및 실차 보안 취약점 점검 |
-| 작성일 | 2026-04-30 (9주차) |
-| 버전 | v0.9-r1 (리뷰 반영본: 정량 주장 완화 + metric 정의 보강) |
+| 작성일 | 2026-04-30 초안 → 2026-06-07 최종본 |
+| 버전 | **v1.0** (학기 종합본: 14주차 발표용 / 리뷰 반영 + R1.b/d/R3.a/R4 측정값 + Stage 3 n=28 최종 통합) |
 
 ---
 
@@ -114,6 +114,7 @@
 > - 2026-05-06 R1.b bootstrap CI 도입. n=19 corpus 의 95% CI 측정으로 표본 작음 약점 정량화.
 > - **2026-05-07 R1.d 표본 확장 — n=28**. 외부 의도적 취약 corpus InsecureBankv2 도입 (9 finding 모두 TP). Stage 1 Precision 78.9% → 85.7%, F1 0.882 → 0.923. CI 폭 약 1/3 감소.
 > - **2026-05-08 Stage 3 ensemble 을 InsecureBankv2 까지 확장 + NewPipe entropy 측정**. 합의 ≥2/3 의 corpus 가 n=19 → n=28 으로 동일하게 확장 — Stage 3 ≥2/3 F1 0.966 → **0.979**. 동시에 R4 첫 측정 — NewPipe (real-world ProGuard 활성 OSS) HIGH 난독화 1.7% (hand-crafted MASTG 40~50% 와 PleOS 0.2~0.4% 의 사이).
+> - **2026-06-07 v1.0 학기 최종본**. 본 보고서 narrative 마무리 + 발표 PPT 18 슬라이드 빌드 (`scripts/build_ppt_final.py`). 14주차 progress report 별도 1페이지 (`scripts/build_ppt_w14_1page.py`). v0.9-r1 → v1.0 의 의미 변화: 측정값은 동일 (corpus n=28), 결론 / Future Work 섹션 학기 마무리 톤으로 보강.
 
 ### 핵심 산출물
 
@@ -623,25 +624,53 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 
 ## 8. 결론
 
-본 학기 9주차 시점에 Phase A (환경 구축) → Phase B (Stage 1/2/3 검증 단계 적용) → Phase C 초기 측정 → Phase D (AAOS / TARA 매핑 + 사례 연구 + 통합 + 일반화 평가) 까지 완료하였다.
+본 학기 14주차 시점에 Phase A (환경 구축) → Phase B (Stage 1/2/3 검증 단계 적용) → Phase C (난독화 + 평가 프레임워크) → Phase D (AAOS / TARA 매핑 + 사례 연구 + 통합 + 일반화 평가) → Phase E (발표 + 보고서 v1.0) 까지 완료하였다.
 
-본 연구의 현재 결론은 “LLM scanner가 완벽한 취약점 탐지기”라는 것이 아니다. 더 안전한 결론은 다음과 같다.
+본 연구의 결론은 "LLM scanner 가 완벽한 취약점 탐지기" 라는 것이 아니다. 더 안전하고 본 학기 측정값이 직접 뒷받침하는 결론은 다음과 같다.
 
-> **LLM을 deterministic keyword triage와 caller/manifest 기반 도메인 검증 사이의 reasoning component로 배치하면, 제한된 PleOS/MASTG corpus에서 IVI APK 보안 리뷰의 후보 검증 비용을 줄이고 FP를 줄이는 pipeline을 구성할 수 있다.**
+> **LLM 을 deterministic keyword triage 와 caller/manifest 기반 도메인 검증 사이의 reasoning component 로 배치하면, combined corpus n=28 에서 IVI APK 보안 리뷰의 후보 검증 비용을 줄이고 후보 기준 FP 비율을 25% (가설) → 0% (Stage 3 ≥2/3 합의) 로 줄이는 정적 분석 pipeline 을 구성할 수 있다. 단, 이는 본 corpus 에서 관찰된 결과이며 95% bootstrap CI 가 ±9~12%p 인 점과 native-bound vuln 미커버 한계 (외부 corpus 6 sample 중 4 = boundary case) 를 함께 명시한다.**
 
-**주요 성과**:
-1. 제한된 combined corpus n=19에서 Stage 1 후보 기준 FP 비율 21.1%, Stage 3 ≥2/3 후보 기준 FP 비율 0%가 관찰되었다.
-2. Stage 3 ≥2/3 consensus에서 **Precision 100% / Recall 93.3% / F1 0.966**이 관찰되었으나, 이는 일반화 성능이 아니라 초기 feasibility 측정값으로 해석한다.
-3. 자체 GT (n=15) + OWASP MASTG (n=4) combined corpus 로 외부 베이스라인 비교 체계를 구축하였다.
-4. UnCrackable-Level2 / r2pay-v1.0 두 sample 에서 Java-only 정적 분석의 in-scope finding 0건을 확인하여 native boundary를 정량적으로 드러냈다. 이는 단순 한계가 아니라, 향후 PleOS 보안 점검 아키텍처에서 Java/Kotlin scanner와 native binary scanner를 분리해야 한다는 설계 근거가 된다.
-5. AAOS / TARA 자동 매핑 + 5건 사례 연구 + 통합 아키텍처 권고 + 일반화 평가 등 학기 deliverable을 정리하였다.
+### 8.1 주요 정량 성과 (combined n=28, 2026-05-08 measure)
 
-**남은 작업 (10~14주차)**:
-- 표본 확장 (MASTG 추가 sample, 의도적 취약 corpus 도입)
-- 운영 비용 평가 (Claude Code 정액제 사용 시 정확한 시간 측정)
-- 일부 APK에 대한 full-audit 또는 기존 scanner 비교로 missed finding 확인
-- 발표 PPT v1.0 + 라이브 데모 시나리오
-- 지도교수 1차 리뷰 → 보고서 v1.0
+1. **Stage 1**: Precision 85.7% / Recall 100% / F1 **0.923** (95% CI [71.4%, 96.4%]) — 초기 계획서 가설 (1차 오탐률 25%) 충족.
+2. **Stage 3 ≥2/3 합의**: Precision 100% / Recall 95.8% / F1 **0.979** — 초기 계획서 가설 (Precision 0.93, 3차 오탐률 7%) 충족·초과. 단 일반화 성능이 아니라 본 corpus 측정값.
+3. **Bootstrap CI 표본 효과 정량 측정**: n=19 → n=28 확장으로 CI 폭 약 1/3 감소. 본 학기 처음으로 "n 증가 → CI 좁힘" 의 직접 측정 — RQ1 의 핵심 contribution.
+4. **외부 corpus 6 sample 누계 + InsecureBankv2 9 finding** = self-referential bias 완화. boundary 4건 (66.7%) 으로 Java-only 정적 분석의 한계 L1 정량 입증.
+5. **R3.a / R4 corpus-level 인덱스**: PleOS Connect 207 APK 중 native lib 보유 10.6%. real-world OSS (NewPipe) HIGH 난독화 1.7% — hand-crafted MASTG 와 PleOS 사이의 정량 위치.
+
+### 8.2 본 연구의 직접 contribution
+
+- **방법론**: LLM 을 black-box detector 가 아니라 reasoning component 로 배치하는 4단계 pipeline (Stage 0 / 1 / 2 / 3) 설계 + 결정론 코드와 LLM 의 역할 분리. 단일 모델 + 멀티 시각 ensemble 로 multi-LLM 환경 제약을 우회.
+- **측정 프레임워크**: bootstrap CI / Cohen's κ / transition matrix / native lib inventory 등 corpus-level 직접 인덱스 5종을 결정론 스크립트로 구축 (재현 가능, deterministic seed).
+- **AAOS / TARA 자동 매핑**: ISO/SAE 21434 기반 자산 카탈로그 + Threat Scenarios + Risk Matrix + Treatment 권고 자동 생성. 차량 SW 라이프사이클 (DEV → CI/CD → PR Gate → TARA → OTA → Production) 에 통합 가능한 권고 아키텍처 제시.
+- **외부 GT corpus 비교**: OWASP MASTG 6 sample + InsecureBankv2 도입으로 self-label bias 완화. 4 boundary case 의 정량 입증으로 Java-only / native scanner 의 2-track architecture 권고 근거 마련.
+
+### 8.3 산업 적용성 + Future Work
+
+| 차원 | 본 학기 위치 | 향후 |
+|---|---|---|
+| 분석 엔진 | Claude Code 인터랙티브 (단일 사용자) | PleOS-internal LLM 활성화 시 Stage 1/2/3 자동화. 외부 LLM API 정책 변경 시 multi-vendor ensemble (RQ2.b) 가능. |
+| Native 분석 | 미커버 (한계 L1) | radare2 (MIT, 외부 API 의존 없음) headless + LLM 통합 → 4 boundary sample in-scope 측정. |
+| 표본 / 통계 | n=28 / CI ±10%p | n ≥ 50 corpus (DIVA / 추가 commercial APK) 로 CI ±5%p. paired McNemar test 도입. |
+| 난독화 정확도 | hand-crafted 100% upper-bound | NewPipe ProGuard mapping 확보 후 R4 exact accuracy 측정. real-world floor 정량화. |
+| OS 일반화 | PleOS-only | QNX / AGL 로 swap 2~3주 추정. 실제 측정값 확보 시 일반화의 비용/효과 결론. |
+| 운영 | 권고/설계 | GitHub Actions 정적 부분 통합 → PleOS-internal LLM endpoint 활성화 → fully-batch 자동화. |
+
+### 8.4 학기 deliverable 종합
+
+- **보고서 v1.0** (본 문서) — 8 장 + Notation & Glossary + Appendix A/B
+- **사례 연구 5건** ([`02_case_studies.md`](02_case_studies.md))
+- **차트 6 장** (`data/viz/01~06_*.png`)
+- **AAOS/MASVS/TARA 자동 매핑 표** (`data/reports/aaos_mapping_table.{md,json}`)
+- **TARA artifact** (`data/reports/tara_artifact.{md,json}`) — Risk Matrix Critical 2 / High 13 / Medium 6 / Low 2
+- **Bootstrap CI / Stage transition / Perspective agreement / Native inventory** — RQ별 측정값 자동 산출 (`data/reports/{bootstrap_ci, stage_transitions, perspective_agreement, native_lib_inventory}.{md,json}`)
+- **외부 corpus public reports** (`data/reports/{UnCrackable-Level1/2/3, r2pay-v1.0, InsecureBankv2}_*.{md,json}`)
+- **Per-APK 보고서 마스킹 공개판** (`data/reports/public/`) — PleOS contract IP 보호 + 외부 검증 가능
+- **6 prompt 영문 통일** (`configs/prompts/{stage0_deobfuscate, stage1_detect, stage3_attacker / defender / domain_expert / consensus}.md`)
+- **결정론 분석 스크립트 9종** (`src/{eval, ablation, aaos_map, tara_generate, deobf/entropy, viz/plot_metrics}.py` + `scripts/research_r{1a, 2a, 3a}_*.py` + `scripts/extend_stage3_ib2.py`)
+- **GT corpus** (`data/ground_truth/`) — self_labels n=15, mastg/* n=4, insecurebankv2 n=9, combined n=28
+- **PPT 빌드 스크립트** — 1페이지 progress (10~14주차) + 18슬라이드 최종발표 (`scripts/build_ppt_w{10..14}_1page.py` + `build_ppt_final.py`)
+- **GitHub repo**: [`HoyoenKim/pleos-llm-scanner`](https://github.com/HoyoenKim/pleos-llm-scanner) (MIT) — scaffold + GT + 측정 스크립트 + 자동 산출물 공개
 
 ---
 
