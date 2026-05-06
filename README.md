@@ -2,8 +2,6 @@
 
 LLM-driven static security analysis pipeline for in-vehicle Android (AAOS) APKs, applied to **PleOS Connect** as a case study.
 
-본 저장소는 연세대학교 전기전자공학과 Computational Intelligence Lab의 *자율주행 연구 프로젝트 1* (2026-1학기) 산출물이다. 연계 과제: 현대자동차 계약학과 육성형 연구과제 — PleOS TARA 및 실차 보안 취약점 점검.
-
 > **Note**: 이 저장소는 **재현 가능한 분석 파이프라인**을 공개한다. PleOS Connect APK 바이너리, 디컴파일 결과, 사례별 보고서는 계약과제 IP 보호 정책에 따라 별도 비공개 (`.gitignore`).
 
 ---
