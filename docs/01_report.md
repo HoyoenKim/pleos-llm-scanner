@@ -385,7 +385,7 @@ Boot 등은 본 corpus 미해당 → Future Work.
 
 ### 4.3 사례 연구 5건 (G7)
 
-상세는 [`docs/02_case_studies.md`](case_studies.md). 요약:
+상세는 [`02_case_studies.md`](02_case_studies.md). 요약:
 
 | Case | Finding | 의의 |
 |---|---|---|
@@ -616,7 +616,7 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 | 프롬프트 | `configs/prompts/{stage0_deobfuscate, stage1_detect, stage3_attacker, stage3_defender, stage3_domain_expert, stage3_consensus}.md` |
 | 설정 | `configs/{keywords,aaos_mapping}.yaml`, `configs/result_schema.json` |
 | Ground truth 라벨 | `data/ground_truth/{self_labels, combined_labels}.json`, `data/ground_truth/mastg/*.labels.json` |
-| 본 보고서 + 통합 doc | `docs/{report_v0.9, case_studies, integration_architecture, generalization_assessment, viz, week11_limitations_costs, README}.md` |
+| 본 보고서 + 보충 doc | `docs/{01_report, 02_case_studies, 03_charts, 04_limitations_and_costs, README}.md` |
 | 자동 생성 산출물 | `data/reports/{aaos_mapping_table, tara_artifact}.{md, json}`, `data/viz/01~06_*.png` |
 | Per-APK 보고서 | `data/reports/<apk>_<date>.{md, json}` (IP 보호로 비공개, 로컬 한정) |
 | Raw 측정 노트 (시점 스냅샷) | `docs/archive/` (로컬 한정 — 본 보고서가 인용하는 1차 출처) |

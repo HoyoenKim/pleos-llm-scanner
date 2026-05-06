@@ -174,7 +174,7 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 | **시간** | APK 1개 ~40분, 3 APK ~2시간 | manual 대비 3x 단축 / fully-batch 자동화 가능 |
 | **비용** | Claude Code 정액제 안 | 산업 적용 시 enterprise plan + radar2/Ghidra 통합 필요 |
 | **재현성** | scripts + GT JSON deterministic | LLM의 비결정성은 stage 3 합의가 흡수 |
-| **이식성** | 60~70% OS-독립 ([`docs/01_report.md (§ 6)`](generalization_assessment.md)) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
+| **이식성** | 60~70% OS-독립 ([`01_report.md`](01_report.md) § 6) | swap 필요: 디컴파일러 / 키워드 룰셋 / 매핑 yaml |
 
 ---
 
