@@ -1,0 +1,61 @@
+{
+  "measurement_id": "random_sample_baseline",
+  "description": "Selection-bias baseline — 본 학기 보안 가치 기반 선정 PleOS 3 APK vs 무작위 3 APK 의 priority class count 비교 (selection bias 정량).",
+  "measured_at": "2026-06-07",
+  "scope": "random pool size = 204 APKs (207 total, security-picked 3 excluded). Sample seed=42.",
+  "security_picked": [
+    {
+      "apk": "ai.umos.vehiclecontrol",
+      "java_files": 7211,
+      "priority_classes": 455,
+      "priority_ratio_pct": 6.31,
+      "native_libs": 1
+    },
+    {
+      "apk": "ai.pleos.sync.syslog",
+      "java_files": 9568,
+      "priority_classes": 729,
+      "priority_ratio_pct": 7.62,
+      "native_libs": 4
+    },
+    {
+      "apk": "ai.pleos.llm.model.provider",
+      "java_files": 3463,
+      "priority_classes": 89,
+      "priority_ratio_pct": 2.57,
+      "native_libs": 0
+    }
+  ],
+  "random_sample_seed_42": [
+    {
+      "apk": "com.android.statementservice",
+      "java_files": 879,
+      "priority_classes": 39,
+      "priority_ratio_pct": 4.44,
+      "native_libs": 0
+    },
+    {
+      "apk": "android.car.usb.handler",
+      "java_files": 14,
+      "priority_classes": 6,
+      "priority_ratio_pct": 42.86,
+      "native_libs": 0
+    },
+    {
+      "apk": "ai.pleos.playground.vehiclebridge.servicemeta",
+      "java_files": 1,
+      "priority_classes": 0,
+      "priority_ratio_pct": 0.0,
+      "native_libs": 0
+    }
+  ],
+  "summary": {
+    "security_picked_avg_priority_classes": 424.33,
+    "random_sample_avg_priority_classes": 15.0,
+    "ratio_security_vs_random": 28.29,
+    "security_picked_avg_priority_ratio_pct": 5.5,
+    "random_sample_avg_priority_ratio_pct": 15.77,
+    "security_picked_avg_native_libs": 1.67,
+    "random_sample_avg_native_libs": 0.0
+  }
+}

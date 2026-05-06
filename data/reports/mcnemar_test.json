@@ -1,0 +1,214 @@
+{
+  "measurement_id": "R1.c",
+  "description": "Paired McNemar test for Stage 1 vs Stage 3 (≥2/3 consensus) classification on combined GT (n=28).",
+  "measured_at": "2026-06-07",
+  "scope": "n=28",
+  "contingency": {
+    "a_s1_correct_s3_correct": 23,
+    "b_s1_correct_s3_incorrect": 1,
+    "c_s1_incorrect_s3_correct": 4,
+    "d_s1_incorrect_s3_incorrect": 0
+  },
+  "chi_sq_uncorrected": 1.8,
+  "p_value_chi_sq_df1": 0.1797,
+  "p_value_exact_binomial_two_tailed": 0.375,
+  "interpretation": "b=1, c=4 (b+c=5). With small discordant pairs, exact binomial is preferred. p_exact = 0.375. At α=0.05, the difference between Stage 1 and Stage 3 is NOT statistically significant — the corpus n=28 is too small to reject the null of marginal homogeneity. Sample expansion to n ≥ 50 (DIVA / additional commercial corpora) is needed for a powered test.",
+  "rows": [
+    {
+      "id": "vc-1",
+      "is_real": false,
+      "s1_correct": 0,
+      "s3_correct": 1,
+      "s3_consensus": 1
+    },
+    {
+      "id": "vc-2",
+      "is_real": false,
+      "s1_correct": 0,
+      "s3_correct": 1,
+      "s3_consensus": 1
+    },
+    {
+      "id": "vc-3",
+      "is_real": false,
+      "s1_correct": 0,
+      "s3_correct": 1,
+      "s3_consensus": 1
+    },
+    {
+      "id": "vc-4",
+      "is_real": false,
+      "s1_correct": 0,
+      "s3_correct": 1,
+      "s3_consensus": 1
+    },
+    {
+      "id": "vc-5",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "vc-6",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "vc-7",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 0,
+      "s3_consensus": 1
+    },
+    {
+      "id": "ssl-1",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ssl-2",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ssl-3",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "lmp-1",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "lmp-2",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ssl-4",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 2
+    },
+    {
+      "id": "ssl-5",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ssl-6",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ucl1-1",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ucl1-2",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ucl1-3",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 2
+    },
+    {
+      "id": "ucl3-1",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-1",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-2",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-3",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-4",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-5",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-6",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-7",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 3
+    },
+    {
+      "id": "ib2-8",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 2
+    },
+    {
+      "id": "ib2-9",
+      "is_real": true,
+      "s1_correct": 1,
+      "s3_correct": 1,
+      "s3_consensus": 2
+    }
+  ]
+}
