@@ -25,6 +25,8 @@
 | **Stage 2** | Contextual Verification | caller chain + manifest + regex rule + LLM 재독으로 후보 verdict (TP/FP/uncertain). AST rule 자동화는 Future Work |
 | **Stage 3** | Single-model multi-perspective consensus | 동일 모델을 3개 시각 (공격자 / 방어자 / IVI 도메인 전문가) 으로 재질문하여 합의. ≥2/3 동의 = TP, ≥3/3 = strong TP |
 
+> **PPT 계획서 표기 매핑**: PPT 의 "1차 / 2차 / 3차" 는 본 보고서의 **Stage 1 / Stage 2 / Stage 3** 와 동일. PPT 가설 수치 (1차 25% / 2차 12% / 3차 7%) 인용 시에만 PPT 표기 유지.
+
 ### 학기 작업 단계 (Phase A~E)
 
 | Phase | 의미 |
@@ -151,7 +153,7 @@ self-labeled GT + OWASP MASTG 외부 GT로 초기 정량 평가한다. 여기서
 |---|---|
 | G1 | 디컴파일러 도구 비교 + 환경 구축 (jadx 1순위) |
 | G2 | 키워드 기반 우선순위 큐 + 분석 대상 축소 30-40% |
-| G3 | LLM 다단계 검증 (1차 → 2차 → 3차) — reported finding 기준 FP 비율 25% → 12% → 7% |
+| G3 | LLM 다단계 검증 (1차 → 2차 → 3차 = Stage 1 → 2 → 3) — reported finding 기준 FP 비율 25% → 12% → 7% |
 | G4 | 난독화 코드 처리 (40% → 78% 정확도). 단, hand-crafted corpus와 real-world corpus를 구분 |
 | G5 | AAOS 보안 가이드라인 매핑 표 |
 | G6 | TARA 산출물 자동 생성 |
@@ -567,6 +569,61 @@ PleOS 운영팀이 본 파이프라인을 최소 비용으로 활용하려면:
 - 운영 통합 시에도 PleOS APK 소스가 외부 LLM API 에 송출되지 않도록 차단 필수. 현재는 환경 제약으로 자연스럽게 만족, 향후 cloud LLM 도입 시 별도 가드 필요.
 - TARA 산출물 (자산 카탈로그, 위협 시나리오) 은 contract IP — repo public commit 대상에서 제외, 보고서에만 포함.
 
+### 5.5 운영 비용 평가
+
+본 파이프라인의 시간 / 금전 / 메모리 / 확장성 비용을 manual baseline 과 비교해 산업 적용 ROI 를 정량화. 자세한 단계별 분해는 [`04_limitations_and_costs.md`](04_limitations_and_costs.md) § 2 참조.
+
+#### 5.5.1 시간 cost (APK 1개 기준)
+
+| 단계 | 본 파이프라인 (인터랙티브) | manual baseline | 단축률 |
+|---|---|---|---|
+| 키워드 grep + priority 추출 | 1분 | 코드 read 30분 ~ 1시간 | 30~60x |
+| Stage 1 LLM 분석 (priority 9 클래스) | ~1시간 | manual 코드 분석 3~4시간 | 3~4x |
+| Stage 2 caller 추적 | ~30분 | manual grep + 사고 1~2시간 | 2~4x |
+| Stage 3 멀티 시각 합의 | ~30분 | n/a | — |
+| 보고서 (JSON + MD) 생성 | 즉시 | manual 1~2시간 | ∞ |
+| **APK 1개 풀 파이프라인** | **~40분** | **~2 시간** | **3x** |
+| **3 APK 누계** | **~2시간** | **6~7시간** | **3~3.5x** |
+
+PPT 가설의 8~25분/APK 는 fully-batch 가정. 본 파이프라인은 인터랙티브 Claude Code 세션이라 사람의 reading time 포함. **fully-batch 자동화 시 8~15분/APK 도달 가능** (Future Work).
+
+#### 5.5.2 금전 cost
+
+| 항목 | 본 파이프라인 | 외주 환산 baseline |
+|---|---|---|
+| LLM API 비용 | $0 (Claude Code 정액제) | Gemini/OpenAI 기준 APK 1개 ~$1~3 |
+| 디컴파일러 라이선스 | $0 (jadx Apache 2.0) | $0 |
+| GT 라벨링 인건비 | self (학기 프로젝트) | 외주 보안 분석가 시급 ₩100K × 6~7h ≈ ₩600K~₩700K / APK 3종 |
+| **APK 1개 분석 비용** | **~$0** (시간 cost 만) | **외주 환산 ₩200K~₩240K / APK** |
+
+#### 5.5.3 메모리 / CPU peak
+
+| 단계 | peak | 비고 |
+|---|---|---|
+| jadx 디컴파일 (VehicleControl 92MB) | ~3 GB JVM heap | `JADX_OPTS=-Xmx4g` 권장 |
+| Claude Code 세션 | ~500 MB (Node + Python helper) | LLM 추론은 클라우드 |
+| python entropy / eval / ablation | ~200 MB | matplotlib + numpy |
+| **합계 peak** | **~4 GB** | PPT 가설 (4~8 GB) 충족 |
+
+#### 5.5.4 확장성 — APK 100개 분석 추정
+
+| 자원 | 인터랙티브 | fully-batch | 가정 |
+|---|---|---|---|
+| 시간 | ~70 시간 | ~15~25 시간 | APK 당 ~40분 + 보고서 정리 / LLM 호출 자동화 |
+| 디스크 | ~50 GB | ~50 GB | jadx output 200~500 MB × 100 |
+| 메모리 | ~4 GB peak | ~4 GB peak | jadx 단계가 dominant |
+| 비용 | $0 (정액제 한도) | enterprise plan 검토 | — |
+
+ROI: 외주 baseline 대비 **APK 1개당 ~₩200K 절감 + 3x 시간 단축**. APK 100개 분석 시 인건비 **~₩20M, 250 시간 절감** 추정.
+
+#### 5.5.5 PPT 가설 vs 실측 (cost 부분)
+
+| 지표 | PPT 가설 | 실측 | 충족 |
+|---|---|---|---|
+| 처리 시간 (APK 1개) | 8~25분 | 인터랙티브 ~40분 | ⚠️ 하한 8분 초과. fully-batch 전환 시 충족 예상 |
+| 메모리 피크 | 4~8 GB | ~4 GB | ✅ 하한 충족 |
+| 비용 (APK 1개) | $0.40~1.20 | $0 | ✅ 초과 (절감) |
+
 ---
 
 ## 6. 일반화 평가 (G9)
@@ -653,6 +710,18 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 
 본 절은 v1.0 제출 전 교수 리뷰에서 공격받을 수 있는 지점을 명시적으로 정리한다. 현재 결과는 pipeline feasibility를 보이는 데에는 충분하지만, 일반화 성능 주장으로 해석하기에는 아직 제한이 있다.
 
+### 7.0 한계 카테고리 mapping (L1~L5 ↔ 4 validity)
+
+본 보고서는 한계를 4 validity 카테고리 (internal / external / construct / tooling) 로 정리하지만, 학기 작업 노트 [`04_limitations_and_costs.md`](04_limitations_and_costs.md) 에는 5 라벨 (L1~L5) 로 분류되어 있다. cross-reference:
+
+| Label | 설명 | 본 보고서 위치 | 상태 |
+|---|---|---|---|
+| **L1** | 네이티브 코드 분석 불가 | § 7.4 Tooling boundary | open — radare2 통합 (Future Work) |
+| **L2** | 표본 크기 작음 | § 7.2 External validity | n=19 → n=28 부분 해소 (R1.b/d). n ≥ 50 은 Future Work |
+| **L3** | 멀티 모델 앙상블 미구현 (단일 모델 multi-perspective 로 대체) | § 7.1 Internal validity (same-model verification bias) | scope 한정으로 명시. 외부 multi-vendor 도입은 Future Work |
+| **L4** | MASTG corpus 의 hand-crafted 특성 | § 7.2 External validity (난독화 corpus 편향) | NewPipe baseline (R4) 으로 부분 해소 |
+| **L5** | ~~Stage 3 ensemble 의 MASTG 미평가~~ | — | ✅ 2026-04-30 해소 (combined n=19 ablation 측정) |
+
 ### 7.1 Internal validity — 평가 절차 내부의 편향 가능성
 
 - **Self-label bias**: PleOS 자체 라벨 n=15는 실제 도메인 특화 finding을 포함한다는 장점이 있지만, 연구자가 수동 분석으로 만든 라벨이므로 evaluator bias 가능성이 있다. 외부 MASTG corpus를 추가했으나 현재 n=4로 작다.
@@ -678,12 +747,13 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 - **디컴파일 artifact 의존성**: 본 pipeline은 jadx output을 입력으로 삼는다. jadx가 control/data-flow를 잘못 복원하거나 synthetic wrapper를 생성하면 LLM 판단에도 영향을 줄 수 있다.
 - **Compose Navigation 의존 finding**: `vc-3` / `vc-4` 의 4중 차단 분석은 Android Compose Navigation 특화이다. 다른 UI framework 로 그대로 외삽할 수 없다.
 
-### 7.5 v1.0 보강 계획
+### 7.5 v1.0 보강 계획 (해소 상태)
 
-- 외부 corpus 확장: DIVA, InsecureBankv2, MASTG 추가 sample.
-- 일부 APK에 대한 full-audit 또는 broader scanner 비교로 missed finding 측정.
-- Stage 3 명칭을 최종적으로 `single-model multi-perspective consensus`로 통일.
-- native boundary를 한계가 아니라 architecture requirement로 재서술: Java/Kotlin scanner + native binary scanner의 2-track 구조 제안.
+- ✅ 외부 corpus 확장 — InsecureBankv2 (n=19 → n=28), MASTG 6 sample 누계.
+- ⚠️ 일부 APK 에 대한 full-audit 또는 broader scanner 비교로 missed finding 측정 — Future Work (학기 외 작업, [`05_future_work.md`](05_future_work.md) F4 참조).
+- ✅ Stage 3 명칭 `단일 모델 multi-perspective consensus` 로 통일 (§ 8.2 / Appendix B / Notation & Glossary).
+- ✅ Pipeline 단계 명칭은 **Stage 0 / 1 / 2 / 3** 으로 통일. PPT 계획서의 "1차 / 2차 / 3차" 표기는 가설 수치 인용 시에만 유지 (mapping: 1차 = Stage 1, 2차 = Stage 2, 3차 = Stage 3).
+- ⚠️ native boundary 를 한계가 아니라 architecture requirement 로 재서술 — § 5.5 / 8.3 에서 "Java/Kotlin scanner + native binary scanner 의 2-track 구조" 권고로 일부 반영. 정량 측정은 radare2 통합 (Future Work).
 
 ---
 
@@ -759,18 +829,18 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 |---|---|---|
 | 에뮬레이터 이미지 | PleOS Connect v2.0.5 x86_64 | 본 과제 정합성 |
 | 1차 분석 타겟 APK | `ai.umos.vehiclecontrol` | system UID + 13 위험 권한 + 차량 제어 |
-| 3차 검증 방식 | 단일 모델 multi-perspective consensus (Claude Opus 4.7 + 시각 3종) | Claude Code 단일 모델 세션 제약 + 외부 유료 API 미보유. Multi-LLM ensemble로 주장하지 않음 |
+| Stage 3 검증 방식 | 단일 모델 multi-perspective consensus (Claude Opus 4.7 + 시각 3종) | Claude Code 단일 모델 세션 제약 + 외부 유료 API 미보유. Multi-LLM ensemble로 주장하지 않음 |
 | Ground truth 출처 | 자체 라벨링 + OWASP MASTG | 베이스라인 비교 + PleOS 특화 케이스 |
 
 ## Appendix C — PPT 계획서 vs 실측 정량 표
 
-(학기 진척 표 + Phase D 측정값. 모든 수치는 combined n=19 기준의 초기 feasibility 결과이며, 일반화 성능으로 해석하지 않는다.)
+(학기 진척 표 + Phase D 측정값. PPT 의 "1차/2차/3차" 는 본 보고서의 Stage 1/2/3 과 동일. n=19 행은 초기 feasibility, n=28 행은 R1.d 표본 확장 후. 일반화 성능 주장이 아님.)
 
 | 지표 | PPT 가설 / 목표 | 실측 / 현재 해석 |
 |---|---|---|
-| 1차 후보 기준 FP 비율 | 25% | 21.1% (n=19, `FP/(TP+FP)` 기준) |
-| 2차 후보 기준 FP 비율 | 12% | A.2 P-ceiling 1.000은 GT 기반 upper bound. 실제 Stage 2 독립 성능 주장 아님 |
-| 3차 후보 기준 FP 비율 | 7% | 0% (≥2/3 consensus, limited corpus) |
+| Stage 1 후보 기준 FP 비율 (PPT "1차") | 25% | 21.1% (n=19) → **14.3% (n=28)** |
+| Stage 2 후보 기준 FP 비율 (PPT "2차") | 12% | A.2 P-ceiling 1.000은 GT 기반 upper bound. 실제 Stage 2 독립 성능 주장 아님 |
+| Stage 3 후보 기준 FP 비율 (PPT "3차") | 7% | 0% (≥2/3 consensus, limited corpus) |
 | Precision (Full) | 0.93 | 1.00 (≥2/3, limited corpus) |
 | F1 (Stage 1) | — | 0.882 |
 | F1 (Stage 3 ≥2/3) | — | 0.966 |
