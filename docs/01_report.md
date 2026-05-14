@@ -909,7 +909,7 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 
 ### 8.3 산업 적용성 + Future Work
 
-| 차원 | 본 연구 위치 (학기 + 학기 외 A~D) | 향후 |
+| 차원 | 본 연구 위치 (학기 + 학기 외 A~E) | 향후 |
 |---|---|---|
 | 분석 엔진 | Claude Code 인터랙티브 (단일 사용자) + Codex 3-model 보충 cross-read | PleOS-internal LLM 활성화 시 Stage 1/2/3 자동화. Multi-vendor API 앙상블은 별도 정책/예산 필요. |
 | Native 분석 | **R3.c.2 native sample n=4 정적 측정 완료** (학기 외 C, 추가 vuln 0건) | Ghidra GolangAnalyzerExtension function-naming 복원 + Frida hook 으로 dynamic JNI flow capture. |
@@ -920,9 +920,9 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 | OS 일반화 | PleOS-only | QNX / AGL 로 swap 2~3주 추정. 실제 측정값 확보 시 일반화의 비용/효과 결론. |
 | 운영 | 권고/설계 | GitHub Actions 정적 부분 통합 → PleOS-internal LLM endpoint 활성화 → fully-batch 자동화. |
 
-### 8.4 deliverable 종합 (학기 + 학기 외 A~D)
+### 8.4 deliverable 종합 (학기 + 학기 외 A~E)
 
-- **보고서 v1.3** (본 문서) — 8 장 + Notation & Glossary + Appendix A/B/C. 학기 외 A+B+C+D 통합본
+- **보고서 v1.3** (본 문서) — 8 장 + Notation & Glossary + Appendix A/B/C. 학기 외 A+B+C+D+E 통합본
 - **사례 연구 10건** ([`02_case_studies.md`](02_case_studies.md)) — 정적 5건 + 학기 외 D Dynamic 5건 (Case 6~10)
 - **차트 6 장** (`data/viz/01~06_*.png`) — n=18/n=19 시점 스냅샷 ([`03_charts.md`](03_charts.md) 참조)
 - **AAOS/MASVS/TARA 자동 매핑 표** (`data/reports/aaos_mapping_table.{md,json}`)
@@ -933,7 +933,7 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 - **6 prompt 영문 통일** (`configs/prompts/{stage0_deobfuscate, stage1_detect, stage3_attacker / defender / domain_expert / consensus}.md`) + 학기 외 B 의 `stage1_detect_rag.md`
 - **결정론 분석 스크립트** — `src/{eval, ablation, aaos_map, tara_generate, deobf/entropy, viz/plot_metrics, native_analyze}.py` (학기 외 C) + `src/rag/{build_index, retrieve, ablation}.py` (학기 외 B) + `src/dynamic/state_machine.py` + `src/dynamic/hooks/` 5 Frida script (학기 외 D) + `scripts/research_r{1a, 2a, 3a}_*.py`
 - **GT corpus** (`data/ground_truth/`) — self_labels n=15, mastg/* n=4, insecurebankv2 n=9, AOSP-derived n=4, R1.d.5 PleOS-customized 추가 → **combined n=47**
-- **Future Work 구현 명세** — [`06_future_work_implementations.md`](06_future_work_implementations.md) (학기 외 A~D 도달도 + Codex multi-model 보충 결과)
+- **Future Work 구현 명세** — [`06_future_work_implementations.md`](06_future_work_implementations.md) (학기 외 A~E 도달도 매트릭스 — Codex multi-model 보충 cross-read 포함)
 - **PPT 빌드 스크립트** — 1페이지 progress (10~14주차) + 18슬라이드 최종발표 (`scripts/build_ppt_w{10..14}_1page.py` + `build_ppt_final.py`)
 - **GitHub repo**: [`HoyoenKim/pleos-llm-scanner`](https://github.com/HoyoenKim/pleos-llm-scanner) (MIT) — scaffold + GT + 측정 스크립트 + 자동 산출물 공개
 
@@ -964,7 +964,7 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 
 ## Appendix C — PPT 계획서 vs 실측 정량 표
 
-(학기 진척 표 + Phase D + 학기 외 A~D 측정값. PPT 의 "1차/2차/3차" 는 본 보고서의 Stage 1/2/3 과 동일. n=19 → n=47 은 R1.d.2~d.5 표본 확장 trajectory. 일반화 성능 주장이 아님.)
+(학기 진척 표 + Phase D + 학기 외 A~E 측정값. PPT 의 "1차/2차/3차" 는 본 보고서의 Stage 1/2/3 과 동일. n=19 → n=47 은 R1.d.2~d.5 표본 확장 trajectory. 일반화 성능 주장이 아님.)
 
 | 지표 | PPT 가설 / 목표 | 실측 / 현재 해석 (n=47 최종) |
 |---|---|---|
