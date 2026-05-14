@@ -1,8 +1,10 @@
 # 한계 근본 원인 분석 + 운영 비용 평가
 
-_작성: 2026-04-30. 보고서 v0.9 의 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 분석 노트._
+_작성: 2026-04-30. 보고서 7장 (Limitations) + 8장 (Cost Analysis) 의 raw 분석 노트. 2026-05-14 학기 외 A~D 반영 갱신._
 
-본 문서는 본 파이프라인의 **구조적 한계**와 그 **근본 원인**, 그리고 운영 시점에서의 **시간/비용 트레이드오프** 를 정리한다. 향후 v1.0 보고서 / 발표 / 후속 연구의 input.
+본 문서는 본 파이프라인의 **구조적 한계**와 그 **근본 원인**, 그리고 운영 시점에서의 **시간/비용 트레이드오프** 를 정리한다. 보고서 ([`01_report.md`](01_report.md) § 7 / § 5.5) / 발표 / 후속 연구의 input.
+
+> **⚠️ 갱신 안내 (2026-05-14)**: 본 노트의 측정값은 n=18/n=19 시점 기준이다. 학기 외 A~D 작업으로 (1) **L1 (native) 부분 해소** — radare2 + `src/native_analyze.py` 로 R3.c.2 native sample n=4 정적 분석 (추가 vuln 0건), (2) **L2 (표본) n=19 → n=47 해소** — McNemar p_exact=0.0215 통계적 유의 도달, (3) **L6 신규** — ProGuard 활성 APK 의 priority class yield 감소. 최종 한계 표 + 상태는 [`01_report.md`](01_report.md) § 7.0 / Notation L1~L6 참조. 운영 비용 (§ 2) 수치는 변동 없음.
 
 ---
 
@@ -12,13 +14,14 @@ _작성: 2026-04-30. 보고서 v0.9 의 7장 (Limitations) + 8장 (Cost Analysis
 
 본 파이프라인이 못 잡거나 약한 영역을 5 카테고리로 분류:
 
-| # | 한계 | 근본 원인 (1차) | 근본 원인 (2차, 환경) | 측정 증거 |
+| # | 한계 | 근본 원인 (1차) | 근본 원인 (2차, 환경) | 측정 증거 / 상태 |
 |---|---|---|---|---|
-| L1 | **네이티브 코드 분석 불가** | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope finding 0건 (`docs/archive/phase_b4c_mastg_baseline_20260430.md`) |
-| L2 | **표본 크기 작음 (n=19)** ← 2026-04-30 부분 해소 (n=18→19, UnCrackable-Level3 추가) | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined n=19 측정. 추가 sample 도입은 Future Work |
-| L3 | **멀티 모델 앙상블 미구현 (멀티 프롬프트로 대체)** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | 3차 검증 방식을 멀티 모델(Claude+GPT-4 가정) → 멀티 프롬프트(동일 모델 + 시각 3종)로 전환 |
-| L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat (`docs/archive/phase_c_deobf_baseline_20260430.md`) |
+| L1 | **네이티브 코드 분석 불가** ← 2026-05-14 **부분 해소** (학기 외 C) | jadx = Java/Kotlin 전용 디컴파일러 | Ghidra/IDA 등 binary 도구 미통합 | UnCrackable-Level2 + r2pay-v1.0 in-scope 0건. **학기 외 C: radare2 + `src/native_analyze.py` 로 R3.c.2 native sample n=4 정적 분석 — 추가 vuln 0건** (`data/reports/native_r3c2_20260514.md`). dynamic 행동은 여전히 미관찰 (Frida hook 학기 외 D, script ready) |
+| L2 | ~~**표본 크기 작음 (n=19)**~~ ← 2026-05-14 **해소** (학기 외 A) | self-labeling 시간 cost (PleOS 3 APK = 6~7시간) | 1인 학기 프로젝트, 외부 라벨러 없음 | combined **n=47** (R1.d.2~d.5). **McNemar p_exact=0.0215 < α=0.05 통계적 유의 도달**. 외부 라벨러 교차 검증은 Future Work |
+| L3 | **멀티 모델 앙상블 미구현 (멀티 프롬프트로 대체)** | Claude Code 단일 모델 세션 | 외부 유료 API 미사용 정책 → 다른 모델 호출 불가 | 3차 검증 방식을 멀티 모델(Claude+GPT-4 가정) → 멀티 프롬프트(동일 모델 + 시각 3종)로 전환. Multi-model ensemble 은 학기 외 보류 항목 (20%) |
+| L4 | **MASTG corpus의 hand-crafted 특성** | UnCrackable / r2pay = OWASP가 의도적으로 hint 강하게 심은 챌린지 | 무료 / 공개된 commercial-grade APK ground truth 부재 | 난독화 정확도 100%(n=17) caveat. NewPipe R4 n=6 real-world floor GOOD+ 67% 로 부분 해소 |
 | L5 | ~~Stage 3 ensemble의 MASTG 미평가~~ ✅ **2026-04-30 해소** | ucl1-1/2/3 + ucl3-1 stage 3 ensemble 평가 추가 완료 | — | ablation A.3 ≥3/3 F1 0.783 → **0.889** (combined n=19), B ≥2/3 F1 0.952 → **0.966** |
+| L6 | **ProGuard 활성 PleOS-customized APK 의 priority class yield 감소** ← 2026-05-14 신규 | ProGuard 가 비즈니스 패키지 클래스명을 난독화 | 일부 PleOS APK 의 release engineering 정책 | R1.d.5 `ai.umos.maps` 1 finding / `ai.umos.callandmessage` 비즈니스 패키지 2 클래스. Stage 0 deobfuscation 통합 또는 manifest-only Stage 1 모드 권고 |
 
 ### 1.2 L1 — 네이티브 코드 분석 불가 (가장 중요한 한계)
 
@@ -200,4 +203,5 @@ PPT 가설의 8~25분/APK는 fully-batch (백그라운드 LLM 호출) 가정. �
 
 | 날짜 | 변경 |
 |---|---|
-| 2026-04-30 | 11주차 deliverable 초안 — 5 한계 + 운영 비용 + 트레이드오프 종합. v1.0 보고서 7/8장 input. |
+| 2026-04-30 | 11주차 deliverable 초안 — 5 한계 + 운영 비용 + 트레이드오프 종합. 보고서 7/8장 input. |
+| 2026-05-14 | 학기 외 A~D 반영 — L1 부분 해소 (radare2 R3.c.2 native n=4), L2 해소 (n=47 + McNemar 유의), L6 신규 (ProGuard yield). § 1 한계 표 갱신 + 상단 갱신 안내 추가. 운영 비용 (§ 2) 수치는 변동 없음. |

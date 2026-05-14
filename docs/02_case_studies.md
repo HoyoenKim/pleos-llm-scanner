@@ -1,9 +1,10 @@
-# PleOS IVI 정적 분석 — 사례 연구 5건
+# PleOS IVI 정적 분석 — 사례 연구 10건 (정적 5 + Dynamic 5)
 
-_작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/reports/_
+_작성일: 2026-04-30 (정적 Case 1~5) → 2026-05-14 (학기 외 D, Dynamic Case 6~10) / 출처: data/ground_truth/combined_labels.json (n=47) + data/reports/_
 
-본 문서는 본 파이프라인이 발견한 18개 라벨 중 초기 계획서의 5건 사례 연구
-카테고리에 매핑되는 대표 finding을 케이스 카드로 정리한다. 각 카드는 실제 측정값과
+본 문서는 본 파이프라인이 발견한 combined GT n=47 라벨 중 초기 계획서의 5건 사례 연구
+카테고리에 매핑되는 대표 finding을 케이스 카드 (Case 1~5) 로 정리하고, 학기 외 D 작업에서
+구현한 Dynamic 검증 연계 사례 5건 (Case 6~10) 을 추가한다. 각 카드는 실제 측정값과
 재현 가능한 evidence path를 포함한다. (finding ID 정의는 [`01_report.md`](01_report.md) 의 Notation 섹션 참조)
 
 | # | 카테고리 | Finding | APK | 심각도 | Risk |
@@ -120,8 +121,9 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 **의의 — 본 파이프라인의 가치**:
 - Stage 1 단독이면 FP 2건이 HIGH로 보고됨 (Precision 떨어뜨림).
 - Stage 2 caller + Stage 2.b deep-link audit 합쳐서 **FP CONFIRMED**.
-- 측정값으로 정량화: stage 1 P 77.8% → stage 3 ≥2/3 P 100% (+22.2%p, n=18).
-  초기 계획서의 Precision 0.93 가설 도달.
+- 측정값으로 정량화: stage 1 P 77.8% → stage 3 ≥2/3 P 100% (+22.2%p, n=18 최초 측정).
+  최종 n=47 corpus 에서도 Stage 3 ≥2/3 P 100% 유지 (Stage 1 P 80.9% → Stage 3 ≥2/3 P 100%).
+  초기 계획서의 Precision 0.93 가설 도달·초과.
 - 산출: `docs/archive/stage2b_deeplink_verification_20260430.md`.
 
 **교훈**:
@@ -279,7 +281,7 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 
 ---
 
-## 요약 표 — 5건의 종합 임팩트
+## 요약 표 — 정적 사례 5건의 종합 임팩트
 
 | Case | Finding | Stage 1 → 최종 | AAOS § | TARA Risk | 발견 가치 |
 |---|---|---|---|---|---|
@@ -298,3 +300,103 @@ _작성일: 2026-04-30 / 출처: data/ground_truth/combined_labels.json + data/r
 각 사례는 `data/ground_truth/combined_labels.json`의 라벨 + 본 GT가 가리키는
 `data/decompiled/<apk>/sources/<class>` 의 line으로 추적 가능. 외부 corpus
 (UnCrackable Level1)는 `data/apks/_mastg/owasp-mastg/Samples/Android/.../` 경로.
+
+---
+
+## 학기 외 D 작업 추가 — Dynamic 사례 5건 (2026-05-14)
+
+본 학기 5 사례는 모두 정적 분석 (Stage 1/2/3 ensemble) 기반. 학기 외 D 작업
+에서 5 strong-TP finding 에 대한 Frida hook script 를 작성, deterministic
+`src/dynamic/state_machine.py` 로 Static → Dynamic feedback loop 를 정의.
+실제 emulator 실행은 PleOS Connect AVD + frida-server-arm64 환경 의존
+(별도 step) — script + state machine 은 ready, 실제 capture 는 학기 외 후속.
+
+### Case 6 — vc-5 GleoActionSender implicit broadcast (dynamic plan)
+
+**Static (이미 strong TP)**: 차량 명령 broadcast 가 setPackage / setComponent
+없이 발사. 외부 receiver 가 응답 정보 관찰 가능.
+
+**Dynamic hook**: `src/dynamic/hooks/vc-5_gleo_action_sender.js` —
+ContextWrapper.sendBroadcast 의 모든 호출을 wrap, stack trace 에 GleoActionSender
+포함 시 `intent.getComponent() / intent.getPackage()` 값 emit.
+
+**State machine flow** (state_machine.py):
+```
+receive_finding → stage1_classify → stage2_static_verify (TP rule)
+  → decide_dynamic_required (frida_hook 분기) → frida_hook (runtime obs)
+  → stage3_correlate (TP + confirmed → strong_TP_dynamic)
+```
+
+**Expected verdict transition**:
+- component == null AND package == null → `static_TP_dynamic_confirmed` (strong_TP_dynamic)
+- 하나라도 set → `static_FP_dynamic_explicit` (uncertain — 정적 분석 재검토)
+
+### Case 7 — vc-6 VehicleBroadcastReceiver external macAddress
+
+**Static**: exported=true receiver 가 `getStringExtra("macAddress")` 를 그대로
+DB 저장. 외부 attacker 가 임의 MAC 주입 가능.
+
+**Dynamic hook**: `src/dynamic/hooks/vc-6_vehicle_broadcast_receiver.js` —
+onReceive 호출 시 `Binder.getCallingUid()` 와 macAddress payload 캡처.
+
+**Verdict transition**:
+- calling_uid ≥ 10000 (third-party app) → `static_TP_dynamic_external_caller`
+- calling_uid == 1000 (system only) → `static_FP_dynamic_system_only`
+  (정적 가정과 다름 — system-protected broadcast 일 경우 FP)
+
+### Case 8 — ssl-2 AuthData token leak via toString
+
+**Static**: Kotlin data class auto-generated `toString()` 이 `authenticatorToken`
+포함. Log.d emission grep 확인.
+
+**Dynamic hook**: `src/dynamic/hooks/ssl-2_auth_data_token_leak.js` — 2-stage:
+1. `AuthData.toString()` 호출마다 token 추출 + emit.
+2. `Log.d/i/e/w/v` 호출 시 메시지에 관찰된 token substring 포함 여부 검사.
+
+**Verdict transition**:
+- token 발견 + Log emission 확인 → `static_TP_dynamic_emission_confirmed`
+- token 발견 + Log emission 0건 → `static_TP_dynamic_token_in_toString` (leak primitive only)
+
+### Case 9 — ssl-5 BuildConfig.IDENTIFIER as KDF passphrase
+
+**Static**: BuildConfig.IDENTIFIER → ECCCrypto KDF passphrase. 모든 device 동일
+키 도출 가능 (effective hardcoded secret).
+
+**Dynamic hook**: `src/dynamic/hooks/ssl-5_buildconfig_kdf_passphrase.js`:
+1. `BuildConfig.IDENTIFIER` 값 캡처 (runtime literal).
+2. `ECCCrypto.deriveKey(passphrase)` hook 후 passphrase 인자가 IDENTIFIER 와
+   일치 검증.
+
+**Verdict transition**:
+- passphrase == IDENTIFIER → `static_TP_dynamic_passphrase_is_buildconfig` (strong_TP_dynamic)
+- 다른 source → static finding 재검토 (`static_uncertain_dynamic_passphrase_runtime_only`)
+
+### Case 10 — lmp-1 PromptsContentProvider external query
+
+**Static**: exported ContentProvider 가 caller verification 없이 LLM system-
+prompt 전체 노출.
+
+**Dynamic hook**: `src/dynamic/hooks/lmp-1_prompts_provider_query.js` —
+`query()` 호출 시 calling UID/PID + 반환 row count 캡처.
+
+**Verdict transition**:
+- calling_uid ≥ 10000 AND row_count > 0 → `static_TP_dynamic_external_read_confirmed`
+- calling_uid == 1000 only → `static_FP_dynamic_system_only` (정적 결론 재검토)
+
+### Static-only vs Static+Dynamic 비교 (state_machine.py 출력)
+
+| Finding | Static Stage 3 (n=47) | Stage 3 + Dynamic (Frida hook) |
+|---|---|---|
+| vc-5 | strong_TP_3of3 | strong_TP_dynamic (if observation == confirmed) |
+| vc-6 | strong_TP_3of3 | strong_TP_dynamic (caller UID 가 외부일 때) — runtime 만으로 정정 가능 |
+| ssl-2 | strong_TP_3of3 | strong_TP_dynamic + emission_confirmed (logcat 직접 증거) |
+| ssl-5 | strong_TP_3of3 | strong_TP_dynamic + passphrase_is_buildconfig (key derivation 직접 증거) |
+| lmp-1 | strong_TP_3of3 | strong_TP_dynamic + external_read_confirmed (system-only 일 시 FP 정정) |
+
+**핵심 implication**: 5 strong_TP_3of3 가 dynamic 에서도 동일 verdict 라면, 본
+파이프라인의 정적 결론 강건성 (정량 evidence). 만약 dynamic 에서 1건이라도
+FP 로 정정된다면, multi-perspective consensus 가 실제 attack chain 을 잡지
+못한 case — RQ1 추가 한계 (정적+dynamic disagreement) 명시 가능.
+
+**Environment requirement**: PleOS Connect AVD userdebug build + frida-server-arm64
+(API 34). User build 시 frida-gadget injection 으로 우회 (APK 재서명 필요).

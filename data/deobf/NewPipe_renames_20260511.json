@@ -1,0 +1,215 @@
+{
+  "apk": "NewPipe",
+  "version": "v0.27.6",
+  "stage": "stage0_deobfuscate",
+  "model": "claude-opus-4-7",
+  "analyzed_at": "2026-05-11 (extension; initial 3 sample analyzed 2026-05-06)",
+  "supersedes": "data/deobf/NewPipe_renames_20260607.json (file name had erroneous future date; same content preserved + new samples appended)",
+  "scope_note": "R4 보강 — real-world ProGuard 활성 OSS (NewPipe v0.27.6) 의 HIGH composite 클래스에 Stage 0 LLM rename 적용. NewPipe 의 비즈니스 패키지 (org.schabi.newpipe.*) 안 HIGH 클래스는 1/973 = 0.1% 만 존재. 나머지 HIGH 41 개는 모두 p004j$.* (Android Desugar library) 의 jadx-prefix 클래스. 본 sample 은 desugar library 측 sample n=6 (initial 3 + extension 3). Stage 0 rename 의 plausibility 정확도가 sample 당 contextual hint density 에 어떻게 의존하는지 정량.",
+  "input_filter": "composite_obf_score >= 0.85 (top-tier HIGH) within p004j$.* package, 다양한 sub-package 분산 (util / sun.misc / util.concurrent / nio / time)",
+  "renames": [
+    {
+      "id": "np-1",
+      "original_class": "p004j$.util.C1302f",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/C1302f.java",
+      "suggested_class_name": "UnsupportedException",
+      "confidence_class": 0.55,
+      "role_description": "RuntimeException 서브클래스. 'Unsupported <type>: <value>' 메시지 prefix 로 throw 하는 static helper.",
+      "method_renames": [
+        {"original": "m1266a", "suggested": "throwUnsupported", "confidence": 0.70,
+         "evidence": "static void m1266a(String, Serializable) → throw new C1302f('Unsupported ' + str + ' :' + ser). Pattern matches Java/Kotlin 'throw helper'."}
+      ],
+      "field_renames": [],
+      "semantic_match_against_source": "PARTIAL — RuntimeException 의 일반적 throw helper. 정확한 desugar 원본 (java.util 안 어떤 helper인지) 은 mapping file 부재로 unknown. Plausible name 이지만 exact match 측정 불가.",
+      "evidence_summary": "Single-purpose throw helper. RuntimeException 상속 + 'Unsupported ' + ' :' literal 만이 hint."
+    },
+    {
+      "id": "np-2",
+      "original_class": "p004j$.sun.misc.C1112a",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/sun/misc/C1112a.java",
+      "suggested_class_name": "UnsafeAccessor",
+      "confidence_class": 0.85,
+      "role_description": "sun.misc.Unsafe 의 reflection-based getter. 'theUnsafe' field 를 추출해 singleton 으로 캐싱.",
+      "method_renames": [
+        {"original": "m681i", "suggested": "findTheUnsafeField", "confidence": 0.85,
+         "evidence": "Unsafe.class.getDeclaredField('theUnsafe') 호출 + fallback iteration. 'theUnsafe' literal 이 결정적 hint."},
+        {"original": "m680h", "suggested": "getInstance", "confidence": 0.75,
+         "evidence": "static C1112a m680h() { return f248b; } — Singleton getter pattern."},
+        {"original": "m687f", "suggested": "compareAndSet (or putObjectVolatile)", "confidence": 0.50,
+         "evidence": "Unsafe wrapper method, 시그니처는 봐야. context: AtomicReference-style operation 가능."},
+        {"original": "m690k", "suggested": "objectFieldOffset", "confidence": 0.50,
+         "evidence": "Unsafe wrapper method. Standard sun.misc.Unsafe API 매칭 추정."}
+      ],
+      "field_renames": [
+        {"original": "f248b", "suggested": "INSTANCE", "confidence": 0.85,
+         "evidence": "static final C1112a 필드 — Singleton instance 패턴."},
+        {"original": "f249a", "suggested": "unsafe", "confidence": 0.95,
+         "evidence": "constructor C1112a(Unsafe unsafe) { this.f249a = unsafe; }"}
+      ],
+      "semantic_match_against_source": "GOOD — 'UnsafeAccessor' / 'getInstance' / 'INSTANCE' / 'unsafe' 등은 desugar 의 sun.misc.SharedSecrets 와 유사한 wrapper 패턴 매칭. Method-level 일부는 hint 부족으로 partial.",
+      "evidence_summary": "Unsafe.class import + 'theUnsafe' literal + Singleton 패턴이 강한 contextual hint. Class / 핵심 method / field 는 reasonable name 도출."
+    },
+    {
+      "id": "np-3",
+      "original_class": "p004j$.util.concurrent.C1289p",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/concurrent/C1289p.java",
+      "suggested_class_name": "ConcurrentNodePool",
+      "confidence_class": 0.45,
+      "role_description": "(추정) ConcurrentMap 의 internal node container. 인접 클래스 C1285l / C1288o 와 함께 lock-free queue / map 구조 가능.",
+      "method_renames": [],
+      "field_renames": [
+        {"original": "f706a", "suggested": "nodes", "confidence": 0.55,
+         "evidence": "C1285l[] 배열 — node array 추정"},
+        {"original": "f707b", "suggested": "head (or root)", "confidence": 0.45,
+         "evidence": "C1285l 단독 reference + null 초기화 — head node 또는 sentinel 추정"},
+        {"original": "f708c", "suggested": "prev (or left)", "confidence": 0.40,
+         "evidence": "C1288o reference. C1289p 는 binary tree 또는 doubly-linked list 가능"},
+        {"original": "f709d", "suggested": "next (or right)", "confidence": 0.40,
+         "evidence": "C1288o 두 번째 reference"},
+        {"original": "f710e", "suggested": "size (or sizeCtl)", "confidence": 0.35,
+         "evidence": "int counter — concurrent 컨텍스트에서 흔한 sizeCtl"},
+        {"original": "f711f", "suggested": "modCount", "confidence": 0.30,
+         "evidence": "int counter"},
+        {"original": "f712g", "suggested": "threshold", "confidence": 0.30,
+         "evidence": "int counter"},
+        {"original": "f713h", "suggested": "capacity (or hashSeed)", "confidence": 0.40,
+         "evidence": "final int field — fixed at construction, capacity 또는 seed 추정"}
+      ],
+      "semantic_match_against_source": "POOR — 인접 클래스 (C1285l / C1288o) 의 시그니처 없이 본 클래스만 분석 시 hint 부족. concurrent 컨텍스트 (java.util.concurrent.*) 는 강한 prior 이지만 정확한 클래스 (HashMap node? ConcurrentSkipListMap node? ForkJoin queue?) 결정 불가.",
+      "evidence_summary": "Field-only 클래스 (메서드 없음) → static type info + 인접 클래스 의존성만이 hint. 인접 클래스 분석 + multi-class context 가 필요. 본 sample 은 R4 의 한계 사례."
+    },
+    {
+      "id": "np-4",
+      "original_class": "p004j$.desugar.sun.nio.p006fs.C1017a",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/desugar/sun/nio/p006fs/C1017a.java",
+      "suggested_class_name": "AttributesBuilder",
+      "confidence_class": 0.80,
+      "role_description": "java.nio.file.attribute view 설정용 builder. 허용된 attribute 이름 set + 값 map + 'all attributes' wildcard 플래그.",
+      "method_renames": [
+        {"original": "m521b", "suggested": "create (or fromNames)", "confidence": 0.85,
+         "evidence": "static factory: 새 인스턴스 생성, 입력 String[]로 set/map 초기화. '*' 를 'all' wildcard 로 처리, hashSet.contains 체크 실패 시 IllegalArgumentException('... not recognized') throw — 표준 attribute filter 패턴"},
+        {"original": "m523c", "suggested": "matches (or contains)", "confidence": 0.85,
+         "evidence": "boolean m523c(String) { return f121c || f119a.contains(str); } — 'all wildcard' OR 'set contains' 로 매칭 검사"},
+        {"original": "m522a", "suggested": "put (or setValue)", "confidence": 0.85,
+         "evidence": "f120b.put(str, obj) — map setter"},
+        {"original": "m524d", "suggested": "build (or toMap)", "confidence": 0.85,
+         "evidence": "Collections.unmodifiableMap(f120b) return — immutable view"}
+      ],
+      "field_renames": [
+        {"original": "f119a", "suggested": "allowedNames", "confidence": 0.80, "evidence": "HashSet — 'recognized' 와 함께 사용. allowed attribute names"},
+        {"original": "f120b", "suggested": "values", "confidence": 0.85, "evidence": "HashMap — put/toMap return"},
+        {"original": "f121c", "suggested": "allMatched (or wildcard)", "confidence": 0.85, "evidence": "boolean — '*' literal 일 때 true 로 설정"}
+      ],
+      "semantic_match_against_source": "GOOD — java.nio.file.attribute.AttributesBuilder / DynamicFileAttributeView 의 desugar 포팅 패턴과 정확히 매칭. 'Unsupported attribute' / '*' wildcard / unmodifiableMap return 이 결정적 hint. 정확한 desugar 클래스 (sun.nio.fs.* 또는 internal helper)는 mapping 없이 unknown.",
+      "evidence_summary": "Builder 패턴 + 3 fields (set, map, boolean wildcard) + 4 method (factory, lookup, put, build) — Java nio attribute view builder의 표준 구조. '*' literal 과 'not recognized' message 가 strong hint."
+    },
+    {
+      "id": "np-5",
+      "original_class": "p004j$.time.format.C1188w",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/time/format/C1188w.java",
+      "suggested_class_name": "DateTimeFormatterBuilder",
+      "confidence_class": 0.95,
+      "role_description": "java.time.format.DateTimeFormatterBuilder 의 desugar 포팅. Pattern char → temporal field 매핑 + 27 builder method + toFormatter().",
+      "method_renames": [
+        {"original": "m1002v", "suggested": "parseCaseSensitive", "confidence": 0.95,
+         "evidence": "m981d(EnumC1183r.SENSITIVE) — DateTimeFormatterBuilder.parseCaseSensitive() 와 1:1 매칭"},
+        {"original": "m1001u", "suggested": "parseCaseInsensitive", "confidence": 0.95, "evidence": "INSENSITIVE 호출 → standard API"},
+        {"original": "m1004x", "suggested": "parseStrict", "confidence": 0.95, "evidence": "STRICT 호출 → standard API"},
+        {"original": "m1003w", "suggested": "parseLenient", "confidence": 0.95, "evidence": "LENIENT 호출 → standard API"},
+        {"original": "m995o", "suggested": "appendValue", "confidence": 0.90, "evidence": "InterfaceC1223r (TemporalField) + width=1~19 NORMAL signStyle → appendValue(TemporalField)"},
+        {"original": "m996p", "suggested": "appendValue (with width)", "confidence": 0.90, "evidence": "InterfaceC1223r + int width with same min=max=width → appendValue(TemporalField, int)"},
+        {"original": "m997q", "suggested": "appendValue (with min/max/signStyle)", "confidence": 0.90, "evidence": "min/max width + EnumC1163G signStyle → appendValue(TemporalField, int, int, SignStyle)"},
+        {"original": "m994m", "suggested": "appendText", "confidence": 0.90, "evidence": "TemporalField + EnumC1164H (TextStyle) → appendText"},
+        {"original": "m993l", "suggested": "appendText (with map)", "confidence": 0.85, "evidence": "TemporalField + HashMap text lookup → appendText with custom mapping"},
+        {"original": "m985c", "suggested": "appendInstant", "confidence": 0.85, "evidence": "C1173h printer-parser — InstantPrinterParser 추정"},
+        {"original": "m991j", "suggested": "appendOffsetId", "confidence": 0.85, "evidence": "C1177l.f403e default OffsetIdPrinterParser"},
+        {"original": "m990i", "suggested": "appendOffset", "confidence": 0.85, "evidence": "pattern + noOffsetText 2 string → appendOffset(pattern, noOffsetText)"},
+        {"original": "m989h", "suggested": "appendZoneText", "confidence": 0.85, "evidence": "EnumC1164H (TextStyle) FULL/SHORT 검사"},
+        {"original": "m998r", "suggested": "appendZoneRegionId", "confidence": 0.85, "evidence": "'ZoneRegionId()' literal — internal C1186u(f439h, 'ZoneRegionId()')"},
+        {"original": "m988g", "suggested": "appendLocalized", "confidence": 0.80, "evidence": "FormatStyle param"},
+        {"original": "m986e", "suggested": "appendLiteral (char)", "confidence": 0.90, "evidence": "char literal → CharLiteralPrinterParser"},
+        {"original": "m987f", "suggested": "appendLiteral (String)", "confidence": 0.90, "evidence": "string literal → StringLiteralPrinterParser, 빈 string 무시 + 길이 1은 char 위임"},
+        {"original": "m983a", "suggested": "append", "confidence": 0.85, "evidence": "DateTimeFormatter 통째로 append"},
+        {"original": "m992k", "suggested": "appendPattern", "confidence": 0.95, "evidence": "pattern string char-by-char parsing — 'G','y','M','d' 등 → temporal field 매핑 (f440i HashMap 사용)"},
+        {"original": "m1000t", "suggested": "optionalStart", "confidence": 0.90, "evidence": "new C1188w(parent) — nested builder context"},
+        {"original": "m999s", "suggested": "optionalEnd", "confidence": 0.90, "evidence": "parent null 검사 + 'no previous call to optionalStart()' error message"},
+        {"original": "m981d", "suggested": "appendInternal (private)", "confidence": 0.80, "evidence": "private int → internal helper. f443c.add(printerParser)"},
+        {"original": "m982n", "suggested": "appendInternalAdjacent (private)", "confidence": 0.70, "evidence": "private — 이전 NumberPrinterParser와 adjacent 처리"},
+        {"original": "m984b", "suggested": "appendFractionInternal (private)", "confidence": 0.70, "evidence": "C1172g (FractionPrinterParser) instantiation"},
+        {"original": "m1006z", "suggested": "toFormatter", "confidence": 0.95, "evidence": "Locale → DateTimeFormatter return"},
+        {"original": "m1005y", "suggested": "toFormatter (with ResolverStyle, Chronology)", "confidence": 0.90, "evidence": "Locale.getDefault() + ResolverStyle + Chronology"},
+        {"original": "m980A", "suggested": "toFormatter (private full impl)", "confidence": 0.85, "evidence": "private — DateTimeFormatter construction 핵심"}
+      ],
+      "field_renames": [
+        {"original": "f439h", "suggested": "QUERY_REGION_ONLY", "confidence": 0.75, "evidence": "static final C1166a — 'ZoneRegionId()' 와 함께 사용 → TemporalQueries.zone() 같은 query"},
+        {"original": "f440i", "suggested": "FIELD_MAP", "confidence": 0.95, "evidence": "static HashMap<Character, TemporalField> mapping 'G'→ERA, 'y'→YEAR_OF_ERA, ... DateTimeFormatterBuilder의 표준 pattern char ↔ field 매핑"},
+        {"original": "f441a", "suggested": "active", "confidence": 0.80, "evidence": "C1188w self-reference — active sub-builder during optionalStart/End nesting"},
+        {"original": "f442b", "suggested": "parent", "confidence": 0.90, "evidence": "final C1188w — null이면 root, non-null이면 nested context"},
+        {"original": "f443c", "suggested": "printerParsers (or list)", "confidence": 0.90, "evidence": "ArrayList — printer-parser list (appendInternal에서 add)"},
+        {"original": "f444d", "suggested": "optional", "confidence": 0.90, "evidence": "final boolean — root false / nested constructor true"},
+        {"original": "f445e", "suggested": "padNextWidth", "confidence": 0.85, "evidence": "int — 'p' (padNext) 처리 후 width 저장, m981d에서 사용해 PadPrinterParser 생성"},
+        {"original": "f446f", "suggested": "padNextChar", "confidence": 0.85, "evidence": "char — ' ' 로 초기화 (m981d), pad char"},
+        {"original": "f447g", "suggested": "valueParserIndex", "confidence": 0.80, "evidence": "int — -1 default, adjacent NumberPrinterParser 추적용 (m982n에서 사용)"}
+      ],
+      "semantic_match_against_source": "EXCELLENT — Java standard API java.time.format.DateTimeFormatterBuilder 와 메서드 시그니처 / 패턴 char 매핑 / optionalStart/End nesting / appendValue 오버로딩 / toFormatter 가 1:1 매칭. ProGuard mapping file 부재로 'exact' 확정은 못하지만, 메서드 27개 중 19개 (70%)가 Java standard API 와 strong semantic match.",
+      "evidence_summary": "Imports (java.time + p004j$.time.temporal/chrono) + static HashMap field mapping (pattern char → ERA/YEAR/MONTH/...) + builder pattern + optionalStart/End nesting + appendValue 오버로딩 + toFormatter return — Java standard DateTimeFormatterBuilder 의 정확한 desugar 포팅. n=27 method 중 19개가 standard API와 1:1 매칭 가능 (R4 sample 중 가장 높은 semantic match)."
+    },
+    {
+      "id": "np-6",
+      "original_class": "p004j$.util.concurrent.C1290q",
+      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/concurrent/C1290q.java",
+      "suggested_class_name": "TreeBin",
+      "confidence_class": 0.95,
+      "role_description": "java.util.concurrent.ConcurrentHashMap.TreeBin 의 desugar 포팅. Red-black tree + reader/writer lockState + Unsafe-based CAS.",
+      "method_renames": [
+        {"original": "m1258i", "suggested": "tieBreakOrder", "confidence": 0.95,
+         "evidence": "static int tieBreakOrder(Object, Object) — System.identityHashCode 기반 fallback ordering. ConcurrentHashMap.TreeBin.tieBreakOrder 와 정확히 일치"},
+        {"original": "m1255d", "suggested": "lockRoot", "confidence": 0.95,
+         "evidence": "Unsafe.compareAndSwapInt + WAITER state + LockSupport.park — TreeBin.lockRoot의 정확한 패턴 (READER count + WAITER bit, WRITER acquisition)"},
+        {"original": "mo1251a", "suggested": "find", "confidence": 0.95,
+         "evidence": "override mo1251a(Object, int) → red-black tree traversal + lockstate==0 시 root descent, 아니면 linked-list fallback. ConcurrentHashMap.TreeBin.find와 1:1 매칭"},
+        {"original": "m1259e", "suggested": "putTreeVal", "confidence": 0.95,
+         "evidence": "tree insertion with rebalance — ConcurrentHashMap.TreeBin.putTreeVal의 정확한 패턴 (BST descent + 새 node 생성 + balanceInsertion)"},
+        {"original": "m1260f", "suggested": "removeTreeNode", "confidence": 0.95,
+         "evidence": "tree removal with red-black rebalance — successor descent + parent/child link 재정렬. ConcurrentHashMap.TreeBin.removeTreeNode"},
+        {"original": "m1256g", "suggested": "rotateLeft", "confidence": 0.95,
+         "evidence": "static rotateLeft(root, x) — RB-tree 회전 패턴, 표준 알고리즘 시그니처"},
+        {"original": "m1257h", "suggested": "rotateRight", "confidence": 0.95, "evidence": "static rotateRight(root, x) — mirror of rotateLeft"},
+        {"original": "m1254c", "suggested": "balanceInsertion", "confidence": 0.95,
+         "evidence": "static balanceInsertion(root, x) — 새 node 삽입 후 RB property 복구. CLRS 알고리즘 표준 + ConcurrentHashMap.TreeBin과 정확 매칭"},
+        {"original": "m1253b", "suggested": "balanceDeletion", "confidence": 0.95, "evidence": "static balanceDeletion(root, x) — RB-tree 표준 delete fix-up"}
+      ],
+      "field_renames": [
+        {"original": "f714h", "suggested": "U", "confidence": 0.95, "evidence": "static final C1112a (Unsafe wrapper) — ConcurrentHashMap의 표준 'U' 명명"},
+        {"original": "f715i", "suggested": "LOCKSTATE", "confidence": 0.95, "evidence": "static final long — Unsafe.objectFieldOffset('lockState') 결과. ConcurrentHashMap.TreeBin.LOCKSTATE와 동일"},
+        {"original": "f716e", "suggested": "root", "confidence": 0.90, "evidence": "tree root pointer"},
+        {"original": "f717f", "suggested": "first", "confidence": 0.90, "evidence": "volatile — linked-list fallback head (when locked)"},
+        {"original": "f718g", "suggested": "waiter", "confidence": 0.90, "evidence": "volatile Thread — LockSupport.park/unpark 대상"},
+        {"original": "lockState", "suggested": "lockState (already named)", "confidence": 1.00, "evidence": "JADX가 이미 의미적으로 복구한 필드명 — desugar의 ProGuard가 이 필드만 mapping 보존했거나 jadx가 reflection hint(getDeclaredField('lockState'))로부터 복원"}
+      ],
+      "semantic_match_against_source": "EXCELLENT — java.util.concurrent.ConcurrentHashMap.TreeBin 의 정확한 desugar 포팅. 9 method 모두 ConcurrentHashMap.TreeBin의 standard 명명과 1:1 매칭 가능 (lockRoot/find/putTreeVal/removeTreeNode/rotateLeft/rotateRight/balanceInsertion/balanceDeletion/tieBreakOrder). 'lockState' 필드는 JADX가 reflection hint로부터 복원 — sample 중 가장 높은 method-level 매칭률 (9/9 = 100%).",
+      "evidence_summary": "java.util.concurrent.locks.LockSupport import + Unsafe CAS pattern (compareAndSwapInt with WAITER/WRITER bits) + red-black tree (rotateLeft/rotateRight/balanceInsertion/balanceDeletion) + identityHashCode 기반 tieBreakOrder + 'lockState' 필드 복원 — 모두 ConcurrentHashMap.TreeBin 의 결정적 hint. Standard Java internal class의 desugar port 이므로 method-level 1:1 매칭 가능."
+    }
+  ],
+  "summary": {
+    "n_classes_renamed": 6,
+    "n_initial": 3,
+    "n_extension_20260511": 3,
+    "confidence_class_avg": 0.76,
+    "confidence_class_distribution": {
+      "very_high (>=0.9)": 2,
+      "high (0.8~0.9)": 2,
+      "medium (0.5~0.8)": 1,
+      "low (<0.5)": 1
+    },
+    "plausibility_grading": {
+      "EXCELLENT (standard Java API 1:1 매칭 가능)": 2,
+      "GOOD (semantic role + 시그니처 매칭, exact unknown)": 2,
+      "PARTIAL (plausible name, hint 부족)": 1,
+      "POOR (인접 클래스 의존, 본 sample 만으로 부족)": 1
+    },
+    "exact_accuracy": "PARTIALLY VERIFIABLE — np-5 (DateTimeFormatterBuilder) / np-6 (ConcurrentHashMap.TreeBin) 은 Java standard public/internal API 와 비교 가능 → method-level 70~100% strong semantic match. 그 외 4 sample 은 mapping file 부재로 exact unknown.",
+    "vs_hand_crafted_MASTG_baseline": "MASTG UnCrackable Level1/2 (Log.d 'CodeCheck', 'test-keys' 등 string literal 풍부) → n=17 100% exact upper bound. NewPipe desugar library n=6 → EXCELLENT+GOOD 67% plausibility (n=3에서 33%였으나 sample 확장으로 67% 향상 — 다양한 desugar 클래스 추가로 standard Java API 매칭 sample 발견). 정확도 격차는 contextual hint density / standard library 패턴 매칭 가능성에 강하게 의존."
+  },
+  "interpretation": "R4 sample 을 n=3 → n=6 으로 확장한 결과, plausibility 분포가 (1 GOOD / 1 PARTIAL / 1 POOR) → (2 EXCELLENT / 2 GOOD / 1 PARTIAL / 1 POOR) 로 변동. 핵심 finding: **desugar library 안에서도 sample 의 contextual hint 가 standard Java API 패턴 (DateTimeFormatterBuilder, ConcurrentHashMap.TreeBin) 과 매칭되면 method-level 1:1 rename 가능**. 즉 Stage 0 LLM rename 의 ceiling 은 'corpus 가 standard library / well-known design pattern 의 desugar / port 인지' 에 의해 결정. Future Work: ProGuard mapping 확보 후 exact accuracy 정량 + commercial closed-source APK 의 application-tier 난독화 측정 (NewPipe 비즈니스 패키지에서 HIGH 1개뿐이라 본 corpus 는 application code 측 측정 부적합)."
+}

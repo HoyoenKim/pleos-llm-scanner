@@ -1,13 +1,14 @@
 {
   "schema_version": "0.1",
-  "labeled_at": "2026-05-07",
-  "labeler": "self (PleOS APKs) + external OWASP MASTG (UnCrackable-Level1 baseline)",
-  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1, added 2026-04-30) + insecurebankv2.labels.json (n=9, added 2026-05-07 — external Java-side vuln corpus). Total n=28.",
+  "labeled_at": "2026-05-11",
+  "labeler": "self (PleOS APKs) + external OWASP MASTG (UnCrackable-Level1/3) + InsecureBankv2 + PleOS Connect 'android.car.usb.handler' (R1.d.2 expansion 2026-05-11)",
+  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1) + insecurebankv2.labels.json (n=9) + usb_handler.labels (n=3, R1.d.2 expansion 2026-05-11 — AAOS-derived car USB host handler in PleOS Connect). Total n=31.",
   "merged_from": [
     "data/ground_truth/self_labels.json",
     "data/ground_truth/mastg/uncrackable_level1.labels.json",
     "data/ground_truth/mastg/uncrackable_level3.labels.json",
-    "data/ground_truth/insecurebankv2.labels.json"
+    "data/ground_truth/insecurebankv2.labels.json",
+    "data/ground_truth/usb_handler.labels.inline (R1.d.2 expansion 2026-05-11)"
   ],
   "labels": [
     {
@@ -330,66 +331,309 @@
       "true_severity": "medium",
       "notes": "WebView JavaScriptEnabled=true on an exported activity. Combined with insecure HTTP load (statement endpoint), XSS / token-exfil sink. Confidence 0.7 was appropriate at Stage 1.",
       "source": "insecurebankv2"
+    },
+    {
+      "id": "usb-1",
+      "apk": "android.car.usb.handler",
+      "class": "android.car.usb.handler.UsbDeviceHandlerResolver",
+      "line": 181,
+      "stage1_severity": "medium",
+      "stage1_category": "crypto",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "MD5 hash of Build.getSerial() sent to USB AOAP accessory. AAOS §4.2 / MASVS-CRYPTO violation — MD5 is broken; SHA-256+ recommended. While the security context is device fingerprint (not authentication), AAOS guideline non-compliance itself is the finding.",
+      "source": "self_aaos",
+      "masvs": "MASVS-CRYPTO-1"
+    },
+    {
+      "id": "usb-2",
+      "apk": "android.car.usb.handler",
+      "class": "android.car.usb.handler.UsbDeviceHandlerResolver",
+      "line": 96,
+      "stage1_severity": "high",
+      "stage1_category": "permission",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "UsbManager.grantPermission to caller-resolved ComponentName. Stage 2 review: ComponentName is filtered through PackageManager.queryIntentActivities + AOAP_HANDLE_PERMISSION + checkServiceRequiresPermission(MANAGE_USB). All filters sound — no caller-controlled bypass found. FP confirmed.",
+      "source": "self_aaos"
+    },
+    {
+      "id": "usb-3",
+      "apk": "android.car.usb.handler",
+      "class": "android.car.usb.handler.UsbDeviceHandlerResolver",
+      "line": 172,
+      "stage1_severity": "medium",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "Build.getSerial() transmitted to USB accessory after MD5 hash. Stable hardware identifier — linkability/correlation by malicious accessory possible (MD5 poor randomness). Privacy guideline: per-session ephemeral token recommended.",
+      "source": "self_aaos",
+      "masvs": "MASVS-STORAGE-3"
+    },
+    {
+      "id": "ss-1",
+      "apk": "com.android.statementservice",
+      "class": "com.android.statementservice.domain.BootCompletedReceiver",
+      "line": 36,
+      "stage1_severity": "low",
+      "stage1_category": "intent",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "BootCompletedReceiver exported=true with no explicit android:permission. Stage 2 verification: BOOT_COMPLETED is a protected broadcast (Android security model — only system can emit it), so external apps cannot fake-trigger. FP confirmed. Best-practice still recommends explicit permission for defense-in-depth.",
+      "source": "self_aaos"
+    },
+    {
+      "id": "acc-1",
+      "apk": "ai.pleos.playground.account",
+      "class": "ai.pleos.playground.account.AndroidManifest",
+      "line": 64,
+      "stage1_severity": "high",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "android:usesCleartextTraffic=true on auth/account APK. AAOS §5.1 + MASVS-NETWORK-1 위반. SSO endpoint plaintext HTTP 가능성.",
+      "source": "self",
+      "masvs": "MASVS-NETWORK-1"
+    },
+    {
+      "id": "acc-2",
+      "apk": "ai.pleos.playground.account",
+      "class": "ai.pleos.playground.account.login.LoginActivity",
+      "line": 134,
+      "stage1_severity": "medium",
+      "stage1_category": "reflection_dynamic",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "Reflection-based non-SDK API access (SystemProperties.get + ConnectivityManager.setExtNetServiceGroup hidden API). AAOS hardening + Android non-SDK restriction policy 위반.",
+      "source": "self"
+    },
+    {
+      "id": "acc-3",
+      "apk": "ai.pleos.playground.account",
+      "class": "ai.pleos.playground.account.login.LoginActivity",
+      "line": 158,
+      "stage1_severity": "high",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "WebView setJavaScriptEnabled + JavaScriptCanOpenWindowsAutomatically on exported LoginActivity. WebViewClient URL whitelist Stage 2 검증 필요.",
+      "source": "self",
+      "masvs": "MASVS-PLATFORM-2"
+    },
+    {
+      "id": "acc-4",
+      "apk": "ai.pleos.playground.account",
+      "class": "ai.pleos.playground.account.login.SsoActivity",
+      "line": 120,
+      "stage1_severity": "high",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "Exported SsoActivity receives 'user-client-secret' via Intent extra. Intent extras logcat/dumpsys leak 가능성. KeyStore-bound channel 권고.",
+      "source": "self",
+      "masvs": "MASVS-AUTH-1, MASVS-STORAGE-1"
+    },
+    {
+      "id": "acc-5",
+      "apk": "ai.pleos.playground.account",
+      "class": "ai.pleos.playground.account.login.SsoActivity",
+      "line": 135,
+      "stage1_severity": "medium",
+      "stage1_category": "network",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "SsoActivity WebView same JS-enabled pattern + UA suffix with SDK version 42DOTConnectSDK/2.0.5.2 hardcoded (fingerprint). cookieManager cleanup 양호.",
+      "source": "self",
+      "masvs": "MASVS-PLATFORM-2"
+    },
+    {
+      "id": "am-1",
+      "apk": "ai.umos.appmarket",
+      "class": "ai.umos.appmarket.globalsearch.Suggestions",
+      "line": 35,
+      "stage1_severity": "high",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "R1.d.5 — Exported SearchRecentSuggestionsProvider permission=\"\" + bulkInsert overwrite-able + __umos_button_intent_uri reaches system search UI click → arbitrary intent injection in privileged context (INSTALL_PACKAGES + INTERACT_ACROSS_USERS_FULL).",
+      "source": "self_r1d5",
+      "masvs": "MASVS-PLATFORM-1"
+    },
+    {
+      "id": "am-2",
+      "apk": "ai.umos.appmarket",
+      "class": "ai.umos.appmarket.DownloadService",
+      "line": 554,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "R1.d.5 — Implicit broadcast (no setPackage/setComponent/permission) emitting installation actionName + contentId + raw Exception extra. Information disclosure across head unit.",
+      "source": "self_r1d5",
+      "masvs": "MASVS-PLATFORM-3"
+    },
+    {
+      "id": "am-3",
+      "apk": "ai.umos.appmarket",
+      "class": "ai.umos.appmarket.network.AppStoreRestAPIInterceptor",
+      "line": 60,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "R1.d.5 — Hardcoded HMG OAuth client_id + client_secret (UUID-form) for accountManager.getAuthToken(). Consumer side of the same secret flagged by acc-4 in ai.pleos.playground.account. Single APK reverse yields global OAuth client identity.",
+      "source": "self_r1d5",
+      "masvs": "MASVS-AUTH-2"
+    },
+    {
+      "id": "am-4",
+      "apk": "ai.umos.appmarket",
+      "class": "ai.umos.appmarket.MainActivity",
+      "line": 544,
+      "stage1_severity": "low",
+      "stage1_category": "intent",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "R1.d.5 — Exported activity gleo INSTALL_APP/UNINSTALL_APP custom action is handled as UI navigation only (landToSearch/landToDetail) — no auto-install. User confirmation step preserved. FP.",
+      "source": "self_r1d5"
+    },
+    {
+      "id": "amb-1",
+      "apk": "ai.umos.ambientai",
+      "class": "ai.umos.ami.llm.LlmHandler",
+      "line": 218,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "R1.d.5 — CRITICAL hardcoded OpenAI API key (sk-pxxa…) in static initializer of production LLM call site. Used by callOpenaiChatgptApi. Financial loss + privacy (mic/SMS/contacts piped to api.openai.com). MASVS-AUTH-2 + violates project env policy (외부 LLM API 미사용).",
+      "source": "self_r1d5",
+      "masvs": "MASVS-AUTH-2"
+    },
+    {
+      "id": "amb-2",
+      "apk": "ai.umos.ambientai",
+      "class": "ai.umos.ami.llm.LlmHandlerForTest",
+      "line": 112,
+      "stage1_severity": "high",
+      "stage1_category": "hardcoded",
+      "is_real": true,
+      "true_severity": "high",
+      "notes": "R1.d.5 — Same OpenAI API key in test variant of LlmHandler, shipped in release APK (app_avnRealRelease flavor). Recurring MASTG anti-pattern (test code in release).",
+      "source": "self_r1d5",
+      "masvs": "MASVS-AUTH-2"
+    },
+    {
+      "id": "amb-3",
+      "apk": "ai.umos.ambientai",
+      "class": "ai.umos.ambientai.SettingsActivity",
+      "line": 113,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "R1.d.5 — Exported SettingsActivity testDeepLink() reads assistant://ai.umos.ambientai.deeplink?param1=&param2= and pushes both into SettingsUiState without validation. BROWSABLE → triggerable from browser. Logcat persistence at :119.",
+      "source": "self_r1d5",
+      "masvs": "MASVS-PLATFORM-1"
+    },
+    {
+      "id": "amb-4",
+      "apk": "ai.umos.ambientai",
+      "class": "ai.umos.ambientai.feature.comm.manager.AmbMessageManager",
+      "line": 721,
+      "stage1_severity": "low",
+      "stage1_category": "intent",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "R1.d.5 — sendBroadcast with explicit setComponent(ai.umos.callandmessage/MarkAsReadReceiver). Cross-package but PleOS-internal recipient. Stage 2 verdict: not implicit. FP.",
+      "source": "self_r1d5"
+    },
+    {
+      "id": "amb-5",
+      "apk": "ai.umos.ambientai",
+      "class": "ai.umos.ambientai.service.AiAssistantService",
+      "line": 78,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": false,
+      "true_severity": "none",
+      "notes": "R1.d.5 — Exported VoiceInteractionService with custom action BIND_CALL_TO_AI_ASSISTANT inherits BIND_VOICE_INTERACTION signature-level permission gate. FP (mitigated by signature permission). Dynamic verify recommended.",
+      "source": "self_r1d5"
+    },
+    {
+      "id": "map-1",
+      "apk": "ai.umos.maps.android.navigation.app",
+      "class": "ai.umos.maps.android.navigation.app.ui.provider.NaviContentProvider",
+      "line": 146,
+      "stage1_severity": "medium",
+      "stage1_category": "intent",
+      "is_real": true,
+      "true_severity": "medium",
+      "notes": "R1.d.5 — Exported ContentProvider with no permission attribute. query() validates authority but no caller signature check. Returns global-search backing store (location history PII). delete/insert/update throw — read-only. AAOS §3.7 + GDPR.",
+      "source": "self_r1d5",
+      "masvs": "MASVS-PLATFORM-1"
     }
   ],
   "summary": {
-    "n_findings_total": 19,
-    "n_self": 15,
+    "n_findings_total": 47,
+    "n_self": 20,
+    "n_self_r1d5": 10,
     "n_mastg": 4,
-    "true_positive": 15,
-    "false_positive": 4,
+    "n_insecurebankv2": 9,
+    "n_self_aaos": 4,
+    "true_positive": 38,
+    "false_positive": 9,
     "uncertain": 0,
     "by_apk": {
-      "ai.umos.vehiclecontrol": {
-        "n": 7,
-        "tp": 3,
-        "fp": 4
-      },
-      "ai.pleos.sync.syslog": {
-        "n": 6,
-        "tp": 6,
-        "fp": 0
-      },
-      "ai.pleos.llm.model.provider": {
-        "n": 2,
-        "tp": 2,
-        "fp": 0
-      },
-      "UnCrackable-Level1": {
-        "n": 3,
-        "tp": 3,
-        "fp": 0
-      },
-      "UnCrackable-Level3": {
-        "n": 1,
-        "tp": 1,
-        "fp": 0
-      }
+      "ai.umos.vehiclecontrol": {"n": 7, "tp": 3, "fp": 4},
+      "ai.pleos.sync.syslog": {"n": 6, "tp": 6, "fp": 0},
+      "ai.pleos.llm.model.provider": {"n": 2, "tp": 2, "fp": 0},
+      "ai.pleos.playground.account": {"n": 5, "tp": 5, "fp": 0},
+      "ai.umos.appmarket": {"n": 4, "tp": 3, "fp": 1},
+      "ai.umos.ambientai": {"n": 5, "tp": 3, "fp": 2},
+      "ai.umos.maps.android.navigation.app": {"n": 1, "tp": 1, "fp": 0},
+      "UnCrackable-Level1": {"n": 3, "tp": 3, "fp": 0},
+      "UnCrackable-Level3": {"n": 1, "tp": 1, "fp": 0},
+      "InsecureBankv2": {"n": 9, "tp": 9, "fp": 0},
+      "android.car.usb.handler": {"n": 3, "tp": 2, "fp": 1},
+      "com.android.statementservice": {"n": 1, "tp": 0, "fp": 1}
     },
     "by_source": {
-      "self": {
-        "n": 15,
-        "tp": 11,
-        "fp": 4,
-        "precision_lenient": "73.3%"
-      },
-      "mastg": {
-        "n": 4,
-        "tp": 4,
-        "fp": 0,
-        "precision_lenient": "100.0%"
-      },
-      "combined": {
-        "n": 19,
-        "tp": 15,
-        "fp": 4,
-        "precision_lenient": "78.9%"
-      }
+      "self": {"n": 20, "tp": 16, "fp": 4, "precision_lenient": "80.0%"},
+      "self_r1d5": {"n": 10, "tp": 7, "fp": 3, "precision_lenient": "70.0%"},
+      "mastg": {"n": 4, "tp": 4, "fp": 0, "precision_lenient": "100.0%"},
+      "insecurebankv2": {"n": 9, "tp": 9, "fp": 0, "precision_lenient": "100.0%"},
+      "self_aaos": {"n": 4, "tp": 2, "fp": 2, "precision_lenient": "50.0%"},
+      "combined_n28": {"n": 28, "tp": 24, "fp": 4, "precision_lenient": "85.7%"},
+      "combined_n31": {"n": 31, "tp": 26, "fp": 5, "precision_lenient": "83.9%"},
+      "combined_n32": {"n": 32, "tp": 26, "fp": 6, "precision_lenient": "81.3%"},
+      "combined_n37": {"n": 37, "tp": 31, "fp": 6, "precision_lenient": "83.8%"},
+      "combined_n47": {"n": 47, "tp": 38, "fp": 9, "precision_lenient": "80.85%"}
     },
-    "stage1_precision_strict_n18": "14/18 = 77.8%",
-    "stage1_false_positive_rate_strict_n18": "4/18 = 22.2%",
-    "ppt_hypothesis_1차_오탐률": "25% — combined n=19 측정 결과 21.1%. PPT 가설 충족 (-3.9%p, n=18 22.2% → n=19 21.1% 추가 향상).",
-    "stage1_precision_strict_n19": "15/19 = 78.9%",
-    "stage1_false_positive_rate_strict_n19": "4/19 = 21.1%"
+    "history": [
+      {"n": 19, "tp": 15, "fp": 4, "p": 0.789, "fp_rate": 0.211, "date": "2026-04-30"},
+      {"n": 28, "tp": 24, "fp": 4, "p": 0.857, "fp_rate": 0.143, "date": "2026-05-07"},
+      {"n": 31, "tp": 26, "fp": 5, "p": 0.839, "fp_rate": 0.161, "date": "2026-05-11 R1.d.2"},
+      {"n": 32, "tp": 26, "fp": 6, "p": 0.813, "fp_rate": 0.188, "date": "2026-05-11 R1.d.3"},
+      {"n": 37, "tp": 31, "fp": 6, "p": 0.838, "fp_rate": 0.162, "date": "2026-05-11 R1.d.4"},
+      {"n": 47, "tp": 38, "fp": 9, "p": 0.8085, "fp_rate": 0.1915, "date": "2026-05-14 R1.d.5 (appmarket+ambientai+maps)"}
+    ],
+    "stage1_precision_strict_n47": "38/47 = 80.85%",
+    "stage1_false_positive_rate_strict_n47": "9/47 = 19.15%",
+    "ppt_hypothesis_1차_오탐률": "25% — combined n=47 측정 결과 19.15%. PPT 가설 충족 (-5.85%p). R1.d.5 에서 PleOS-customized 추가 10 finding (TP 7 / FP 3) — PleOS-customized origin Precision 80.0% → 76.7% (-3.3%p, FP +3건 영향) 단 Critical OpenAI API key (amb-1/2) 신규 발견 — 정성 가치 큼.",
+    "by_origin_n47": {
+      "pleos_customized": {"n": 30, "tp": 23, "fp": 7, "p": 0.7667, "comment": "PleOS 자체 패키지 (ai.umos.*, ai.pleos.*). R1.d.5 에서 +10 (TP 7 / FP 3). FP 3건: am-4 (gleo navigation), amb-4 (explicit broadcast), amb-5 (BIND_VOICE_INTERACTION signature). PleOS-customized precision -3.3%p 후퇴 단 표본 다양성 강화."},
+      "aosp_derived": {"n": 4, "tp": 2, "fp": 2, "p": 0.500, "comment": "AOSP 표준 system component (android.car.usb.handler, com.android.statementservice). 변경 없음."},
+      "external_corpus": {"n": 13, "tp": 13, "fp": 0, "p": 1.000, "comment": "MASTG + InsecureBankv2 — 변경 없음."}
+    },
+    "r1d5_findings": {
+      "n_added": 10,
+      "tp_added": 7,
+      "fp_added": 3,
+      "critical_findings": ["amb-1 OpenAI API key hardcoded", "amb-2 OpenAI API key in test variant"],
+      "systematic_patterns": ["am-3 + acc-4 hardcoded HMG OAuth secret cross-APK", "amb-1/2 + am-3 + acc-4 hardcoded credential systematic pattern"],
+      "stage3_ensemble_status": "deferred — to be applied to R1.d.2/d.3/d.4/d.5 신규 라벨 19건 in next session (McNemar power 확보 후속 단계)",
+      "proguard_yield_caveat": "ai.umos.maps yielded only 1 finding due to ProGuard-obfuscated business package. New limitation L6 candidate."
+    }
   }
 }

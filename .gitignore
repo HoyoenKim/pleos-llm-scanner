@@ -18,10 +18,18 @@ Thumbs.db
 data/apks/
 data/decompiled/
 
+# Binary artifacts — extracted native libs / vector DB / portable tools (not pipeline source)
+data/native/
+data/native_libs/
+data/rag/
+tools/
+
 # Reports — per-APK private until report-finalisation review
 # (directory itself NOT ignored so meta-analysis tables can opt-in via negation)
 data/reports/*.json
 data/reports/*.md
+# Codex multi-model per-scope detail — local only (summary codex_multimodel_agreement* is committed)
+data/reports/codex_multimodel/
 # Exception: meta-analysis aggregation tables (no PleOS source, GT-derived only)
 !data/reports/aaos_mapping_table*
 !data/reports/tara_artifact*
@@ -34,6 +42,7 @@ data/reports/*.md
 !data/reports/r4_real_world_baseline*
 !data/reports/mcnemar_test*
 !data/reports/random_sample_baseline*
+!data/reports/codex_multimodel_agreement*
 # Exception: external public corpus reports (no PleOS source — intentional vuln corpora)
 !data/reports/InsecureBankv2*
 !data/reports/UnCrackable-Level*

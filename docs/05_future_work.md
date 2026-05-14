@@ -1,17 +1,24 @@
 # Future Work — 학기 외부 작업 목록
 
-_작성: 2026-06-07 / 본 보고서 v1.0 의 Future Work 섹션과 함께 사용._
+_작성: 2026-06-07 / 본 보고서 Future Work 섹션과 함께 사용. 2026-05-14 학기 외 A~D 진행 현황 반영._
 
 본 학기 (2026-1) 안 완료한 RQ 측정값과 정직한 한계를 [`01_report.md`](01_report.md) § 7 / § 8 에 정리했다. 본 문서는 그 한계를 해소하는 **학기 외부 후속 작업 17 종** 을 4 카테고리로 정리한다.
 
-## 0. 본 학기 안 완료한 RQ 측정 (참고)
+> **학기 외 진행 현황 (2026-05-14)**: 본 17종 중 우선순위 상위 항목이 학기 외 A~D 작업으로 진행 완료되었다. 구현 도달도 + 설계 명세는 [`06_future_work_implementations.md`](06_future_work_implementations.md) 가 canonical.
+> - **F1 (n ≥ 50 확장)** → 학기 외 A: **R1.d.5 로 n=47 도달**, McNemar **p_exact=0.0215 통계적 유의** (n ≥ 60 추가 확장만 잔여).
+> - **F3 (radare2 native vuln)** → 학기 외 C: **R3.c.2 native sample n=4 정적 분석 완료** (추가 vuln 0건). Ghidra Go plugin + Frida hook 은 잔여.
+> - **RAG 도메인 지식 주입** (본 17종에 없던 신규 항목) → 학기 외 B: **Chroma 4 collection + intrinsic ablation 완료**.
+> - **동적 분석 연계** (F15 symbolic execution 의 선행 단계) → 학기 외 D: **deterministic state machine + 5 Frida hook script 완료** (AVD runtime capture 만 환경 의존 잔여).
+> - **F2 (multi-vendor ensemble)** → 학기 외 보류 항목 (Multi-model ensemble, 20%).
 
-| RQ | 본 학기 측정 | 한계 |
+## 0. 본 학기 안 완료한 RQ 측정 (참고 — 2026-05-14 학기 외 갱신 반영)
+
+| RQ | 측정 현황 | 잔여 한계 |
 |---|---|---|
-| RQ1 | R1.a transition + R1.b bootstrap CI (n=19, n=28) + R1.c paired McNemar (p=0.375) + R1.d 표본 확장 (n=19→28) + random baseline (28× bias) | n=28 으로 paired test power 부족, n ≥ 50 표본 확장 필요 |
-| RQ2 | R2.a disagreement matrix + R2.b' defender prompt 효과 (κ 0.0 → 0.9) | 외부 vendor cross-read 미실시 — 단일 벤더 (Anthropic) 한정 |
-| RQ3 | R3.a 207 APK native lib inventory (10.6%) + boundary 4 sample | Native-bound vuln 정량 미측정 — radare2 통합 필요 |
-| RQ4 | NewPipe entropy + Stage 0 semantic plausibility (~33% GOOD) | Exact accuracy 측정 불가 — ProGuard mapping 부재 |
+| RQ1 | R1.a transition + R1.b bootstrap CI (n=19 → **n=47**) + R1.c paired McNemar (**p_exact=0.0215, α=0.05 유의 도달**) + R1.d.2~d.5 표본 확장 + random baseline (28× bias) | discordant b+c=10 으로 여전히 작음 — n ≥ 60 추가 확장 시 power 강화 |
+| RQ2 | R2.a disagreement matrix + R2.b' defender prompt 효과 (κ 0.0 → 0.9) | 외부 vendor cross-read 미실시 — Multi-model ensemble 학기 외 보류 (20%) |
+| RQ3 | R3.a 207 APK native lib inventory (10.6%) + boundary 4 sample + **R3.c.2 native sample n=4 정적 분석 (학기 외 C, 추가 vuln 0건)** | dynamic JNI argument flow 미관찰 — Ghidra Go plugin + Frida hook 잔여 |
+| RQ4 | NewPipe entropy + Stage 0 semantic plausibility (n=6, GOOD+ 67%) | Exact accuracy 측정 불가 — commercial closed-source ProGuard mapping 부재 |
 
 ---
 
@@ -235,7 +242,7 @@ Claude Code 가 직접 못 하는 사용자 환경 의존 작업.
 
 학기 외부 작업 시 출발점이 될 본 학기 산출물:
 
-- **GT corpus**: `data/ground_truth/combined_labels.json` (n=28)
+- **GT corpus**: `data/ground_truth/combined_labels.json` (학기 종료 n=37 → 학기 외 A 로 **n=47**)
 - **외부 corpus reports**: `data/reports/{UnCrackable-Level1/2/3, r2pay-v1.0, InsecureBankv2}_*.{md,json}`
 - **결정론 측정 스크립트**: `src/{eval, ablation, aaos_map, tara_generate}.py`, `src/deobf/entropy.py`, `src/viz/plot_metrics.py`, `scripts/research_r{1a, 1c, 2a, 2b, 3a}_*.py`, `scripts/research_random_baseline.py`
 - **프롬프트 (calibrated)**: `configs/prompts/{stage0_deobfuscate, stage1_detect, stage3_attacker, stage3_defender, stage3_domain_expert, stage3_consensus}.md`

@@ -4,6 +4,10 @@
 > 산출 스크립트: `src/viz/plot_metrics.py` (matplotlib 3.10.8, Malgun Gothic). 산출 PNG: `data/viz/`.
 > finding ID 정의는 [`01_report.md`](01_report.md) 의 Notation 섹션 참조.
 
+> **⚠️ corpus 시점 안내 (2026-05-14)**: 본 문서와 `data/viz/01~06_*.png` 차트는 **combined n=18/n=19 시점의 스냅샷**이다.
+> 학기 외 A 작업으로 corpus 가 n=47 로 확장되었으며 (R1.d.2~d.5), 최종 정량값은 [`01_report.md`](01_report.md) § 3.2 (Stage 1 P 80.9% / Stage 3 ≥2/3 P 100% / F1 0.987) + § 3.6.5 (McNemar p_exact=0.0215) + [`bootstrap_ci.md`](../data/reports/bootstrap_ci.md) 를 참조한다.
+> 차트 PNG 재생성은 `python src/viz/plot_metrics.py` (n=47 combined_labels.json 기준) 로 가능 — 학기 외 후속.
+
 ## 차트 인덱스
 
 | # | 파일 | 다루는 측정 | PPT 매핑 |

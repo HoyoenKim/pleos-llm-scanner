@@ -1,0 +1,752 @@
+{
+  "schema_version": "codex-multimodel-agreement-v0.1",
+  "generated_at": "2026-05-14T14:26:46+09:00",
+  "scope": "full47",
+  "source_files": {
+    "claude_baseline": "data/reports/stage3_ensemble.json",
+    "ground_truth": "data/ground_truth/combined_labels.json",
+    "model_outputs": [
+      "data\\reports\\codex_multimodel\\full47_gpt-5.5.json",
+      "data\\reports\\codex_multimodel\\full47_gpt-5.4.json",
+      "data\\reports\\codex_multimodel\\full47_gpt-5.3-codex.json"
+    ]
+  },
+  "models": [
+    {
+      "model_requested": "gpt-5.5",
+      "model_actual": "gpt-5.5",
+      "source": "data\\reports\\codex_multimodel\\full47_gpt-5.5.json",
+      "generated_at": "2026-05-14T14:12:37+09:00"
+    },
+    {
+      "model_requested": "gpt-5.4",
+      "model_actual": "gpt-5.4",
+      "source": "data\\reports\\codex_multimodel\\full47_gpt-5.4.json",
+      "generated_at": "2026-05-14T14:14:13+09:00"
+    },
+    {
+      "model_requested": "gpt-5.3-codex",
+      "model_actual": "gpt-5.3-codex",
+      "source": "data\\reports\\codex_multimodel\\full47_gpt-5.3-codex.json",
+      "generated_at": "2026-05-14T14:15:18+09:00"
+    }
+  ],
+  "metrics": {
+    "claude_code_consensus": {
+      "tp": 37,
+      "fp": 0,
+      "tn": 9,
+      "fn": 1,
+      "precision": 1.0,
+      "recall": 0.9737,
+      "f1": 0.9867,
+      "report_rate": 0.7872
+    },
+    "codex_models": {
+      "gpt-5.5": {
+        "tp": 34,
+        "fp": 0,
+        "tn": 9,
+        "fn": 4,
+        "precision": 1.0,
+        "recall": 0.8947,
+        "f1": 0.9444,
+        "report_rate": 0.7234
+      },
+      "gpt-5.4": {
+        "tp": 28,
+        "fp": 0,
+        "tn": 9,
+        "fn": 10,
+        "precision": 1.0,
+        "recall": 0.7368,
+        "f1": 0.8485,
+        "report_rate": 0.5957
+      },
+      "gpt-5.3-codex": {
+        "tp": 25,
+        "fp": 0,
+        "tn": 9,
+        "fn": 13,
+        "precision": 1.0,
+        "recall": 0.6579,
+        "f1": 0.7937,
+        "report_rate": 0.5319
+      }
+    },
+    "codex_2of3_consensus": {
+      "tp": 29,
+      "fp": 0,
+      "tn": 9,
+      "fn": 9,
+      "precision": 1.0,
+      "recall": 0.7632,
+      "f1": 0.8657,
+      "report_rate": 0.617
+    }
+  },
+  "agreement": {
+    "claude_vs_codex_consensus": {
+      "agreement_count": 39,
+      "agreement_pct": 83.0,
+      "cohens_kappa": 0.6067
+    },
+    "claude_vs_gpt-5.5": {
+      "agreement_count": 44,
+      "agreement_pct": 93.6,
+      "cohens_kappa": 0.8283
+    },
+    "claude_vs_gpt-5.4": {
+      "agreement_count": 38,
+      "agreement_pct": 80.9,
+      "cohens_kappa": 0.5697
+    },
+    "claude_vs_gpt-5.3-codex": {
+      "agreement_count": 35,
+      "agreement_pct": 74.5,
+      "cohens_kappa": 0.4699
+    }
+  },
+  "codex_vote_distribution": {
+    "0": 13,
+    "1": 5,
+    "2": 5,
+    "3": 24
+  },
+  "discordance_buckets": {
+    "codex_suppressed_claude_fp": [],
+    "codex_recovered_claude_fn": [],
+    "codex_promoted_claude_filtered_fp": [],
+    "both_missed_gt_tp": [
+      "vc-7"
+    ],
+    "both_reported_fp": [],
+    "codex_model_disagreement": [
+      "ssl-3",
+      "ssl-5",
+      "ib2-8",
+      "ib2-9",
+      "usb-1",
+      "acc-1",
+      "acc-4",
+      "acc-5",
+      "amb-2",
+      "amb-3"
+    ]
+  },
+  "rows": [
+    {
+      "id": "vc-1",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "vc-2",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "vc-3",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "vc-4",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "vc-5",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "vc-6",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "vc-7",
+      "apk": "ai.umos.vehiclecontrol",
+      "gt_is_real": true,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "ssl-1",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ssl-2",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ssl-3",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 1,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "lmp-1",
+      "apk": "ai.pleos.llm.model.provider",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "lmp-2",
+      "apk": "ai.pleos.llm.model.provider",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ssl-4",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "ssl-5",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 2,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ssl-6",
+      "apk": "ai.pleos.sync.syslog",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ucl1-1",
+      "apk": "UnCrackable-Level1",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ucl1-2",
+      "apk": "UnCrackable-Level1",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ucl1-3",
+      "apk": "UnCrackable-Level1",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "ucl3-1",
+      "apk": "UnCrackable-Level3",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-1",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-2",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-3",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-4",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-5",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-6",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-7",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-8",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 2,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ib2-9",
+      "apk": "InsecureBankv2",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 2,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "usb-1",
+      "apk": "android.car.usb.handler",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 2,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "usb-2",
+      "apk": "android.car.usb.handler",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "usb-3",
+      "apk": "android.car.usb.handler",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "ss-1",
+      "apk": "com.android.statementservice",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "acc-1",
+      "apk": "ai.pleos.playground.account",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 1,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "acc-2",
+      "apk": "ai.pleos.playground.account",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "acc-3",
+      "apk": "ai.pleos.playground.account",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "acc-4",
+      "apk": "ai.pleos.playground.account",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 1,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "acc-5",
+      "apk": "ai.pleos.playground.account",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 1,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "am-1",
+      "apk": "ai.umos.appmarket",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "am-2",
+      "apk": "ai.umos.appmarket",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "am-3",
+      "apk": "ai.umos.appmarket",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "am-4",
+      "apk": "ai.umos.appmarket",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "amb-1",
+      "apk": "ai.umos.ambientai",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "amb-2",
+      "apk": "ai.umos.ambientai",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 2,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "amb-3",
+      "apk": "ai.umos.ambientai",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 1,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": true
+      }
+    },
+    {
+      "id": "amb-4",
+      "apk": "ai.umos.ambientai",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "amb-5",
+      "apk": "ai.umos.ambientai",
+      "gt_is_real": false,
+      "claude_report": false,
+      "codex_votes_report": 0,
+      "codex_consensus_report": false,
+      "model_votes": {
+        "gpt-5.3-codex": false,
+        "gpt-5.4": false,
+        "gpt-5.5": false
+      }
+    },
+    {
+      "id": "map-1",
+      "apk": "ai.umos.maps.android.navigation.app",
+      "gt_is_real": true,
+      "claude_report": true,
+      "codex_votes_report": 3,
+      "codex_consensus_report": true,
+      "model_votes": {
+        "gpt-5.3-codex": true,
+        "gpt-5.4": true,
+        "gpt-5.5": true
+      }
+    }
+  ],
+  "sample19_acceptance": null,
+  "interpretation": "multi-model 자체보다 prompt calibration과 evidence packaging이 더 중요함"
+}
