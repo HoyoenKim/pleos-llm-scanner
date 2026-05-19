@@ -1,174 +1,181 @@
 # Case Studies
 
-Representative cases from the final PleOS / AAOS IVI APK analysis. Public files do not reproduce proprietary PleOS code snippets or secret literals.
-
-## Runtime Claim Levels
-
-These levels describe how strong the evidence is for a case. The static `n=47` metric is separate from runtime claim strength.
-
-| Level | Meaning | Boundary |
-|---|---|---|
-| L0 | Static-only evidence | Decompiled code, manifest, or config evidence only |
-| L1 | Runtime reachability observed | Component invocation, provider query, broadcast delivery, Binder call, or hook trigger observed |
-| L2 | Local data/state effect observed | Safe provider response, marker value, log emission, preference/database state change, or equivalent local effect observed |
-| L3 | Emulator-visible UI/IVI behavior effect observed | Reversible UI marker, navigation effect, or emulator-visible IVI behavior observed |
-| L4 | End-to-end exploit impact | Full exploit chain with externally meaningful impact |
-
-This project does not claim L4 real-vehicle control unless explicitly supported by evidence. The final public docs use conservative claim levels.
+Representative final cases from the 15-week PleOS IVI APK analysis. Code excerpts are not reproduced here; public files keep PleOS proprietary snippets redacted.
 
 ## Case Map
 
-| Finding | Category | Static Verdict | Conservative Claim Level | Why It Matters |
-|---|---|---|---|---|
-| `amb-1` | hardcoded credential | TP | L0 | production LLM API-key exposure pattern |
-| `am-3` | hardcoded credential | TP | L0 | OAuth client-secret pattern in account flow |
-| `acc-4` | exported component / secret flow | TP | L0 | SSO secret crosses an Activity boundary |
-| `ssl-6` | plaintext transport | TP | L0 | gRPC plaintext in diagnostic/system-log context |
-| `lmp-1` | exported provider | TP | L1/L2 when runtime response evidence is attached | IVI LLM prompt/corpus exposure surface |
-| `vc-6` | exported receiver | TP | L0 unless runtime reachability evidence is attached | untrusted payload accepted by receiver under IVI threat model |
-| `vc-3/4` | permission API | FP | L0 | caller route blocked |
-| `usb-2` | USB permission path | FP | L0 | framework permission checks block exploitability |
-| `ss-1` | exported receiver | FP | L0 | protected broadcast blocks normal-app trigger |
-| `ssl-5` / `ucl1-1` | hardcoded crypto comparison | TP | L0 | PleOS self-label aligns with external MASTG pattern |
+| Case | Finding | Type | Final Verdict | Why It Matters |
+|---:|---|---|---|---|
+| 1 | `amb-1` | hardcoded credential | TP | production LLM API key in AmbientAI |
+| 2 | `am-3` | hardcoded credential | TP | HMG OAuth client secret in AppMarket |
+| 3 | `acc-4` | exported component / secret flow | TP | SSO secret crosses Activity boundary |
+| 4 | `ssl-6` | plaintext transport | TP | gRPC `.usePlaintext()` in SysLog |
+| 5 | `lmp-1` | exported provider | TP | IVI LLM prompt/corpus disclosure |
+| 6 | `vc-6` | vehicle-control spoofing | TP | exported receiver accepts untrusted MAC-like payload |
+| 7 | `vc-3/4` | permission API | FP | caller route blocked |
+| 8 | `usb-2` | USB permission path | FP | framework permission checks block exploitability |
+| 9 | `ss-1` | exported receiver | FP | protected broadcast blocks normal-app trigger |
+| 10 | `ssl-5` / `ucl1-1` | hardcoded crypto comparison | TP | PleOS self-label aligns with external MASTG pattern |
 
-## 1. `amb-1` - AmbientAI Production LLM API Key
-
-| Field | Value |
-|---|---|
-| Finding | Production LLM API-key exposure pattern |
-| Evidence type | Static decompiled-code evidence |
-| Why Stage 1 flagged it | External LLM-style credential pattern appeared in production APK code |
-| Why Stage 2 kept it | The value was associated with reachable production call paths, not only a dead string |
-| Final claim level | L0 |
-| Public redaction note | Literal secret values are redacted |
-
-Final claim: `amb-1` is a confirmed credential-exposure finding in the static corpus. The public artifact does not publish the secret literal.
-
-## 2. `am-3` - AppMarket OAuth Secret
+## 1. `amb-1` — AmbientAI Production LLM API Key
 
 | Field | Value |
 |---|---|
-| Finding | OAuth client-secret pattern in AppMarket account flow |
-| Evidence type | Static decompiled-code and flow-context evidence |
-| Why Stage 1 flagged it | Credential-like `client_secret` material appeared near authentication code |
-| Why Stage 2 kept it | The surrounding flow indicated production account integration rather than a harmless identifier |
-| Final claim level | L0 |
-| Public redaction note | Secret values are redacted |
+| APK | `ai.umos.ambientai` |
+| Category | `hardcoded` |
+| Stage 1 | HIGH |
+| Final | TP HIGH |
 
-Final claim: `am-3` is a confirmed static credential finding. It is not presented as a completed account-takeover exploit.
+`amb-1` is the most important credential finding in the final corpus. The APK contained an `sk-...` style external LLM API credential on a production call path. A related release-shipped test handler also repeated the same credential pattern, so the issue is not best described as a dead string.
 
-## 3. `acc-4` - SSO Activity Receives Secret Through Intent Extra
+Security impact:
 
-| Field | Value |
-|---|---|
-| Finding | SSO secret crosses an Activity boundary |
-| Evidence type | Manifest and decompiled-source context |
-| Why Stage 1 flagged it | Secret-like extra name appeared in an Activity flow |
-| Why Stage 2 kept it | The value crossed a component boundary and was not only an internal local variable |
-| Final claim level | L0 |
-| Public redaction note | Public docs describe the boundary and omit proprietary code |
+- API key extraction by APK reverse engineering
+- billing abuse or unauthorized API calls
+- privacy risk when LLM requests contain voice/message/contact context
 
-Final claim: `acc-4` is a confirmed boundary-crossing secret-flow finding in the static corpus.
+Recommended treatment:
 
-## 4. `ssl-6` - SysLog gRPC Plaintext Transport
+- remove secrets from APK assets/classes
+- rotate exposed credentials
+- move LLM credential use to a server-side broker or KeyStore-bound trusted component
+
+## 2. `am-3` — AppMarket HMG OAuth Secret
 
 | Field | Value |
 |---|---|
-| Finding | Plaintext gRPC transport in diagnostic/system-log context |
-| Evidence type | Static API-use evidence plus service context |
-| Why Stage 1 flagged it | `.usePlaintext()` appeared in network-client setup |
-| Why Stage 2 kept it | The call was part of a diagnostic/system-log package rather than an unreachable sample |
-| Final claim level | L0 |
-| Public redaction note | Endpoint and code excerpts stay redacted when needed |
+| APK | `ai.umos.appmarket` |
+| Category | `hardcoded` |
+| Stage 1 | HIGH |
+| Final | TP HIGH |
 
-Final claim: `ssl-6` is a confirmed static transport-security finding.
+`am-3` exposed HMG OAuth `client_id` and `client_secret` material in AppMarket. The finding matters because it connects to a related account/SSO flow (`acc-4`), creating a cross-APK credential-handling pattern rather than a single isolated string.
 
-## 5. `lmp-1` - Exported LLM Prompt Provider
+Security impact:
 
-| Field | Value |
-|---|---|
-| Finding | Exported provider exposes LLM prompt/corpus surface |
-| Evidence type | Manifest/provider evidence and selected runtime-provider track |
-| Why Stage 1 flagged it | Provider and prompt/corpus terms appeared in a sensitive IVI LLM package |
-| Why Stage 2 kept it | Provider exposure was security-relevant under the IVI threat model |
-| Final claim level | L1 or L2 only when runtime query/response evidence is attached; otherwise L0 |
-| Public redaction note | Prompt/corpus contents are not reproduced in public docs |
+- global client identity exposure from one APK reverse
+- credential reuse risk across AppMarket and Account flows
+- server-side abuse until rotation and client hardening
 
-Final claim: `lmp-1` is a confirmed static provider-exposure finding. Runtime evidence can upgrade the claim to reachability or local data exposure, but the static metric does not depend on that runtime track.
-
-## 6. `vc-6` - VehicleBroadcastReceiver Payload Surface
+## 3. `acc-4` — SSO Activity Receives Secret Through Intent Extra
 
 | Field | Value |
 |---|---|
-| Finding | Exported receiver accepts untrusted MAC-like payload under IVI threat model |
-| Evidence type | Static receiver, manifest, and payload-handling evidence |
-| Why Stage 1 flagged it | Vehicle-adjacent receiver handled externally shaped payload data |
-| Why Stage 2 kept it | The receiver surface remained relevant after contextual checks |
-| Final claim level | Static TP at L0 unless runtime receiver invocation is observed; L1/L2 only with local evidence |
-| Public redaction note | No proprietary code excerpts or vehicle-control secrets are published |
+| APK | `ai.pleos.playground.account` |
+| Category | `intent` |
+| Stage 1 | HIGH |
+| Final | TP HIGH |
 
-Final claim: `vc-6` is a static TP under the IVI threat model. It is not claimed as remote exploitation or real-vehicle control. Any stronger runtime claim must cite local evidence separately.
+`SsoActivity` receives `user-client-secret` through an Intent extra. Intent extras are observable through crash dumps, instrumentation, logs, or same-device malicious apps depending on component exposure and caller controls.
 
-## 7. `vc-3` / `vc-4` - Runtime Permission Grant/Revoke False Positive
+This finding is connected to `am-3`: the same credential domain appears in both AppMarket and Account flows. The final interpretation is a systematic credential-boundary problem.
 
-| Field | Value |
-|---|---|
-| Finding | Permission-management API looked dangerous in Stage 1 |
-| Evidence type | Decompiled API-use evidence plus caller-route context |
-| Why Stage 1 flagged it | `grantRuntimePermission` / `revokeRuntimePermission` are sensitive APIs |
-| Why Stage 2 removed it | Caller route was blocked by manifest, navigation, or internal binding constraints |
-| Final claim level | L0 FP |
-| Public redaction note | Public docs summarize the route-blocking reason |
-
-Final claim: these rows are false positives in the final corpus.
-
-## 8. `usb-2` - USB Permission Path False Positive
+## 4. `ssl-6` — SysLog gRPC Plaintext Transport
 
 | Field | Value |
 |---|---|
-| Finding | USB permission path looked caller-controllable |
-| Evidence type | Framework source and permission-check context |
-| Why Stage 1 flagged it | USB permission APIs appeared in a security-sensitive component |
-| Why Stage 2 removed it | Framework permission checks blocked the normal-app trigger path |
-| Final claim level | L0 FP |
-| Public redaction note | Public docs keep this as a framework blocking-control example |
+| APK | `ai.pleos.sync.syslog` |
+| Category | `network` |
+| Stage 1 | MEDIUM |
+| Final | TP HIGH |
 
-Final claim: `usb-2` is a false positive and is useful as a Stage 2 control case.
+The relevant pattern is not merely an `http://` string. The gRPC channel builder calls `.usePlaintext()`, which explicitly disables TLS transport. Because the service handles system/logging context, the finding was escalated to HIGH in final review.
 
-## 9. `ss-1` - `BOOT_COMPLETED` Receiver False Positive
+Recommended treatment:
 
-| Field | Value |
-|---|---|
-| Finding | Exported receiver looked externally triggerable |
-| Evidence type | Manifest and Android protected-broadcast semantics |
-| Why Stage 1 flagged it | Exported receiver and broadcast handling appeared suspicious |
-| Why Stage 2 removed it | `BOOT_COMPLETED` is a protected broadcast, so a normal app cannot trigger the path |
-| Final claim level | L0 FP |
-| Public redaction note | Public docs describe only Android platform semantics |
+- use TLS channel credentials
+- separate prod/dev endpoints
+- enforce certificate validation and deployment policy
 
-Final claim: `ss-1` is a false positive in the final corpus.
-
-## 10. `ssl-5` and `ucl1-1` - Hardcoded Crypto Pattern
+## 5. `lmp-1` — Exported LLM Prompt Provider
 
 | Field | Value |
 |---|---|
-| Finding | Hardcoded crypto material or comparison pattern |
-| Evidence type | Static source-pattern evidence |
-| Why Stage 1 flagged it | Crypto-sensitive literals and comparison logic appeared in relevant code |
-| Why Stage 2 kept it | PleOS self-label and external MASTG-style evidence aligned on the pattern |
-| Final claim level | L0 |
-| Public redaction note | Sensitive literals are not reproduced |
+| APK | `ai.pleos.llm.model.provider` |
+| Category | `intent` |
+| Stage 1 | HIGH |
+| Final | TP HIGH |
 
-Final claim: these rows show that the PleOS self-label pattern aligns with an external vulnerable-corpus pattern.
+`PromptsContentProvider` exposes prompt/corpus material without a strong permission gate. In a normal Android app this would be information disclosure. In an IVI LLM context it is more specific: prompt/corpus leakage helps prepare prompt injection, jailbreak, or model-behavior probing attacks.
+
+Recommended treatment:
+
+- mark provider non-exported where possible
+- require signature-level read permission
+- split public metadata from prompt/system corpus
+
+## 6. `vc-6` — VehicleBroadcastReceiver MAC Payload
+
+| Field | Value |
+|---|---|
+| APK | `ai.umos.vehiclecontrol` |
+| Category | `intent` |
+| Stage 1 | MEDIUM |
+| Final | TP HIGH / Critical TARA concern |
+
+`VehicleBroadcastReceiver` accepts a MAC-like external payload and connects it to vehicle/Bluetooth state. Because the asset is vehicle control context, the final risk is higher than the initial category severity suggests.
+
+Recommended treatment:
+
+- restrict receiver to trusted caller
+- require signature permission
+- validate MAC format and trusted source
+- prefer explicit in-process or bound-service channel
+
+## 7. `vc-3` / `vc-4` — Runtime Permission Grant/Revoke FP
+
+| Field | Value |
+|---|---|
+| APK | `ai.umos.vehiclecontrol` |
+| Category | `permission` |
+| Stage 1 | HIGH |
+| Final | FP |
+
+Stage 1 flagged calls to permission grant/revoke APIs. Stage 2 removed them because the external route was blocked by a combination of manifest, internal-only Compose navigation, route binding, and caller reachability constraints.
+
+This is the cleanest example of why API-name search alone is insufficient.
+
+## 8. `usb-2` — USB Permission Path FP
+
+| Field | Value |
+|---|---|
+| APK | `android.car.usb.handler` |
+| Category | `permission` |
+| Stage 1 | HIGH |
+| Final | FP |
+
+Stage 1 saw a permission-relevant USB path. Contextual verification found framework-level constraints such as permission gating and component resolution. The path is security-sensitive, but not a confirmed caller-controlled vulnerability in this corpus.
+
+## 9. `ss-1` — BOOT_COMPLETED Receiver FP
+
+| Field | Value |
+|---|---|
+| APK | `com.android.statementservice` |
+| Category | `intent` |
+| Stage 1 | LOW |
+| Final | FP |
+
+An exported `BOOT_COMPLETED` receiver can look suspicious in a shallow scan. Android protects this broadcast, so a normal third-party app cannot simply spoof it. This case validates the protected-broadcast check in Stage 2.
+
+## 10. `ssl-5` and `ucl1-1` — Hardcoded Crypto Pattern
+
+| Finding | Source | Meaning |
+|---|---|---|
+| `ssl-5` | PleOS self-label | BuildConfig-derived material enters crypto/KDF path |
+| `ucl1-1` | OWASP MASTG | hardcoded AES key in public challenge |
+
+This comparison ties a PleOS-specific hardcoded credential/crypto pattern to an external vulnerable-corpus pattern. It does not prove the two are identical in exploitability, but it shows the detector is not only learning project-specific language.
 
 ## Dynamic Verification Hooks
 
-These hooks are completed verification infrastructure. Runtime capture remains environment-dependent and must not be confused with the static `n=47` metric.
+The final artifact includes state-machine and Frida hook scaffolding for:
 
-| Finding | Hook Purpose | Metric Boundary |
-|---|---|---|
-| `vc-5` | observe implicit broadcast path | not part of static precision/recall |
-| `vc-6` | observe receiver caller/source and payload | can upgrade claim only with captured runtime evidence |
-| `ssl-2` | observe token-leak emission path | selected runtime evidence track |
-| `ssl-5` | observe KDF passphrase use | selected runtime evidence track |
-| `lmp-1` | confirm provider query caller and row exposure | can support L1/L2 claim strength |
+| Finding | Hook Purpose |
+|---|---|
+| `vc-5` | confirm implicit broadcast target at runtime |
+| `vc-6` | observe receiver caller/source and payload |
+| `ssl-2` | confirm token `toString()` emission |
+| `ssl-5` | confirm BuildConfig material entering KDF |
+| `lmp-1` | confirm provider query caller and row exposure |
+
+These hooks are completed as verification infrastructure. Runtime capture remains environment-dependent and should not be confused with the static `n=47` metric.
