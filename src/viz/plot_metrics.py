@@ -4,7 +4,7 @@ Generate publication-quality charts from the GT + ablation + entropy measurement
 
 Outputs (data/viz/*.png):
 - 01_category_distribution.png   : finding 카테고리 분포 (combined n=47)
-- 02_apk_severity_heatmap.png    : APK × severity 히트맵 (12 APK, n=47)
+- 02_apk_severity_heatmap.png    : verified vulnerabilities by APK and severity
 - 03_fp_rate_trend.png           : 1차/2차/3차 오탐률 (PPT 가설 vs 실측 n=18/n=47)
 - 04_deobf_accuracy_trend.png    : Corpus별 난독화 분포 + LLM rename 정확도 (단일 측정, 시간축 아님)
 - 05_ablation_bars.png           : A 변형 + B threshold sensitivity (combined n=47)
@@ -75,14 +75,15 @@ def chart_category_distribution() -> None:
 
 # ---------------------------------------------------------------- 02 severity heatmap
 def chart_severity_heatmap() -> None:
-    # combined_labels.json n=47 기준 — apk × true_severity TP count + FP 별도 annotation
+    # combined_labels.json n=47: verified vulnerabilities by APK/final severity,
+    # with rejected candidates shown as a separate right-side annotation.
     apks = [
         "VehicleControl", "sync.syslog", "llm.model.provider", "account",
         "appmarket", "ambientai", "maps", "UnCrackable-L1", "UnCrackable-L3",
         "InsecureBankv2", "usb.handler", "statementservice",
     ]
     sev_levels = ["HIGH", "MEDIUM", "LOW"]
-    tp_matrix = np.array(
+    verified_matrix = np.array(
         [
             [1, 1, 1],   # VehicleControl  — vc-5/6/7
             [5, 1, 0],   # sync.syslog     — ssl-1/2/4/5/6 HIGH, ssl-3 MED
@@ -99,37 +100,44 @@ def chart_severity_heatmap() -> None:
         ],
         dtype=int,
     )
-    fp_per_apk = np.array([4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1])  # 합계 9 FP
+    rejected_per_apk = np.array([4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1])  # total 9 rejected
 
-    fig, ax = plt.subplots(figsize=(7.4, 6.4))
-    im = ax.imshow(tp_matrix, aspect="auto", cmap="Blues", vmin=0, vmax=tp_matrix.max())
+    fig, ax = plt.subplots(figsize=(8.2, 6.8))
+    im = ax.imshow(verified_matrix, aspect="auto", cmap="Blues", vmin=0, vmax=verified_matrix.max())
     ax.set_xticks(range(len(sev_levels)))
     ax.set_xticklabels(sev_levels)
     ax.set_yticks(range(len(apks)))
     ax.set_yticklabels(apks, fontsize=9)
-    ax.set_title("APK × Severity — True Positive (n=38 TP) + FP 표시 (combined n=47)")
+    ax.set_title("Verified Security Vulnerabilities By APK And Severity", pad=30)
+    ax.text(
+        0.5, 1.035,
+        "38 verified vulnerabilities by final severity; 9 false-positive candidates.",
+        transform=ax.transAxes, ha="center", va="bottom", fontsize=9, color="#555",
+    )
 
     for i in range(len(apks)):
         for j in range(len(sev_levels)):
-            v = tp_matrix[i, j]
+            v = verified_matrix[i, j]
             if v > 0:
                 ax.text(j, i, str(v), ha="center", va="center",
                         color="white" if v >= 4 else "#222", fontweight="bold")
 
-    # FP annotation column on the right
+    # Rejected candidates are not assigned final severity, so they are shown outside the heatmap.
     ax2 = ax.twinx()
     ax2.set_yticks(range(len(apks)))
-    ax2.set_yticklabels([f"FP={n}" for n in fp_per_apk])
+    ax2.set_yticklabels([f"FP={n}" for n in rejected_per_apk])
     ax2.set_ylim(ax.get_ylim())
-    ax2.tick_params(axis="y", labelsize=8, labelcolor="#c73e1d")
+    ax2.tick_params(axis="y", labelsize=8, labelcolor="#d9902f")
 
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.20)
-    cbar.set_label("True Positive count", fontsize=9)
-    ax.text(
-        0.5, -0.10,
-        "FP 9건 — VehicleControl 4 (vc-1~4 deep-link FP) + ambientai 2 + appmarket/usb.handler/statementservice 각 1",
-        transform=ax.transAxes, ha="center", va="center", fontsize=7.5, color="#666",
+    cbar.ax.set_title("Count", fontsize=8, pad=8)
+    fig.text(
+        0.5, 0.075,
+        "This chart is a coverage map for the evaluated corpus, not a prevalence estimate for all PleOS APKs.\n"
+        "False-positive candidates are shown outside the heatmap because they do not receive final severity.",
+        ha="center", va="center", fontsize=8.2, color="#666",
     )
+    fig.subplots_adjust(bottom=0.14, top=0.84)
     fig.savefig(OUT_DIR / "02_apk_severity_heatmap.png")
     plt.close(fig)
 
