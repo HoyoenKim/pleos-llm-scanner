@@ -40,19 +40,31 @@ matplotlib.rcParams["font.size"] = 10
 OUT_DIR = Path("data/viz")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# ---------------------------------------------------------------- 01 category distribution
+# ---------------------------------------------------------------- 01 candidate verification by vulnerability pattern
 def chart_category_distribution() -> None:
-    # combined_labels.json n=47 기준 (is_real → TP/FP, stage1_category 그룹)
-    cats = ["intent", "hardcoded", "network", "crypto", "permission", "reflection_dynamic"]
-    tp = [14, 11, 7, 5, 0, 1]
-    fp = [4, 0, 2, 0, 3, 0]
+    # combined_labels.json n=47: is_real -> kept/rejected, grouped by original candidate category.
+    cats = [
+        "Intent /\nexported component",
+        "Hardcoded\nsecret",
+        "Network\nconfig",
+        "Crypto\nmisuse",
+        "Permission\nexposure",
+        "Dynamic code /\nreflection",
+    ]
+    kept = [14, 11, 7, 5, 0, 1]
+    rejected = [4, 0, 2, 0, 3, 0]
     x = np.arange(len(cats))
     width = 0.42
-    fig, ax = plt.subplots(figsize=(9.0, 4.4))
-    b1 = ax.bar(x - width / 2, tp, width, label="True Positive", color="#3a7d44")
-    b2 = ax.bar(x + width / 2, fp, width, label="False Positive", color="#c73e1d")
-    ax.set_ylabel("개수 (n=47)")
-    ax.set_title("Stage 1 카테고리별 정·오탐 분포 (combined n=47)")
+    fig, ax = plt.subplots(figsize=(10.4, 5.2))
+    b1 = ax.bar(x - width / 2, kept, width, label="Kept for reporting (TP)", color="#2f6f9f")
+    b2 = ax.bar(x + width / 2, rejected, width, label="Rejected after context check (FP)", color="#d9902f")
+    ax.set_ylabel("Number of LLM-proposed candidates")
+    ax.set_title("LLM Security Candidates After Context Verification", pad=24)
+    ax.text(
+        0.5, 1.03,
+        "47 candidates proposed from decompiled APK code; 38 kept for reporting, 9 rejected after Android context checks.",
+        transform=ax.transAxes, ha="center", va="bottom", fontsize=9.5, color="#555",
+    )
     ax.set_xticks(x)
     ax.set_xticklabels(cats, fontsize=9)
     ax.set_yticks(range(0, 16, 2))
@@ -64,23 +76,30 @@ def chart_category_distribution() -> None:
             h = b.get_height()
             if h:
                 ax.text(b.get_x() + b.get_width() / 2, h + 0.12, f"{int(h)}", ha="center", fontsize=9)
-    ax.text(
-        0.99, -0.18,
-        "combined GT n=47 — PleOS-customized 30 + MASTG 4 + InsecureBankv2 9 + AOSP-derived 4 (TP 38 / FP 9)",
-        transform=ax.transAxes, ha="right", va="center", fontsize=8, color="#666",
+    fig.text(
+        0.5, 0.105,
+        "Context verification checked manifest exposure, caller reachability, permission gates, route binding,\n"
+        "and Android framework controls before deciding whether each candidate should remain reportable.",
+        ha="center", va="center", fontsize=8.5, color="#555",
     )
+    fig.text(
+        0.5, 0.060,
+        "Candidate sources: PleOS-customized (30), MASTG (4), InsecureBankv2 (9), AOSP-derived (4).",
+        ha="center", va="center", fontsize=8.2, color="#666",
+    )
+    fig.subplots_adjust(bottom=0.24, top=0.82)
     fig.savefig(OUT_DIR / "01_category_distribution.png")
     plt.close(fig)
 
 
 # ---------------------------------------------------------------- 02 severity heatmap
 def chart_severity_heatmap() -> None:
-    # combined_labels.json n=47: verified vulnerabilities by APK/final severity,
-    # with rejected candidates shown as a separate right-side annotation.
+    # combined_labels.json n=47: verified vulnerabilities by APK/final severity.
     apks = [
-        "VehicleControl", "sync.syslog", "llm.model.provider", "account",
-        "appmarket", "ambientai", "maps", "UnCrackable-L1", "UnCrackable-L3",
-        "InsecureBankv2", "usb.handler", "statementservice",
+        "VehicleControl [PleOS]", "sync.syslog [PleOS]", "llm.model.provider [PleOS]",
+        "account [PleOS]", "appmarket [PleOS]", "ambientai [PleOS]", "maps [PleOS]",
+        "UnCrackable-L1 [MASTG]", "UnCrackable-L3 [MASTG]",
+        "InsecureBankv2 [External]", "usb.handler [AOSP]", "statementservice [AOSP]",
     ]
     sev_levels = ["HIGH", "MEDIUM", "LOW"]
     verified_matrix = np.array(
@@ -100,9 +119,8 @@ def chart_severity_heatmap() -> None:
         ],
         dtype=int,
     )
-    rejected_per_apk = np.array([4, 0, 0, 0, 1, 2, 0, 0, 0, 0, 1, 1])  # total 9 rejected
 
-    fig, ax = plt.subplots(figsize=(8.2, 6.8))
+    fig, ax = plt.subplots(figsize=(8.4, 6.8))
     im = ax.imshow(verified_matrix, aspect="auto", cmap="Blues", vmin=0, vmax=verified_matrix.max())
     ax.set_xticks(range(len(sev_levels)))
     ax.set_xticklabels(sev_levels)
@@ -111,7 +129,7 @@ def chart_severity_heatmap() -> None:
     ax.set_title("Verified Security Vulnerabilities By APK And Severity", pad=30)
     ax.text(
         0.5, 1.035,
-        "38 verified vulnerabilities by final severity; 9 false-positive candidates.",
+        "38 verified vulnerabilities by final severity; PleOS rows are marked for project-target context.",
         transform=ax.transAxes, ha="center", va="bottom", fontsize=9, color="#555",
     )
 
@@ -122,22 +140,15 @@ def chart_severity_heatmap() -> None:
                 ax.text(j, i, str(v), ha="center", va="center",
                         color="white" if v >= 4 else "#222", fontweight="bold")
 
-    # Rejected candidates are not assigned final severity, so they are shown outside the heatmap.
-    ax2 = ax.twinx()
-    ax2.set_yticks(range(len(apks)))
-    ax2.set_yticklabels([f"FP={n}" for n in rejected_per_apk])
-    ax2.set_ylim(ax.get_ylim())
-    ax2.tick_params(axis="y", labelsize=8, labelcolor="#d9902f")
-
-    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.20)
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.08)
     cbar.ax.set_title("Count", fontsize=8, pad=8)
     fig.text(
         0.5, 0.075,
-        "This chart is a coverage map for the evaluated corpus, not a prevalence estimate for all PleOS APKs.\n"
-        "False-positive candidates are shown outside the heatmap because they do not receive final severity.",
+        "Rows marked [PleOS] are the project target apps; HIGH cells indicate priority targets for follow-up analysis.\n"
+        "Runtime PoC tracks focus on selected PleOS rows, including VehicleControl and maps.",
         ha="center", va="center", fontsize=8.2, color="#666",
     )
-    fig.subplots_adjust(bottom=0.14, top=0.84)
+    fig.subplots_adjust(left=0.25, bottom=0.14, top=0.84)
     fig.savefig(OUT_DIR / "02_apk_severity_heatmap.png")
     plt.close(fig)
 

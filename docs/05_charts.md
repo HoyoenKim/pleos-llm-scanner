@@ -7,7 +7,7 @@ This document records the chart artifacts used by the final report. The chart im
 | Chart | Source input | Command | Boundary |
 |---|---|---|---|
 | `data/viz/01_category_distribution.png` | 47-candidate vulnerability-pattern summary embedded in plotting script | `python src/viz/plot_metrics.py` | LLM candidates after context verification; TP/FP appears only in the legend |
-| `data/viz/02_apk_severity_heatmap.png` | verified-vulnerability APK/severity matrix plus false-positive candidate counts in script | same | coverage map for the evaluated corpus, not a prevalence estimate for all PleOS APKs |
+| `data/viz/02_apk_severity_heatmap.png` | verified-vulnerability APK/severity matrix in script | same | HIGH-severity coverage map for follow-up analysis; PleOS rows are marked |
 | `data/viz/03_fp_rate_trend.png` | Stage 1/2/3 FP-rate comparison | same | stage comparison, not chronological trend |
 | `data/viz/04_deobf_accuracy_trend.png` | `data/deobf/*.json` plus fixed corpus annotations | same | corpus comparison, not time trend |
 | `data/viz/05_ablation_bars.png` | final `n=47` ablation and consensus-threshold values | same | threshold sensitivity, not new independent evaluation |
@@ -17,7 +17,7 @@ This document records the chart artifacts used by the final report. The chart im
 
 - The Stage 3 `0.0%` false-positive rate means no false positives among accepted Stage 3 findings in this measured corpus. It is not a universal guarantee.
 - Chart 01 shows candidates proposed from decompiled APK code and then kept or rejected after Android context checks.
-- Chart 02 colors count verified security vulnerabilities by final severity. FP candidates are shown outside the heatmap because they do not receive final severity.
+- Chart 02 colors count verified security vulnerabilities by final severity. Rows marked `[PleOS]` are project target apps, and HIGH cells identify priority APKs for follow-up analysis.
 - The FP-rate chart uses "trend" in the filename, but the x-axis is pipeline stage, not time.
 - The deobfuscation chart uses "trend" in the filename, but it compares corpora, not time.
 - The deobfuscation chart combines two measurements: HIGH-obfuscation ratio and rename-evaluation annotations. The bar height is not rename accuracy.
