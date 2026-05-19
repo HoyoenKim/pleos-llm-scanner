@@ -1,8 +1,8 @@
 # Research Extension Plan
 
-This document lists optional research expansions after the final 15-week artifact. It does not re-list completed reinforcement experiments A-E as unfinished work.
+This document describes future experiment designs that build beyond the final 15-week artifact. It does not re-list completed reinforcement experiments A-E as unfinished work.
 
-## Current Fixed Baseline
+## Fixed Baseline
 
 | Baseline Item | Final Value |
 |---|---:|
@@ -13,61 +13,54 @@ This document lists optional research expansions after the final 15-week artifac
 | Native static sample | 4 |
 | Additional native-bound vulnerabilities | 0 |
 
-The main research baseline is fixed: Stage 3 multi-perspective consensus is currently the strongest validation layer. Codex 3-model cross-read was useful as an independent check, but it did not outperform the Stage 3 baseline.
+Any extension should treat Stage 3 `>=2/3` as the current baseline.
 
-## Extension Roadmap
+## Experiment Designs
 
-| Priority | Extension | Question | Done Criteria |
-|---:|---|---|---|
-| 1 | Independent label review | Do external reviewers agree with self-labelled PleOS findings? | reviewer matrix, adjudication log, updated confidence labels |
-| 2 | Corpus expansion to `n>=60` | Does Stage 3 improvement remain significant? | updated bootstrap CI and McNemar table |
-| 3 | RAG end-to-end ablation | Does retrieved context improve prompted judgment? | paired `no_rag` vs `with_rag` metrics |
-| 4 | Runtime validation | Which static findings become stronger/weaker with Frida evidence? | at least 3 reproducible runtime traces |
-| 5 | Native deep dive | Are secrets/endpoints hidden beyond string-level native scan? | Ghidra/radare2 use-site analysis for high-value libs |
-| 6 | Public redaction expansion | Can all final evidence be shared safely? | public masked full `n=47` report reviewed |
-| 7 | OS transfer | Does the method transfer to QNX or AGL? | labelled pilot corpus and OS-specific rule adaptation |
+| Design | Question | Conditions | Metrics | Leakage Control |
+|---|---|---|---|---|
+| Independent label review | Do external reviewers agree with self-labelled PleOS findings? | reviewer A, reviewer B, adjudicated label | agreement rate, adjudication count, updated confidence | reviewers do not see final verdicts |
+| Corpus expansion | Does Stage 3 improvement remain significant at larger `n`? | current corpus vs expanded corpus | precision, recall, F1, bootstrap CI, McNemar | preserve origin labels and avoid duplicate findings |
+| RAG end-to-end ablation | Does retrieved context improve prompted judgment? | `no_rag` vs `with_rag` | paired precision/recall/F1, discordance, FP suppression | remove target finding's own historical row and redact GT verdicts |
+| Runtime validation | Which static findings become stronger or weaker with runtime evidence? | selected static cases with hooks/harnesses | claim-level upgrade/downgrade, trace reproducibility | keep runtime evidence separate from static `n=47` metrics |
+| Native deep dive | Are secrets or endpoints hidden beyond string-level scan? | radare2/Ghidra/native runtime use-site analysis | recovered use sites, JNI argument flows, additional findings | separate Java/Kotlin metrics from native/runtime evidence |
+| OS transfer | Does the method transfer to QNX or AGL? | labelled pilot corpus on another IVI OS | adapted categories, precision/recall/F1, new rule gaps | do not reuse Android-specific reachability assumptions blindly |
 
-## RAG End-To-End Ablation Design
+## RAG End-To-End Ablation
 
 The next RAG experiment should judge already discovered findings, not search for new vulnerabilities.
 
 | Condition | Context |
 |---|---|
 | `no_rag` | finding only |
-| `with_rag` | same finding plus retrieved AAOS/MASVS/TARA/history context |
+| `with_rag` | same finding plus retrieved AAOS / MASVS / TARA / history context |
 
-Required leakage controls:
+Required controls:
 
 - remove the target finding's own historical row from retrieval
 - redact GT verdict fields from retrieved examples
 - run judgment in a fresh session that has not inspected `combined_labels.json`
 
-Metrics:
+Required outputs:
 
-- Precision / Recall / F1 per condition
+- precision / recall / F1 per condition
 - paired discordance table
 - FP-control suppression rate
 - evidence-use audit in model reasons
 
-## Runtime Validation Design
+## Runtime Validation
 
-Use the existing state machine and hook scripts for:
+Use the existing state machine and hook scripts for selected high-value findings such as `vc-6`, `ssl-2`, `ssl-5`, and `lmp-1`.
 
-- `vc-5`
-- `vc-6`
-- `ssl-2`
-- `ssl-5`
-- `lmp-1`
+The goal is not to change the static metric table. The goal is to attach runtime observations to selected findings and identify cases where runtime evidence upgrades, downgrades, or clarifies the static verdict.
 
-The goal is not to change the static metric table. The goal is to attach runtime observations to selected high-value findings and identify cases where runtime evidence upgrades, downgrades, or clarifies the static verdict.
-
-## Native Deep Dive Design
+## Native Deep Dive
 
 The native static scan found no additional vulnerabilities in the checked sample. A deeper track should focus on:
 
 - Go symbol/function recovery for `libgojni.so`
-- endpoint and certificate verification use-sites
+- endpoint and certificate-verification use sites
 - JNI boundary arguments
-- syscall/network call paths
+- syscall and network call paths
 
 This work should be reported as native/runtime evidence, separate from the Java/Kotlin Stage 1/2/3 metrics.

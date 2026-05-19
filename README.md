@@ -270,7 +270,6 @@ Do not publish or force-add local-only APKs, decompiled code, screenshots, video
 | [Validation Tracks A-E](docs/08_completed_reinforcements.md) | Corpus/statistics, RAG, native scan, runtime PoC, and Codex cross-read tracks integrated into the final results. |
 | [Research Extension Plan](docs/09_research_extension_plan.md) | Optional longer-term research directions that build beyond the current pipeline and evaluation artifacts. |
 | [Repository Inventory](docs/10_project_inventory.md) | Inventory of tracked repository files, generated artifacts, and public/local disclosure boundaries. |
-| [Parent Workspace Inventory](docs/11_parent_workspace_inventory.md) | Notes on course-workspace files outside this git repo and why they are not part of the public artifact. |
 
 ## License
 

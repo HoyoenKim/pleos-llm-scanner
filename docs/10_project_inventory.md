@@ -1,14 +1,14 @@
-# Project Inventory
+# Project Inventory And Disclosure Boundary
 
-This document records the final repository organization after the 15-week research artifact cleanup.
+This document states what belongs in the public repository and what stays local-only. It is the disclosure inventory for the final 15-week archive.
 
 ## Scope Split
 
 | Scope | Role | Policy |
 |---|---|---|
-| parent workspace | course materials, PPT/PDF submissions, local progress notes | local workspace, not a pushed git repo |
-| `pleos-llm-scanner/` | source, configs, public-safe docs, aggregate artifacts | public repo source of truth |
-| `data/_local/` | APKs, JADX output, raw evidence, tools, vector DBs | ignored local-only data |
+| parent workspace | course materials, PPT/PDF submissions, and local progress notes outside this git repo | not part of the public artifact |
+| `pleos-llm-scanner/` | source, configs, public-safe docs, labels, aggregate artifacts, and redacted reports | public repo source of truth |
+| `data/_local/` | APKs, JADX output, raw evidence, tools, vector DBs, and local scratch | ignored local-only data |
 
 ## Canonical Public Files
 
@@ -16,12 +16,17 @@ This document records the final repository organization after the 15-week resear
 |---|---|
 | `README.md` | repo map and quickstart |
 | `PROJECT_STATUS.md` | compact final state |
-| `docs/01_final_report.md` | full final report |
-| `docs/02_final_brief.md` | first-read summary |
-| `docs/03_case_studies.md` | representative findings |
+| `docs/00_reading_guide.md` | reading paths |
+| `docs/01_final_report.md` | measured-claim source of truth |
+| `docs/02_final_brief.md` | one-page evaluator brief |
+| `docs/03_case_studies.md` | representative findings and claim levels |
 | `docs/04_methodology_stage2.md` | contextual verification method |
+| `docs/05_charts.md` | chart source and interpretation boundary |
 | `docs/06_limitations_and_costs.md` | limits and operating cost |
+| `docs/07_remaining_work.md` | remaining work after final scope |
 | `docs/08_completed_reinforcements.md` | completed reinforcement experiments A-E |
+| `docs/09_research_extension_plan.md` | future experiment designs |
+| `docs/10_project_inventory.md` | disclosure inventory |
 
 ## Tracked Data
 
@@ -45,18 +50,11 @@ This document records the final repository organization after the 15-week resear
 | `data/_local/native_extracts/` | native extracted binaries and analysis scratch |
 | `data/_local/rag_db/` | Chroma vector DB |
 | `data/_local/tools/` | portable binary tools |
-| `data/reports/*_local/` | unmasked or generated report tracks |
-
-## Final Timeline Markers
-
-| Date | Meaning |
-|---|---|
-| 2026-04-29 | repo scaffold, APK extraction/decompile, initial self-label |
-| 2026-04-30 | Stage 2 verification, MASTG baseline, Stage 0, AAOS/TARA first pass |
-| 2026-05-06 | evaluation scripts, baseline comparison, early RQ measurements |
-| 2026-05-11 | broader corpus, report/brief consolidation |
-| 2026-05-14 | reinforcement experiments A-E integrated into final results |
-| 2026-05-19 | repo structure cleanup and final-document rewrite policy |
+| `data/reports/local/` | local Stage 3 and intermediate evidence |
+| `data/reports/per_apk_local/` | unmasked per-APK reports |
+| `data/reports/runtime_local/` | runtime evidence and PoC records |
+| `data/reports/native_local/` | native scan scratch and local details |
+| `data/reports/rag_local/` | local RAG ablation and judgment packages |
 
 ## Commit Policy
 
@@ -73,12 +71,17 @@ Do not commit:
 
 - APKs
 - decompiled PleOS code
-- raw screenshots/logcat/window dumps
+- raw screenshots, logcat, or window dumps
 - videos
 - unredacted reports
 - generated vector DBs
-- binary tools
+- portable binary tools
+- generated runtime harness outputs unless explicitly redacted and reviewed
 
 ## Redaction Rule
 
-Public PleOS reports may keep metadata such as class name, line number, category, severity, rationale, AAOS/MASVS/TARA mapping, and high-level attack chain. They must not include proprietary code excerpts or secret literals.
+Public PleOS reports may keep metadata such as class name, line number, category, severity, rationale, AAOS/MASVS/TARA mapping, and high-level attack chain. They must not include proprietary code excerpts, secret literals, raw runtime logs, videos, or unredacted local evidence.
+
+## Public Archive Rule
+
+The public docs should explain what was measured and how to reproduce public-safe checks. Internal workspace cleanup notes, course submission logistics, parent-directory file inventories, and temporary local artifacts are intentionally excluded from `docs/`.
