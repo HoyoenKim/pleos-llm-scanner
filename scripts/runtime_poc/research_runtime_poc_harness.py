@@ -32,6 +32,14 @@ MANIFEST = """\
     <uses-permission android:name="ai.pleos.playground.service.vehicle.VEHICLE_BINDING" />
     <uses-permission android:name="pleos.car.permission.CAR_MIRRORS" />
     <uses-permission android:name="pleos.car.permission.CONTROL_CAR_MIRRORS" />
+    <uses-permission android:name="pleos.car.permission.CAR_LIGHTS" />
+    <uses-permission android:name="pleos.car.permission.CONTROL_CAR_LIGHTS" />
+    <uses-permission android:name="pleos.car.permission.CAR_CLIMATE" />
+    <uses-permission android:name="pleos.car.permission.CONTROL_CAR_CLIMATE" />
+    <uses-permission android:name="pleos.car.permission.CAR_DOORS" />
+    <uses-permission android:name="pleos.car.permission.CONTROL_CAR_DOORS" />
+    <uses-permission android:name="pleos.car.permission.CAR_WINDOWS" />
+    <uses-permission android:name="pleos.car.permission.CONTROL_CAR_WINDOWS" />
     <application android:label="CodexRuntimePoc" android:debuggable="true" android:allowBackup="false">
         <activity android:name=".PocActivity" android:exported="true" />
         <service android:name=".PocOverlayService" android:exported="true" />
@@ -122,6 +130,7 @@ public final class PocActivity extends Activity implements ServiceConnection, Ru
     private int vehicleAreaType = 5;
     private int vehicleAreaId = 0;
     private int vehicleValueType = 64;
+    private int vehicleObserveMs = 700;
     private String vehicleBeforeValue = "";
     private String vehicleAfterValue = "";
     private String vehicleRestoreValue = "";
@@ -323,6 +332,7 @@ public final class PocActivity extends Activity implements ServiceConnection, Ru
         vehicleAreaType = getIntExtra("vehicle_area_type", 5);
         vehicleAreaId = getIntExtra("vehicle_area_id", 0);
         vehicleValueType = getIntExtra("vehicle_value_type", 64);
+        vehicleObserveMs = getIntExtra("vehicle_observe_ms", 700);
         Intent intent = new Intent("ai.pleos.playground.vehicle.VEHICLE_START");
         intent.setComponent(new ComponentName(
                 "ai.pleos.playground.service.vehicle",
@@ -586,7 +596,7 @@ public final class PocActivity extends Activity implements ServiceConnection, Ru
                 setPath = "tx7";
             }
         }
-        sleepQuietly(700);
+        sleepQuietly(vehicleObserveMs);
         VehicleCallbackResult after = getVehicleProperty(service, "after");
         vehicleAfterValue = after.value;
         Boolean afterBool = parseBooleanLike(after.value);
@@ -602,7 +612,7 @@ public final class PocActivity extends Activity implements ServiceConnection, Ru
                     restore = fallbackRestore;
                 }
             }
-            sleepQuietly(700);
+            sleepQuietly(vehicleObserveMs);
             finalGet = getVehicleProperty(service, "final");
         }
         Boolean finalBool = finalGet == null ? null : parseBooleanLike(finalGet.value);
@@ -704,6 +714,12 @@ public final class PocActivity extends Activity implements ServiceConnection, Ru
             return Boolean.TRUE;
         }
         if (s.equals("false") || s.equals("\"false\"") || s.contains(":false") || s.contains("false,")) {
+            return Boolean.FALSE;
+        }
+        if (s.equals("1") || s.equals("1.0") || s.equals("\"1\"")) {
+            return Boolean.TRUE;
+        }
+        if (s.equals("0") || s.equals("0.0") || s.equals("\"0\"")) {
             return Boolean.FALSE;
         }
         return null;
