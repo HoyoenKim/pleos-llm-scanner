@@ -2,108 +2,174 @@
 
 LLM-assisted static security analysis pipeline for Android Automotive / PleOS IVI APKs.
 
-This repository is the **final 15-week research artifact** for the 2026-1 autonomous-driving research project. It should be read as a completed archive, not as an in-progress work log. Late-stage reinforcement experiments A-E are completed and integrated into the final results.
+## Overview
 
-## Final Result
+`pleos-llm-scanner` analyzes Android APKs from PleOS / AAOS environments and turns decompiled code into security findings, verification evidence, automotive-security mappings, and public-safe reports.
 
-The project built and evaluated a pipeline that combines deterministic Android APK analysis with LLM-based reasoning:
+The repository uses scripts for deterministic work such as APK extraction, JADX decompilation, keyword triage, evaluation, chart generation, and AAOS/TARA mapping. LLM sessions are used for the parts that need security reasoning: interpreting candidate findings, checking Android context, and comparing attacker / defender / domain-expert views.
 
-```text
-APK
-  -> jadx decompile
-  -> keyword triage
-  -> Stage 0 obfuscation check
-  -> Stage 1 LLM finding proposal
-  -> Stage 2 contextual verification
-  -> Stage 3 multi-perspective consensus
-  -> AAOS / MASVS / TARA mapping
-  -> final reports and public-safe artifacts
+## Motivation
+
+Privileged IVI APKs can expose exported components, custom permissions, vehicle-adjacent services, local LLM providers, and system-level integration points. A keyword scan or one-pass LLM review can find suspicious code, but many candidates are false positives unless the surrounding Android context is checked.
+
+This project tests a stricter workflow: narrow the APK deterministically, let an LLM propose and reason about candidates, then verify each candidate against manifests, caller chains, permissions, routes, AAOS/MASVS guidance, and selected runtime evidence.
+
+## Pipeline
+
+The pipeline is organized as four blocks. The first block collects APK inputs from the emulator. The second block performs deterministic preprocessing so the analysis does not start from the full decompiled APK blindly. The third block uses LLM reasoning, but only after the code has been narrowed and only with contextual checks around each candidate. The final block turns verified findings into automotive-security mappings, reports, charts, and bounded runtime PoC evidence.
+
+```mermaid
+flowchart LR
+    subgraph APK["PleOS / AAOS APK"]
+        direction TB
+        APK1["APK collection"] --> APK2["ADB pull"]
+    end
+
+    subgraph STATIC["Static preprocessing"]
+        direction TB
+        STATIC1["JADX decompile<br/>jadx --deobf"] --> STATIC2["Keyword triage<br/>security-category priority queue"] --> STATIC3["Obfuscation screen<br/>entropy + rename plausibility"]
+    end
+
+    subgraph LLM["LLM-assisted review"]
+        direction TB
+        LLM1["Candidate proposal<br/>LLM security review"] --> LLM2["Context verification<br/>manifest + caller chain<br/>permissions + routes"] --> LLM3["Consensus review<br/>attacker + defender + domain expert"]
+    end
+
+    subgraph OUT["Reports and PoC"]
+        direction TB
+        OUT1["AAOS / MASVS / TARA mapping"] --> OUT2["Reports<br/>JSON + Markdown + charts<br/>redacted public artifacts"] --> OUT3["Runtime PoC evidence boundary"]
+    end
+
+    APK --> STATIC --> LLM --> OUT
 ```
 
-Final measured corpus:
+The key design choice is that the LLM is not the scanner by itself. It is a reasoning layer between deterministic triage and Android/automotive-specific verification.
 
-| Metric | Result |
-|---|---:|
-| Combined GT | 47 labelled findings |
-| Stage 1 precision / recall / F1 | 80.9% / 100.0% / 0.894 |
-| Stage 3 `>=2/3` precision / recall / F1 | 100.0% / 97.4% / 0.987 |
-| Stage 1 vs Stage 3 McNemar exact test | `p=0.0215` |
-| Native static sample | 4 `.so` samples, 0 additional native-bound vulnerabilities |
-| RAG intrinsic ablation | NN verdict 85.1%, AAOS category 85.1% |
+## Artifacts
 
-The main conclusion is not that an LLM alone is a security scanner. The useful design is to place an LLM as a reasoning layer between deterministic triage and domain-specific verification.
+This repository separates local evidence, configuration, evaluation data, reports, and tooling. The table below shows what each artifact group is for and where to find it.
 
-## What Was Completed
+| Group | What It Is | Location |
+|---|---|---|
+| Local inputs | APKs, JADX output, raw runtime evidence, and generated harness files. Not public-safe. | `data/_local/`, `data/reports/*_local/` |
+| Configuration | Keyword rules, result schema, AAOS mapping, and prompt protocols. | `configs/` |
+| Evaluation data | Ground-truth labels used for precision/recall/F1 and statistical tests. | `data/ground_truth/` |
+| Reports | Per-APK finding reports and redacted public reports. | `data/reports/`, `data/reports/public/`, `data/reports/external/` |
+| Aggregate results | Metrics, ablations, bootstrap CI, McNemar test, RAG/native/model summaries, AAOS/TARA tables. | `data/reports/aggregate/` |
+| Runtime PoC tooling | Harness scripts and Frida hooks used for emulator-only dynamic evidence. | `scripts/runtime_poc/`, `src/dynamic/` |
+| Visuals | Charts used in reports and presentations. | `data/viz/` |
 
-The 15-week final scope includes:
+## Evaluation Summary
 
-| Area | Completed Work |
-|---|---|
-| APK collection/decompile | ADB extraction wrapper and `jadx --deobf` wrapper |
-| Stage 0 | Obfuscation entropy and rename plausibility checks |
-| Stage 1 | Six-category vulnerability candidate detection |
-| Stage 2 | Manifest/caller/permission/route based contextual verification |
-| Stage 3 | Single-model multi-perspective consensus |
-| GT expansion | PleOS-customized, OWASP MASTG, InsecureBankv2, AOSP-derived samples |
-| Statistics | Bootstrap CI, stage ablation, McNemar paired test |
-| Mapping | AAOS/MASVS mapping and TARA artifact generation |
-| Reinforcement A | Corpus expansion to `n=47` |
-| Reinforcement B | Local RAG knowledge base and intrinsic retrieval evaluation |
-| Reinforcement C | Native binary static scan track |
-| Reinforcement D | Dynamic verification state machine and Frida hooks |
-| Reinforcement E | Codex 3-model cross-read |
+The main evaluation compares broad candidate generation against verified reporting. The labelled corpus contains 47 findings from PleOS-customized APKs, OWASP MASTG, InsecureBankv2, and AOSP-derived samples.
 
-## Directory Map
+The result is that the first LLM pass is useful for recall-oriented candidate collection, while the full verification pipeline is what makes the findings reportable.
+
+| Evaluation Step | Precision | Recall | F1 | Takeaway |
+|---|---:|---:|---:|---|
+| Candidate generation | 80.9% | 100.0% | 0.894 | Broad coverage, but still includes false positives. |
+| Verified reporting | 100.0% | 97.4% | 0.987 | Context checks removed the measured false positives with one low-severity miss. |
+
+The improvement is statistically visible on paired labels: McNemar exact test `p=0.0215`.
+
+### Supporting Measurements
+
+These measurements do not replace the main precision/recall comparison. They check adjacent parts of the research design: native-code coverage and retrieval-based domain knowledge support.
+
+| Check | Result | Takeaway |
+|---|---|---|
+| Native static sample | 4 `.so` samples checked, 0 additional native-bound vulnerabilities | Native analysis reduced a blind spot, but did not add new confirmed findings in the sampled set. |
+| Local RAG evaluation | nearest-neighbor verdict 85.1%, AAOS category alignment 85.1% | Retrieval helps organize domain knowledge; end-to-end LLM gain is separate. |
+
+## Runtime Validation
+
+Selected static findings were checked in a PleOS emulator to determine whether they were only static observations or also runtime-reachable behaviors. This track is separate from the main `n=47` static evaluation: it refines the strength of individual claims, but it does not change the precision/recall table above.
+
+The runtime work uses safe same-device probes, generated harness APKs, and Frida hooks. The goal is to record observable evidence such as provider reads, broadcast delivery, Binder calls, UI markers, or state changes. It does not claim remote exploitation or real-vehicle control.
+
+```mermaid
+flowchart LR
+    A["Static finding"] --> B["PoC ranking<br/>claim level L0-L4"]
+    B --> C["Harness APK<br/>org.codex.pleos.poc"]
+    B --> D["Frida hook<br/>observe or dry-run block"]
+    C --> E["Runtime observation<br/>provider read, broadcast delivery,<br/>Binder call, UI marker"]
+    D --> E
+    E --> F["Claim update<br/>reachability, data effect,<br/>UI effect, or no upgrade"]
+```
+
+| Track | Runtime Evidence | Claim Level |
+|---|---|---|
+| `lmp-1` prompt provider | Provider query returns internal LLM prompt/corpus data. | Same-device prompt/corpus disclosure under emulator conditions. |
+| `vc-6` vehicle broadcast receiver | Broadcast delivery and receiver reachability observed with dry-run hooks. | Receiver reachability confirmed; state mutation requires a captured state diff. |
+| `am-1` AppMarket suggestions provider | Harmless marker write/read can be checked against the exported suggestions provider. | Provider-local write/read effect; UI impact requires user-visible marker evidence. |
+| `navi-1` / `vs-1` Binder expansion | Route UI injection and reversible mirror-fold property mutation in the emulator track. | Same-device IVI primitive under lab conditions. |
+
+Tracked PoC code lives in `scripts/runtime_poc/` and `src/dynamic/`. Raw APKs, videos, screenshots, unredacted logs, and generated harness outputs stay local-only under `data/_local/` and `data/reports/runtime_local/`.
+
+## Implementation Map
+
+This section maps the research pipeline to the source files, configs, and reports that implement or document each part.
+
+### Main Pipeline
+
+| Pipeline Part | Role | Where To Look |
+|---|---|---|
+| APK acquisition and decompilation | Pull APKs from the emulator and decompile them with JADX. | `scripts/apk/`, `data/_local/` |
+| Static triage | Prioritize security-relevant classes before LLM review. | `configs/keywords.yaml`, `configs/result_schema.json` |
+| Obfuscation screen | Measure identifier entropy and test rename plausibility. | `src/deobf/`, `data/deobf/` |
+| Candidate review | Generate first-pass LLM security findings. | `configs/prompts/stage1_detect.md`, `data/reports/` |
+| Context verification | Check manifest, caller chain, permissions, routes, and trust boundary. | `docs/04_methodology_stage2.md`, `docs/03_case_studies.md` |
+| Consensus review | Compare attacker, defender, and domain-expert perspectives. | `configs/prompts/stage3_*.md`, `data/reports/public/stage3_ensemble.md` |
+| Evaluation | Evaluate labels, metrics, ablations, bootstrap CI, and McNemar test. | `data/ground_truth/`, `src/evaluation/`, `data/reports/aggregate/` |
+| Automotive mapping | Generate AAOS/MASVS/TARA outputs. | `src/mapping/`, `configs/aaos_mapping.yaml` |
+| Public reporting | Keep public artifacts redacted and publishable. | `data/reports/public/`, `docs/` |
+
+### Validation Tracks
+
+| Track | Role | Where To Look |
+|---|---|---|
+| RAG support | Domain-knowledge retrieval and intrinsic agreement checks. | `src/rag/`, `data/reports/aggregate/` |
+| Native scan | Native-library inventory and selected `.so` scans. | `src/native/`, `data/reports/aggregate/native_lib_inventory.md` |
+| Runtime validation | Emulator PoC harnesses and Frida hooks. | `scripts/runtime_poc/`, `src/dynamic/` |
+| Codex cross-read | Independent model cross-read against the main baseline. | `configs/prompts/codex_multimodel_cross_read.md`, `data/reports/aggregate/codex_multimodel_agreement.md` |
+
+## Repository Layout
+
+Use this section as a quick navigation map. `configs/`, `src/`, and `scripts/` contain the reusable pipeline pieces; `docs/` and `data/` contain the written results and evidence boundary.
 
 ```text
-configs/                  keyword rules, schemas, prompt protocols
+configs/                  keyword rules, schemas, AAOS mapping, prompt protocols
 src/                      deterministic pipeline code
-  evaluation/             metrics, ablation, bootstrap support
-  deobf/                  obfuscation and rename support
-  mapping/                AAOS / MASVS / TARA generation
-  rag/                    local Chroma retrieval helpers
-  dynamic/                state machine and Frida hook scripts
-  native/                 native `.so` scanner
+  evaluation/             metrics, ablation, bootstrap, and McNemar tooling
+  deobf/                  obfuscation and rename-plausibility checks
+  mapping/                AAOS / MASVS / TARA output generation
+  rag/                    local retrieval helpers
+  dynamic/                dynamic validation state machine and Frida hooks
+  native/                 native `.so` inventory and scan helpers
   viz/                    chart generation
-scripts/                  orchestration and one-off research helpers
-  apk/                    APK pull/decompile wrappers
-  research/               RQ measurement and packaging scripts
+scripts/                  orchestration and research helpers
+  apk/                    APK pull and JADX decompile wrappers
+  research/               measurement and packaging scripts
   runtime_poc/            runtime PoC and recording helpers
-  presentation/           deck/video helper scripts
   maintenance/            masking and result maintenance
-docs/                     final report, brief, methodology, cases, limits
-data/                     labels, public-safe reports, charts, local evidence boundary
+docs/                     final report, reading guide, methodology, cases, limitations
+data/                     labels, aggregate results, public reports, charts, local-only evidence
 ```
 
-## Data Boundary
+## Public / Local Boundary
 
-Tracked public-safe artifacts:
+This repository keeps publishable research artifacts separate from PleOS proprietary code and raw emulator evidence. Public-facing files should contain redacted findings, aggregate measurements, and generated charts. Raw APKs, JADX output, screenshots, logs, videos, unmasked reports, and generated PoC outputs stay local-only.
 
-```text
-data/ground_truth/        final labels and merged GT
-data/reports/aggregate/   aggregate measurements and tables
-data/reports/external/    public vulnerable-corpus reports
-data/reports/public/      masked PleOS public reports
-data/deobf/               obfuscation measurements and rename outputs
-data/viz/                 final chart PNGs
-```
-
-Local-only or generated evidence:
-
-```text
-data/_local/              APKs, JADX output, raw evidence, tools, DBs
-data/reports/local/       unmasked Stage 3 and model outputs
-data/reports/per_apk_local/
-data/reports/runtime_local/
-data/reports/native_local/
-data/reports/rag_local/
-```
+| Boundary | Contains | Paths |
+|---|---|---|
+| Public-safe / tracked | Labels, aggregate measurements, redacted PleOS reports, external vulnerable-corpus reports, deobfuscation summaries, and charts. | `data/ground_truth/`, `data/reports/aggregate/`, `data/reports/external/`, `data/reports/public/`, `data/deobf/`, `data/viz/` |
+| Local-only / generated | APKs, JADX output, raw emulator evidence, unmasked Stage 3/model outputs, runtime/native/RAG local reports, generated PoC harnesses, screenshots, videos, and logs. | `data/_local/`, `data/reports/local/`, `data/reports/*_local/`, `data/_local/runtime_poc_harness/`, `data/_local/runtime_videos/`, `data/_local/poc_evidence/` |
 
 PleOS proprietary code excerpts must stay redacted in public-facing files.
 
 ## Quickstart
 
-Run commands from the repository root.
+Run commands from the repository root. APK pull/decompile commands require a booted Android Automotive / PleOS emulator with `adb` access. Metric commands assume the local/private report JSONs referenced by the glob are available; public-safe aggregate results are already tracked in `data/reports/aggregate/`.
 
 ```bash
 # Pull system APKs from an emulator into the local-only bucket.
@@ -112,32 +178,40 @@ bash scripts/apk/pull_apks.sh
 # Decompile one APK with jadx into the local-only bucket.
 bash scripts/apk/decompile.sh data/_local/apks/<package>.apk
 
-# Evaluate report JSONs against the final combined GT.
+# Measure candidate-generation findings against the combined ground truth.
 python src/evaluation/eval.py \
   --labels data/ground_truth/combined_labels.json \
   --reports 'data/reports/**/*.json'
 
-# Run stage/threshold ablation.
+# Compare stage and consensus-threshold behavior using the local Stage 3 file.
 python src/evaluation/ablation.py \
   --labels data/ground_truth/combined_labels.json \
   --reports 'data/reports/**/*.json' \
   --stage3 data/reports/local/stage3_ensemble.json
 
 # Regenerate AAOS/TARA aggregate outputs when labels or mappings change.
+# These commands overwrite data/reports/aggregate/aaos_mapping_table.* and tara_artifact.*.
 python src/mapping/aaos_map.py
 python src/mapping/tara_generate.py
 ```
 
-## Reading Order
+## Documentation
 
-1. `docs/00_reading_guide.md`
-2. `docs/02_final_brief.md`
-3. `docs/01_final_report.md`
-4. `docs/03_case_studies.md`
-5. `docs/04_methodology_stage2.md`
-6. `docs/06_limitations_and_costs.md`
-7. `docs/08_completed_reinforcements.md`
+| Document | Description |
+|---|---|
+| [Documentation Reading Order](docs/00_reading_guide.md) | Recommended order for reading the report set and understanding which document answers which question. |
+| [Evaluator Brief](docs/02_final_brief.md) | Compact summary of the problem, pipeline, measured results, validation tracks, and disclosure boundary. |
+| [Full Research Report](docs/01_final_report.md) | Main report with research questions, method, evaluation results, automotive-security mapping, and limitations. |
+| [Finding Case Studies](docs/03_case_studies.md) | Representative true positives, false positives, and runtime-validation targets with public-safe evidence summaries. |
+| [Context Verification Method](docs/04_methodology_stage2.md) | Rules for checking first-pass candidates against manifests, caller chains, permissions, routes, and trust boundaries. |
+| [Chart Inventory](docs/05_charts.md) | List of chart artifacts used in the report, including their source data and regeneration path. |
+| [Limitations And Cost Model](docs/06_limitations_and_costs.md) | Remaining technical limits, operating constraints, manual/LLM cost trade-offs, and evidence boundaries. |
+| [Open Follow-Up Work](docs/07_remaining_work.md) | Work still outside the current evidence base; already integrated validation tracks are not treated as unresolved. |
+| [Validation Tracks A-E](docs/08_completed_reinforcements.md) | Corpus/statistics, RAG, native scan, runtime PoC, and Codex cross-read tracks integrated into the final results. |
+| [Research Extension Plan](docs/09_research_extension_plan.md) | Optional longer-term research directions that build beyond the current pipeline and evaluation artifacts. |
+| [Repository Inventory](docs/10_project_inventory.md) | Inventory of tracked repository files, generated artifacts, and public/local disclosure boundaries. |
+| [Parent Workspace Inventory](docs/11_parent_workspace_inventory.md) | Notes on course-workspace files outside this git repo and why they are not part of the public artifact. |
 
 ## License
 
-MIT. See `LICENSE`.
+This project is released under the MIT License. See [LICENSE](LICENSE).
