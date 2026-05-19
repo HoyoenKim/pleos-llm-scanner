@@ -63,7 +63,7 @@ Log.d("CodeCheck", "AES error:" + e.getMessage());
 
 ## Negative confirmations (out-of-scope but worth noting)
 
-- **MainActivity root / debug detection** (`onCreate` checks `C0001b.m1a` + `C0002c.m2a/m3b/m4c`) — anti-tamper category not currently in `result_schema.json` enum (`crypto`/`network`/`permission`/`intent`/`hardcoded`/`reflection_dynamic`). Future Work: extend enum with `anti_tamper` once MASVS-RESILIENCE coverage is in scope.
+- **MainActivity root / debug detection** (`onCreate` checks `C0001b.m1a` + `C0002c.m2a/m3b/m4c`) — anti-tamper category not currently in `result_schema.json` enum (`crypto`/`network`/`permission`/`intent`/`hardcoded`/`reflection_dynamic`). Scope extension: add `anti_tamper` once MASVS-RESILIENCE coverage is in scope.
 - **INTERNET / external comms**: 0 hits (no HttpClient / URL / OkHttp / Retrofit / WebView usage).
 - **IPC**: no ContentProvider, BroadcastReceiver, Service.
 - **Manifest** is single-Activity; nothing else exported.

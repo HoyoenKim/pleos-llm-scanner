@@ -16,7 +16,7 @@
     "sg.vantagepoint.p000a.C0001b",
     "sg.vantagepoint.p000a.C0002c"
   ],
-  "scope_note": "MASTG corpus baseline — 외부 ground truth로 PleOS pipeline 정확도 측정용. 본 APK의 모든 java source (6 files) 직접 분석 (priority filtering 우회). configs/keywords.yaml 카테고리 enum (crypto/network/permission/intent/hardcoded/reflection_dynamic) 안에 들어가는 vuln만 보고. anti-tamper(root/debug detection) findings는 Future Work로 카테고리 enum 확장 시 보고.",
+  "scope_note": "MASTG corpus baseline — 외부 ground truth로 PleOS pipeline 정확도 측정용. 본 APK의 모든 java source (6 files) 직접 분석 (priority filtering 우회). configs/keywords.yaml 카테고리 enum (crypto/network/permission/intent/hardcoded/reflection_dynamic) 안에 들어가는 vuln만 보고. anti-tamper(root/debug detection) findings는 별도 scope extension으로 카테고리 enum 확장 시 보고.",
   "results": [
     {
       "class": "sg.vantagepoint.uncrackable1.C0005a",
@@ -71,7 +71,7 @@
     }
   ],
   "negative_confirmations": [
-    "MainActivity 진입 검증 (root/debug detection)은 카테고리 enum 안에 매칭자 없음 → stage1 보고 제외 (Future Work).",
+    "MainActivity 진입 검증 (root/debug detection)은 카테고리 enum 안에 매칭자 없음 → stage1 보고 제외 (scope extension).",
     "INTERNET / 외부 통신 호출 0건 (HttpClient/URL/OkHttp/Retrofit 미사용).",
     "WebView 미사용. JavaScript bridge 없음.",
     "ContentProvider / BroadcastReceiver / Service 정의 없음 (Activity 단일 + utility 클래스만)."

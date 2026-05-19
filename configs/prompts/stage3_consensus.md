@@ -61,7 +61,6 @@ A multi-model ensemble (e.g. Opus + Sonnet + Haiku, or Claude + GPT-4) was consi
 | Source of perspective diversity | Training-data and architecture differences | Explicit role prompts (attacker / defender / domain expert) |
 | Reporting honesty | Must disclose the manual workflow | Documents the environment limit and the chosen substitute |
 
-## Future work
+## Final archive note
 
-- Switching to a multi-model ensemble requires an external SDK / API budget; this is left as future work.
-- A different model family (GPT-4, Gemini, etc.) can be plugged in later — the consensus rule above is reusable as-is.
+The automated pipeline keeps this multi-prompt rule because it is reproducible in one local analysis session. A later Codex 3-model cross-read was completed as an independent validation track and is summarized in `docs/08_completed_reinforcements.md`; it did not replace this deterministic consensus rule.

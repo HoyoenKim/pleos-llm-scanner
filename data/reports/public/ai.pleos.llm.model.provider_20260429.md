@@ -1,6 +1,8 @@
 > **Public masked copy** — code evidence (fenced blocks) replaced with redaction markers under contractor IP protection. Class names, line numbers, categories, severities, rationale, and AAOS / MASVS mappings are kept verbatim. Original raw report is retained locally only.
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
+>
+> **Final archive note**: this is a historical 2026-04-29 Stage 1 snapshot. The "next-step" items below record the analysis state on that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.pleos.llm.model.provider` (PleOS LLM Model Provider)
 
@@ -71,7 +73,7 @@
 - JSON: `data/reports/ai.pleos.llm.model.provider_20260429.json`
 - Markdown (this file): `data/reports/ai.pleos.llm.model.provider_20260429.md`
 
-## Next steps
+## 당시 next-step 기록
 
 1. Confirm the exact `<receiver>` block in `AndroidManifest.xml` to verify the absence of `android:permission=`.
 2. Cross-read `ai.pleos.playground.caas.apk` (the consumer of the FileProvider URI) — that's where the model file actually leaves this trust boundary.

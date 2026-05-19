@@ -1,32 +1,35 @@
 # Reading Guide
 
-This repo has three audiences. Use the path that matches your task.
+All documents in this directory are read from the **final 15-week completion point**. Reinforcement experiments A-E are completed project results unless a document explicitly labels a separate item as remaining work.
 
-## For A First-Time Evaluator
+## Fast Path
 
-1. `02_final_brief.md` - concise project summary and conclusions.
-2. `01_final_report.md` - full v1.4 supplement report.
-3. `03_case_studies.md` - concrete TP/FP/dynamic examples.
-4. `05_charts.md` - chart interpretation and reproduction notes.
+| Reader | Start Here | Then Read |
+|---|---|---|
+| First-time evaluator | `02_final_brief.md` | `01_final_report.md`, `03_case_studies.md` |
+| Method reviewer | `04_methodology_stage2.md` | `06_limitations_and_costs.md`, `08_completed_reinforcements.md` |
+| Reproducer | `../README.md` | `../data/README.md`, `../src/README.md`, `../scripts/README.md` |
+| Project maintainer | `10_project_inventory.md` | `11_parent_workspace_inventory.md` |
 
-## For Method Review
+## Document Roles
 
-1. `04_methodology_stage2.md` - contextual verification rules.
-2. `08_future_work_implementations.md` - completed A-E follow-up work.
-3. `06_limitations_and_costs.md` - limits, costs, and boundary conditions.
-4. `09_research_extension_plan.md` - optional next research units.
+| File | Role |
+|---|---|
+| `01_final_report.md` | Full final report and measured claims |
+| `02_final_brief.md` | Compact evaluator-facing summary |
+| `03_case_studies.md` | Representative TP/FP/dynamic evidence |
+| `04_methodology_stage2.md` | Contextual verification rules |
+| `05_charts.md` | Final chart inventory and reproduction notes |
+| `06_limitations_and_costs.md` | Limits, residual risks, cost trade-offs |
+| `07_remaining_work.md` | True remaining follow-up work after 15 weeks |
+| `08_completed_reinforcements.md` | Completed reinforcement experiments A-E |
+| `09_research_extension_plan.md` | Longer research expansion plan |
+| `10_project_inventory.md` | Repo cleanup and disclosure inventory |
+| `11_parent_workspace_inventory.md` | Parent workspace policy |
 
-## For Reproduction
+## Local-Only Rule
 
-1. `../README.md` - repository map and quickstart.
-2. `../configs/prompts/README.md` - Stage 0/1/3 prompt protocol.
-3. `../data/README.md` - data boundary and local-only policy.
-4. `../data/reports/README.md` - report folder classification.
-5. `../src/README.md` and `../scripts/README.md` - code and helper layout.
-
-## What Is Local-Only
-
-Do not publish or commit:
+Do not publish or commit raw files from:
 
 - `data/_local/`
 - `data/reports/local/`
@@ -35,5 +38,4 @@ Do not publish or commit:
 - `data/reports/native_local/`
 - `data/reports/rag_local/`
 
-These may contain PleOS APKs, decompiled code, raw runtime evidence, videos,
-vector DBs, native extracts, or unredacted report details.
+These paths may contain APKs, decompiled code, raw runtime evidence, videos, native extracts, vector DBs, or unredacted report details.

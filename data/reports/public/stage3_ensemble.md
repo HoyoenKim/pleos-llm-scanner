@@ -68,7 +68,7 @@
 | 3차 오탐률 7% | 미측정 | **0% (n=6 채택, n=12 입력)** | strong+TP 채택 시. 표본 작음 |
 | Precision 0.93 | 0.60 (lenient) | **1.00 (n=6, strong+TP)** | 합의 임계 적용. 표본 작음 |
 
-## 다음 작업 (follow-up)
+## 당시 follow-up 기록
 
 1. **uncertain 6건 정밀화**:
    - `ssl-2` AuthData: `Timber.|Log\.[diwev]\(.*authData` grep — 실제 log emission 확인

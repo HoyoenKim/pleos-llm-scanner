@@ -1,6 +1,6 @@
 # R1.b — Bootstrap CI for Stage 1 metrics
 
-_Latest measurement: 2026-05-14 (R1.d.5, 학기 외 A) / scope: combined GT n=47 (PleOS-customized 30 + MASTG 4 + InsecureBankv2 9 + AOSP-derived 4)_
+_Latest measurement: 2026-05-14 (R1.d.5, 보강 A) / scope: combined GT n=47 (PleOS-customized 30 + MASTG 4 + InsecureBankv2 9 + AOSP-derived 4)_
 
 ## 방법
 
@@ -33,8 +33,8 @@ usb-2 FP 1건 추가로 Precision 85.7% → 83.9% 약간 후퇴. 그러나 PleOS
 - **CI 폭이 약 40% 줄어듦** (n=19 → n=47 Precision 폭 36.8%p → 21.3%p, F1 24.0%p → 13.1%p). "n 증가 → CI 좁힘" 의 직접 측정.
 - Precision lenient lower bound 가 57.9% → **70.2%** 로 안정화 (+12.3%p). 즉 corpus 가 n=47 일 때 Precision 의 통계적 보장 근거가 70.2% 이상 — 가설 25% FP rate (= Precision 75%) 가 lower bound 근처가 아니라 그 위.
 - **point 값 변동 ≠ 통계적 보장 약화**: n=37 → n=47 에서 R1.d.5 신규 FP 3건 (am-4 / amb-4 / amb-5) 으로 Precision point 83.8% → 80.9% 후퇴했으나, CI 폭은 계속 좁아짐 (21.6%p → 21.3%p). point 후퇴는 PleOS-customized application code 의 진짜 FP 이므로 정직 기록.
-- **R1.c McNemar 와 결합**: bootstrap CI 좁힘 (R1.b) + paired test 유의성 (R1.c, n=47 p_exact=0.0215) 둘 다 학기 외 A 작업에서 도달 — RQ1 의 통계적 보장 완성.
-- **단 n ≥ 60 추가 확장**: 무료 commercial closed-source corpus 다운로드 시도 실패 (GitHub LFS pointer / HTML 404). Future Work 로 명시.
+- **R1.c McNemar 와 결합**: bootstrap CI 좁힘 (R1.b) + paired test 유의성 (R1.c, n=47 p_exact=0.0215) 둘 다 보강 A에서 도달 — RQ1 의 통계적 보장 완성.
+- **단 n ≥ 60 추가 확장**: 무료 commercial closed-source corpus 다운로드 시도 실패 (GitHub LFS pointer / HTML 404). 별도 확장 과제로 분리.
 
 ## 재현
 
@@ -70,7 +70,7 @@ deterministic (seed 42) — 동일 commit 에서 동일 결과.
 | 2026-05-11 (R1.d.2) | 31 | 83.9% | 91.2% | 16.1% | 25.8%p (+0.8%p) | +android.car.usb.handler 3 finding (2 TP / 1 FP) |
 | 2026-05-11 (R1.d.3) | 32 | 81.2% | 89.6% | 18.8% | 25.0%p (-0.8%p) | +com.android.statementservice 1 finding (0 TP / 1 FP) — AOSP-derived |
 | 2026-05-11 (R1.d.4) | 37 | 83.8% | 91.1% | 16.2% | 21.6%p (-3.4%p) | +ai.pleos.playground.account 5 finding (5 TP / 0 FP) — PleOS-customized auth/SSO |
-| **2026-05-14 (R1.d.5, 학기 외 A)** | **47** | **80.9%** | **89.4%** | **19.1%** | **21.3%p (-0.3%p)** | **+appmarket 4 + ambientai 5 + maps 1 = 10 finding (7 TP / 3 FP) — PleOS-customized. point 후퇴, CI 폭 계속 좁힘** |
+| **2026-05-14 (R1.d.5, 보강 A)** | **47** | **80.9%** | **89.4%** | **19.1%** | **21.3%p (-0.3%p)** | **+appmarket 4 + ambientai 5 + maps 1 = 10 finding (7 TP / 3 FP) — PleOS-customized. point 후퇴, CI 폭 계속 좁힘** |
 
 ## 표본 origin 별 정밀도 분리 (n=47)
 

@@ -44,7 +44,7 @@ n=3 → n=6 확장 결과 plausibility 분포가 크게 변동. 추가 sample 3�
 | **np-5** | `C1188w` (time format builder) | **0.95** | **EXCELLENT** | Java `DateTimeFormatterBuilder` 와 27 method 중 19 (70%) 1:1 매칭. static HashMap pattern char → ERA/YEAR/... 매핑 |
 | **np-6** | `C1290q` (CHM TreeBin) | **0.95** | **EXCELLENT** | Java `ConcurrentHashMap.TreeBin` 과 9 method 모두 1:1 매칭. `lockState` 필드명까지 jadx 가 복원 |
 
-상세 entry 는 [`data/deobf/NewPipe_renames_20260511.json`](../deobf/NewPipe_renames_20260511.json) (초기 3 sample 포함).
+상세 entry 는 [`data/deobf/NewPipe_renames_20260511.json`](../../deobf/NewPipe_renames_20260511.json) (초기 3 sample 포함).
 
 ### Plausibility 분포 (n=3 → n=6)
 
@@ -70,7 +70,7 @@ n=3 → n=6 확장 결과 plausibility 분포가 크게 변동. 추가 sample 3�
 
 1. **본 학기 첫 정량 측정 (n=6)**: Stage 0 LLM rename 의 정확도가 corpus 종류에 따라 변동.
 2. **hand-crafted vs real-world** 의 차이를 처음으로 측정 — hand-crafted 100% exact (upper bound) / real-world plausibility 67% GOOD+ (정확한 floor 는 ProGuard mapping 없이는 미확정).
-3. **Future Work**:
+3. **확장 과제**:
    - closed-source commercial APK 의 ProGuard mapping 확보 후 exact accuracy 측정으로 진짜 baseline 정착.
    - NewPipe 같은 OSS 는 application code 가 가독성 유지라 R4 의 application-tier 측정에 적합 sample 이 아닐 수 있음 (HIGH 비즈니스 클래스 1/973 = 0.1%).
    - 상업 ProGuard 활성 APK (banking / messenger) 에서 application-tier sample 확보가 본 RQ4 의 진짜 floor 측정.
@@ -81,7 +81,7 @@ n=3 → n=6 확장 결과 plausibility 분포가 크게 변동. 추가 sample 3�
 - Sample n=6 — 통계적 일반화 불가. 단 모두 desugar library (p004j$.*) 한정 측정 (NewPipe 의 비즈니스 패키지에는 HIGH 1개라 application-tier sample 확장 불가).
 - Plausibility 평가는 본인 (Claude Code) 의 직접 판단 — 외부 reviewer 또는 NewPipe maintainer 의 검증이 추가되어야 객관성 강화.
 - Exact accuracy 측정 불가 (ProGuard mapping file 부재). np-5 / np-6 는 Java standard API 와 method 시그니처 매칭이 strong evidence 이지만 'exact' 라고 보장은 못함.
-- 본 학기 외부 다운로드 환경 제약 (네트워크 정책에 따른 toggle) 으로 추가 commercial APK 확보 어려움 — 12주차 사용자 결정 사항.
+- 프로젝트 중 외부 다운로드 환경 제약 (네트워크 정책에 따른 toggle) 으로 추가 commercial APK 확보 어려움 — 12주차 사용자 결정 사항.
 
 ## 재현
 

@@ -1,6 +1,8 @@
 > **Public masked copy** — code evidence (fenced blocks) replaced with redaction markers under contractor IP protection. Class names, line numbers, categories, severities, rationale, and AAOS / MASVS mappings are kept verbatim. Original raw report is retained locally only.
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
+>
+> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "Stage-2 follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.pleos.sync.syslog` (SysLogService)
 
@@ -191,7 +193,7 @@ The cryptographic primitives themselves are well-chosen:
 - JSON (machine-readable, schema = `configs/result_schema.json`): `data/reports/ai.pleos.sync.syslog_20260429.json`
 - Markdown (this file): `data/reports/ai.pleos.sync.syslog_20260429.md`
 
-## Next steps (B-3.c 후)
+## 당시 next-step 기록 (B-3.c 후)
 
 1. **ssl-3 third-party lib 확인**: `com.squareup.okhttp3`, `io.grpc.okhttp`, `io.grpc.netty` 패키지 grep으로 `CertificatePinner`/`X509TrustManager` 사용 위치 식별. provisional strong TP를 최종 strong TP 또는 clean으로 확정.
 2. **ssl-6 TLS verdict**: `ManagedChannel`/`OkHttpChannelBuilder.useTransportSecurity` vs `usePlaintext` grep. TLS 적용이면 ssl-3과 같은 pinning 의제로 통합.

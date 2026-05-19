@@ -1,90 +1,73 @@
-# Research Extension Plan — After v1.4 Supplement
+# Research Extension Plan
 
-_Created: 2026-05-14 / scope: post-report research expansion, not required for the current final PPT._
+This document lists optional research expansions after the final 15-week artifact. It does not re-list completed reinforcement experiments A-E as unfinished work.
 
-This document separates the completed **v1.4 supplement** conclusion from optional follow-up experiments that can strengthen the work as a longer research project.
+## Current Fixed Baseline
 
-## Bottom Line
+| Baseline Item | Final Value |
+|---|---:|
+| Combined GT | 47 |
+| Stage 1 Precision / Recall / F1 | 80.9% / 100.0% / 0.894 |
+| Stage 3 `>=2/3` Precision / Recall / F1 | 100.0% / 97.4% / 0.987 |
+| McNemar exact p-value | 0.0215 |
+| Native static sample | 4 |
+| Additional native-bound vulnerabilities | 0 |
 
-The current research conclusion is already fixed:
+The main research baseline is fixed: Stage 3 multi-perspective consensus is currently the strongest validation layer. Codex 3-model cross-read was useful as an independent check, but it did not outperform the Stage 3 baseline.
 
-- Claude Code single-model multi-perspective Stage 3 is the strongest current validation layer: `n=47`, Precision 100.0%, Recall 97.4%, F1 98.7%, McNemar `p_exact=0.0215`.
-- Codex 3-model cross-read is useful as independent reproducibility evidence, but its 2/3 consensus is more conservative: Precision 100.0%, Recall 76.3%, F1 86.6%.
-- The next research question is therefore not "add more models blindly"; it is **which evidence packaging or runtime signal actually changes model decisions in the right direction?**
+## Extension Roadmap
 
-## Priority Roadmap
+| Priority | Extension | Question | Done Criteria |
+|---:|---|---|---|
+| 1 | Independent label review | Do external reviewers agree with self-labelled PleOS findings? | reviewer matrix, adjudication log, updated confidence labels |
+| 2 | Corpus expansion to `n>=60` | Does Stage 3 improvement remain significant? | updated bootstrap CI and McNemar table |
+| 3 | RAG end-to-end ablation | Does retrieved context improve prompted judgment? | paired `no_rag` vs `with_rag` metrics |
+| 4 | Runtime validation | Which static findings become stronger/weaker with Frida evidence? | at least 3 reproducible runtime traces |
+| 5 | Native deep dive | Are secrets/endpoints hidden beyond string-level native scan? | Ghidra/radare2 use-site analysis for high-value libs |
+| 6 | Public redaction expansion | Can all final evidence be shared safely? | public masked full `n=47` report reviewed |
+| 7 | OS transfer | Does the method transfer to QNX or AGL? | labelled pilot corpus and OS-specific rule adaptation |
 
-| Priority | Extension | Research Question | Current Status | Done Criteria |
-|---:|---|---|---|---|
-| 1 | RAG end-to-end ablation | Does retrieved AAOS/MASVS/TARA/history context improve Stage 1 verdict quality? | Intrinsic retrieval measured only: NN/AAOS 85.1%, MASVS 23.4% | `no_rag` vs `with_rag` paired judgments on sample19, then full47; Precision/Recall/F1 and discordance table |
-| 2 | Dynamic runtime validation | Which static findings become stronger/weaker after Frida runtime evidence? | deterministic state machine + 5 hook scripts ready | At least 3 hooks executed on PleOS AVD or emulator-equivalent target; runtime observation attached to case studies |
-| 3 | Native deep dive | Are high-value native libs hiding secrets/endpoints beyond string-level analysis? | native sample n=4 static strings, 0 additional vulns | Ghidra Go plugin or equivalent symbol recovery for `libgojni.so`; use-site of UUID and MQTT payload path classified |
-| 4 | Public redaction expansion | Can full n=47 evidence be safely shared? | public Stage 3 remains initial n=12 snapshot | full n=47 public masked report regenerated and reviewed for PleOS source leakage |
-| 5 | n>=60 statistical expansion | Does McNemar significance remain stable with broader corpus? | n=47 significant, but discordant b+c=10 | n>=60 combined labels + Stage 3 applied to new labels + updated bootstrap/McNemar |
-| 6 | True multi-vendor comparison | Does vendor diversity beat prompt diversity? | Codex-only 3-model cross-read complete | Only if IP/budget policy allows non-PleOS or redacted public-corpus prompts through external APIs |
+## RAG End-To-End Ablation Design
 
-## Priority 1 Design — RAG End-To-End Ablation
+The next RAG experiment should judge already discovered findings, not search for new vulnerabilities.
 
-### Experiment Unit
+| Condition | Context |
+|---|---|
+| `no_rag` | finding only |
+| `with_rag` | same finding plus retrieved AAOS/MASVS/TARA/history context |
 
-The unit is an already discovered finding, not a new class scan. This keeps the experiment focused on **validation quality**:
+Required leakage controls:
 
-- Input: one Stage 1 finding hypothesis with APK, class, line, category, severity, title, evidence, and rationale.
-- Hidden GT: `is_real` from `combined_labels.json`.
-- Output: `report` or `suppress`, with confidence and short reason.
+- remove the target finding's own historical row from retrieval
+- redact GT verdict fields from retrieved examples
+- run judgment in a fresh session that has not inspected `combined_labels.json`
 
-### Conditions
+Metrics:
 
-| Condition | Context Given To Model | Purpose |
-|---|---|---|
-| `no_rag` | Finding only | Baseline validation prompt without retrieved domain knowledge |
-| `with_rag` | Same finding + retrieved AAOS/MASVS/TARA/history context | Tests whether retrieved context improves calibration |
+- Precision / Recall / F1 per condition
+- paired discordance table
+- FP-control suppression rate
+- evidence-use audit in model reasons
 
-The model must not search for new vulnerabilities. It only decides whether the given finding should remain reportable.
+## Runtime Validation Design
 
-Leakage control is mandatory for `with_rag`: the target finding's own historical row is removed from retrieval results, and explicit `GT verdict` / `is_real` fields are redacted from historical examples before the prompt is written.
+Use the existing state machine and hook scripts for:
 
-Judgment should be run in a fresh Codex or Claude session that has not seen `combined_labels.json`, the sample composition, or the expected TP/FP split. The current planning session is not a valid judge because it has already inspected the GT and leakage checks.
+- `vc-5`
+- `vc-6`
+- `ssl-2`
+- `ssl-5`
+- `lmp-1`
 
-### Scopes
+The goal is not to change the static metric table. The goal is to attach runtime observations to selected high-value findings and identify cases where runtime evidence upgrades, downgrades, or clarifies the static verdict.
 
-| Scope | Findings | Purpose |
-|---|---|---|
-| `sample19` | strong TP 10 + uncertain/low-consensus 5 + FP controls 4 | cheap smoke test; checks whether RAG suppresses controls without losing strong TPs |
-| `full47` | all combined GT findings | final measurement after sample19 passes |
+## Native Deep Dive Design
 
-### Metrics
+The native static scan found no additional vulnerabilities in the checked sample. A deeper track should focus on:
 
-- Per-condition Precision / Recall / F1.
-- RAG delta: `with_rag - no_rag`.
-- Paired discordance: no_rag wrong → with_rag correct, and no_rag correct → with_rag wrong.
-- FP-control suppression rate for sample19.
-- Evidence-use audit: whether the reason mentions retrieved history, AAOS, MASVS, or TARA.
+- Go symbol/function recovery for `libgojni.so`
+- endpoint and certificate verification use-sites
+- JNI boundary arguments
+- syscall/network call paths
 
-### Acceptance Criteria
-
-Sample19 can expand to full47 only if:
-
-- `with_rag` does not lose more than one strong TP.
-- At least one FP control is suppressed because of retrieved historical FP or AAOS/MASVS mismatch.
-- Output JSON validates against the expected schema.
-- The model does not use universal-report or universal-suppress behavior.
-- No retrieved context exposes the target finding's own GT label.
-
-## Artifacts
-
-New deterministic tooling:
-
-- `configs/prompts/rag_end_to_end_judge.md` — manual/Codex judgment prompt.
-- `scripts/research/research_rag_end_to_end_pack.py` — creates paired `no_rag` / `with_rag` input packages.
-- `scripts/research/research_rag_end_to_end_eval.py` — scores filled judgment JSON files against GT.
-
-Generated local-only artifacts:
-
-- `data/reports/rag_local/rag_end_to_end/sample19_no_rag_input.json`
-- `data/reports/rag_local/rag_end_to_end/sample19_with_rag_input.json`
-- `data/reports/rag_local/rag_end_to_end/sample19_no_rag_results_template.json`
-- `data/reports/rag_local/rag_end_to_end/sample19_with_rag_results_template.json`
-- `data/reports/rag_local/rag_end_to_end/*_metrics.{json,md}`
-
-These generated artifacts may include PleOS finding evidence and stay local-only.
+This work should be reported as native/runtime evidence, separate from the Java/Kotlin Stage 1/2/3 metrics.

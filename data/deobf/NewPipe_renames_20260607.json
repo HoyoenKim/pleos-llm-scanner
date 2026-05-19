@@ -85,5 +85,5 @@
     "semantic_plausibility": "1 GOOD (UnsafeAccessor) + 1 PARTIAL (UnsupportedException) + 1 POOR (ConcurrentNodePool) = 33% GOOD plausibility",
     "vs_hand_crafted_MASTG_baseline": "MASTG UnCrackable Level1/2 (Log.d 'CodeCheck', 'test-keys' 등 string literal 풍부) → 100% exact. NewPipe desugar library (interface 패턴, 인접 클래스 의존) → 33% GOOD plausibility. **약 3배 정확도 하락** (hand-crafted 100% → real-world plausibility 33%)."
   },
-  "interpretation": "R4 의 real-world floor 정량 측정 결과: contextual hint 의 풍부함에 따라 Stage 0 LLM rename 정확도가 크게 변동. hand-crafted MASTG (string literal + 명확한 role) → 100% exact match upper bound. real-world desugar library (interface 패턴) → 33% GOOD plausibility. 즉 **본 학기 Stage 0 의 일반화 성능 = corpus 의 contextual hint density 에 강하게 의존**. Future Work: closed-source commercial APK 의 ProGuard mapping 확보 후 exact accuracy 측정으로 baseline 정착."
+  "interpretation": "R4 의 real-world floor 정량 측정 결과: contextual hint 의 풍부함에 따라 Stage 0 LLM rename 정확도가 크게 변동. hand-crafted MASTG (string literal + 명확한 role) → 100% exact match upper bound. real-world desugar library (interface 패턴) → 33% GOOD plausibility. 즉 **본 학기 Stage 0 의 일반화 성능 = corpus 의 contextual hint density 에 강하게 의존**. 별도 확장 과제: closed-source commercial APK 의 ProGuard mapping 확보 후 exact accuracy 측정으로 baseline 정착."
 }

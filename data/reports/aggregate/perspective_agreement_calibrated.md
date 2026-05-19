@@ -51,5 +51,5 @@ _Measured: 2026-06-07 / scope: n=28 findings_
 
 ## 한계
 
-- 본 측정은 R2.a 의 같은 28 finding 에 calibrated 룰을 **수동 적용** 한 결과이지, 실제로 prompt 를 다시 LLM 에 던져 측정한 값이 아니다. selectivity 룰이 명확히 정의되어 있고 finding 들의 actionability / severity 가 documented 되어 있어 결정론적이지만, **새 corpus 에 LLM 으로 직접 적용한 검증** 은 Future Work.
+- 본 측정은 R2.a 의 같은 28 finding 에 calibrated 룰을 **수동 적용** 한 결과이지, 실제로 prompt 를 다시 LLM 에 던져 측정한 값이 아니다. selectivity 룰이 명확히 정의되어 있고 finding 들의 actionability / severity 가 documented 되어 있어 결정론적이지만, **새 corpus 에 LLM 으로 직접 적용한 검증** 은 별도 확장 과제다.
 - ssl-4 (PII toString without confirmed emission) 의 해석에 따라 defender flag 가 변동 가능. 본 측정은 'PII leak primitive 가 actionable mitigation (redacted toString) 가능' 으로 flag 유지.

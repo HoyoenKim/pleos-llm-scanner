@@ -2,30 +2,52 @@
 
 Last cleaned: 2026-05-19.
 
-## Summary
+## Status
 
-The repo now separates final research artifacts from local working evidence.
+The repository is arranged as the final 15-week research artifact. Reinforcement experiments A-E are completed and are part of the final project.
 
-- Completed: semester Phase A-E and off-semester Future Work A-E.
-- Canonical report: `docs/01_final_report.md`.
-- First-read brief: `docs/02_final_brief.md`.
-- Public-safe reports: `data/reports/aggregate/`, `data/reports/external/`, `data/reports/public/`.
-- Local-only evidence: `data/_local/`, `data/reports/local/`, `data/reports/per_apk_local/`, `data/reports/runtime_local/`, `data/reports/native_local/`, `data/reports/rag_local/`.
+## Canonical Artifacts
 
-## Current Numbers
+| Purpose | File |
+|---|---|
+| First-read summary | `docs/02_final_brief.md` |
+| Full final report | `docs/01_final_report.md` |
+| Case evidence | `docs/03_case_studies.md` |
+| Stage 2 method | `docs/04_methodology_stage2.md` |
+| Completed reinforcement experiments | `docs/08_completed_reinforcements.md` |
+| Remaining research extensions | `docs/09_research_extension_plan.md` |
 
-- Combined GT: n=47.
-- Stage 1: precision 80.9%, false-positive rate 19.1%, recall 100%, F1 0.894.
-- Stage 3 2/3 consensus: precision 100%, recall 97.4%, F1 0.987.
-- McNemar exact p-value: 0.0215.
-- Native scan sample: n=4, additional native-bound vulnerabilities found: 0.
+## Final Numbers
 
-## Next Deliverable
+| Metric | Value |
+|---|---:|
+| Combined GT | 47 |
+| Stage 1 precision | 80.9% |
+| Stage 1 false-positive rate | 19.1% |
+| Stage 1 recall | 100.0% |
+| Stage 1 F1 | 0.894 |
+| Stage 3 `>=2/3` precision | 100.0% |
+| Stage 3 `>=2/3` recall | 97.4% |
+| Stage 3 `>=2/3` F1 | 0.987 |
+| McNemar exact p-value | 0.0215 |
+| Native static scan sample | 4 |
+| Additional native-bound vulnerabilities | 0 |
 
-Prepare the final presentation deck from the parent workspace. The repository is now arranged so the deck can cite:
+## Disclosure Boundary
 
-- `docs/02_final_brief.md` for narrative.
-- `docs/01_final_report.md` for details.
-- `data/reports/aggregate/` for measured tables.
-- `data/viz/` for figures.
-- `data/reports/runtime_local/` and `data/_local/poc_evidence/` only after redaction review.
+Public-safe:
+
+- `data/reports/aggregate/`
+- `data/reports/external/`
+- `data/reports/public/`
+- `data/ground_truth/`
+- `data/viz/`
+
+Local-only:
+
+- `data/_local/`
+- `data/reports/local/`
+- `data/reports/per_apk_local/`
+- `data/reports/runtime_local/`
+- `data/reports/native_local/`
+- `data/reports/rag_local/`

@@ -21,7 +21,7 @@ Output of `src/deobf/entropy.py` (Shannon entropy + jadx pattern matching) on 7 
 - **NewPipe (real-world OSS, ProGuard 활성)**: HIGH 1.7% — hand-crafted MASTG 와 PleOS 사이의 **real-world baseline**. R4 의 첫 정량 데이터.
 - **PleOS APKs**: HIGH 0.2~0.4% — semantic 클래스명 유지. 초기 계획서가 가정한 heavy obfuscation 시나리오와 정량적으로 다름.
 
-→ 본 학기 Stage 0 정확도는 hand-crafted MASTG 에서 100% (upper-bound), NewPipe 에서는 ProGuard mapping 부재로 semantic plausibility 평가만 partial. real-world floor 의 exact accuracy 는 Future Work.
+→ 최종 Stage 0 정확도 해석은 hand-crafted MASTG 100%를 upper-bound로, NewPipe semantic plausibility를 real-world floor로 분리한다. ProGuard mapping 기반 exact accuracy 측정은 별도 확장 과제로 남긴다.
 
 ## Files
 

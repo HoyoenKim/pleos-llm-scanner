@@ -45,7 +45,7 @@
     "INTERNET 권한 / WebView / ContentProvider / 외부 통신 — 0건."
   ],
   "out_of_scope_findings": [
-    "Native CodeCheck verification logic in libfoo.so (XOR with hardcoded key + comparison). Recoverable via radare2 / Ghidra. Phase D L1 (radare2 통합) Future Work.",
+    "Native CodeCheck verification logic in libfoo.so (XOR with hardcoded key + comparison). Recoverable via radare2 / Ghidra. Phase D L1 (radare2 통합) scope extension.",
     "Anti-tamper bypass: integrity check + 3 root heuristics + debugger detection 모두 Frida hook 가능. MASVS-RESILIENCE-2/3."
   ],
   "stats": {

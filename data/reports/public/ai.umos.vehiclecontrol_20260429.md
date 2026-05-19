@@ -1,6 +1,8 @@
 > **Public masked copy** — code evidence (fenced blocks) replaced with redaction markers under contractor IP protection. Class names, line numbers, categories, severities, rationale, and AAOS / MASVS mappings are kept verbatim. Original raw report is retained locally only.
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
+>
+> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.umos.vehiclecontrol` (VehicleControl.apk)
 
@@ -184,9 +186,9 @@ This class is a **privileged primitive**: it can grant or revoke runtime permiss
 ⚠️ 측정 caveat:
 - "잠정 FP 4건"은 아직 deep-link 검증을 거치지 않은 상태. ApplicationDetails 화면의 deep link 등록 여부에 따라 1~2건이 다시 TP로 환원될 수 있음.
 - 표본 1개 APK / 7 findings 이라 통계적 유의성 매우 약함. **PPT 가설 1차 오탐률 25%** 와 비교는 PleOS 특화 APK 2종 추가 (Phase B-3) 후 다시 측정.
-- D3=(A) "멀티 Claude 모델 cross-read" 는 Claude Code가 단일 모델 세션이라 **manual workflow**. 사용자가 별도 Sonnet 4.6 / Haiku 4.5 세션을 열어 같은 보고서 입력 후 disagreement 비교 — 자동화 안 됨.
+- D3=(A) "멀티 모델 cross-read" 는 당시 Claude Code 단일 모델 세션에서는 **manual workflow**로만 가능했다. 최종 artifact에서는 이 아이디어를 Codex 3-model cross-read 보강 실험으로 별도 완료했다.
 
-### 다음 작업 (Phase B-3 진입 직전 follow-up)
+### 당시 follow-up 기록 (Phase B-3 진입 직전)
 
 1. ApplicationDetails 화면의 deep link 등록 여부 manifest 재확인 → AppPermissionManager 4건 FP 확정/환원 ← **2026-04-30 Stage 2.b 완료, 아래 참조**
 2. HtmlPopupScreen / ReleaseNotes 의 caller 추적 → HtmlWebView 2건 FP 확정/환원 ← **2026-04-30 Stage 2.b 완료, 아래 참조**
@@ -238,7 +240,7 @@ GT는 이미 vc-1~4 모두 `is_real=false` 라벨링. 측정값 변동 없음. �
 - B ≥2/3 (default): P 100% / Recall 90.9% / **F1 0.952** ← PPT 가설 0.93 도달·초과
 
 
-## Next steps — Stage 2 progression
+## 당시 next-step 기록 — Stage 2 progression
 
 1. **Manifest exported component triage** — match the 12+ exported receivers/activities/providers to the analyzed classes. Confirms / refutes severity for `VehicleBroadcastReceiver`, `GleoActionSender` callers, and the `Broadcasts` utility risk surface.
 2. **Caller traces**:
@@ -249,4 +251,4 @@ GT는 이미 vc-1~4 모두 `is_real=false` 라벨링. 측정값 변동 없음. �
    - `setAllowFileAccess(true)` + `loadUrl(<param>)` (false-positive filter for asset-only URLs)
    - `grantRuntimePermission(<param>, ...)` / `revokeRuntimePermission(<param>, ...)`
    - implicit `sendBroadcast(...)` with custom action and no `setPackage` / `permission`
-4. **Sonnet 4.6 cross-read** of the 7 findings (D3=(A) ensemble first application). Disagreement = false-positive candidate.
+4. **Manual cross-read idea** of the 7 findings (D3=(A) ensemble first application). This was later superseded by the completed Codex 3-model cross-read summarized in `../../../docs/08_completed_reinforcements.md`.

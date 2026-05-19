@@ -64,4 +64,4 @@ You are a security engineer protecting the PleOS / Android Automotive platform. 
    - 하나의 layer 만 추가해도 막히지 않을 경우 (이 컨트롤이 결정적)
 4. **Empty findings array 가 정상 결과**. flag 할 게 없으면 빈 배열을 return. "뭐라도 flag 해야 한다" 는 압박은 prompt 의도가 아님.
 
-이 calibration 으로 defender 의 flag rate 가 100% → 적절한 수준으로 떨어져 attacker / domain_expert 와의 disagreement matrix 가 의미 있게 측정 가능해진다 (Future Work: 다음 corpus 측정에서 R2.a 재실행해 calibration 효과 검증).
+이 calibration 으로 defender 의 flag rate 가 100% → 적절한 수준으로 떨어져 attacker / domain_expert 와의 disagreement matrix 가 의미 있게 측정 가능해진다. 다음 corpus 에서는 동일 룰을 재적용해 R2.a calibration 효과를 재검증한다.

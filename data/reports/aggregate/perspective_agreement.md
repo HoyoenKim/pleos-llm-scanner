@@ -36,4 +36,4 @@ _Measured: 2026-05-06 / scope: n=28 findings from `data/reports/local/stage3_ens
 - 만장일치 (3/3): 19건 (67.9%) / 단독 flag (1/3): 5건 (17.9%)
 - κ 해석은 위 표 참조. κ ≥ 0.61 (substantial) 이면 합의 임계 ≥2/3 가 reliable.
 
-**한계**: 본 측정은 동일 모델 (Opus 4.7) 에 시각 prompt 만 다르게 한 결과. 외부 모델 (Sonnet / Gemini 등) cross-read 측정값 (RQ2.b) 이 추가되어야 multi-prompt 가 multi-model 의 대체재인지 판단 가능. 본 학기 환경 제약으로 RQ2.b 는 Future Work.
+**한계 및 최종 반영**: 본 측정은 동일 모델 (Opus 4.7) 에 시각 prompt 만 다르게 한 결과다. 이후 보강 E에서 Codex 3-model cross-read를 별도로 완료했으며, 최종 결론은 `docs/08_completed_reinforcements.md`에 통합했다. 이 R2.a 문서는 multi-prompt baseline 측정 기록으로 유지한다.
