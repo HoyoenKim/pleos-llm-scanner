@@ -42,3 +42,7 @@
 - 프롬프트: `../configs/prompts/{stage0_deobfuscate,stage1_detect,stage3_attacker,stage3_defender,stage3_domain_expert,stage3_consensus}.md` + `stage1_detect_rag.md` (B) + `codex_multimodel_cross_read.md` (E)
 - 매핑 데이터: `../configs/keywords.yaml`, `../configs/aaos_mapping.yaml`
 - local-only runtime evidence: `../data/poc_evidence/`, `../data/runtime_poc_*`, `../data/reports/_raw/`, `../data/reports/prompt_leak_attack_poc/`
+
+## Parent workspace inventory
+
+- [11_parent_workspace_inventory_20260519.md](11_parent_workspace_inventory_20260519.md) documents the non-git parent workspace, local-only PPT/APK/runtime artifacts, and the push boundary for `pleos-llm-scanner/`.
