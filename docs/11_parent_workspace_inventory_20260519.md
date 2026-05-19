@@ -24,7 +24,7 @@ Because the parent workspace contains submitted PPT/PDF files, APK inputs, and r
 | `.claude/` | Local Claude/session settings (`settings.local.json`, lock file) | Keep local; never push |
 | `pptx/` | Weekly decks, final deck versions, course overview PDF | Keep local. Do not overwrite submitted files; create new versions if needed |
 | `scripts/` | Parent-level PPT helper scripts (`build_ppt_w11_v4_*`) | Keep local unless a rebuild path must be made public |
-| `data/apks/_external/` | External APK inputs (`NewPipe.apk`, `InsecureBankv2.apk`) | Keep local-only as benchmark inputs |
+| `data/apks/_external/` | External APK inputs (`NewPipe.apk`, `InsecureBankv2.apk`) | Archived on 2026-05-19 because matching copies already exist under `pleos-llm-scanner/data/apks/_external/` |
 | `data/runtime_poc_harness/` | Generated runtime PoC harness source/build outputs | Treat as local-only generated evidence; do not push APK/dex/keystore/class outputs |
 | `tmp_pentest_report.docx` | Unclassified old document | Leave untouched until provenance is confirmed |
 
@@ -63,6 +63,7 @@ Archived items:
 | `pptx/v4/` | Older final deck revision |
 | `scripts/` | Parent-level v4 PPT helper scripts |
 | `data/runtime_poc_harness/` | Generated PoC harness APK/dex/keystore/class outputs |
+| `data/apks/` | Duplicate parent-level external APK cache; SHA256 matched repo-local ignored copies |
 | `tmp_pentest_report.docx` | Unclassified temporary document, preserved rather than deleted |
 | `pleos-llm-scanner/scripts/update_ppt_v5_poc.py` | Untracked held PPT update script moved out of the repo working tree |
 
@@ -72,7 +73,6 @@ Left in place:
 |---|---|
 | `pptx/v5/` | Current final presentation deck |
 | `pptx/*.pptx`, `pptx/*.pdf` | Submitted or course-facing base materials |
-| `data/apks/_external/` | External benchmark APK inputs |
 | `AGENTS.md`, `CLAUDE.md`, `progress.md`, `next.md` | Active local project records |
 
 ## Push Boundary
