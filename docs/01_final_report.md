@@ -227,7 +227,7 @@ This report covers the completed research tracks at result level. Detailed evide
 | AAOS / MASVS / TARA mapping | Contributions, artifact index | `src/mapping/`, `data/reports/aggregate/` |
 | RAG intrinsic retrieval evaluation | Supporting tracks | `src/rag/`, `docs/08_completed_reinforcements.md` |
 | Native static boundary scan | Supporting tracks, limitations | `src/native/`, `docs/08_completed_reinforcements.md` |
-| Runtime PoC validation | Runtime PoC and claim-level evidence | `scripts/runtime_poc/`, `src/dynamic/` |
+| Runtime PoC validation | Runtime PoC and claim-level evidence | `docs/12_runtime_poc_details.md`, `scripts/runtime_poc/`, `src/dynamic/` |
 | Codex cross-read reinforcement | Supporting tracks | `docs/08_completed_reinforcements.md` |
 | Public disclosure and redaction boundary | Threat model, limitations, artifact index | `docs/10_project_inventory.md` |
 
@@ -244,6 +244,7 @@ Failed or inconclusive experiments are not promoted into final claims. They rema
 | Limitations and cost | `docs/06_limitations_and_costs.md` |
 | Remaining work | `docs/07_remaining_work.md` |
 | Completed A-E tracks | `docs/08_completed_reinforcements.md` |
+| Runtime PoC details | `docs/12_runtime_poc_details.md` |
 | Runtime PoC tooling | `scripts/runtime_poc/`, `src/dynamic/` |
 | PoC feasibility matrix | `scripts/research/research_compromise_scenarios.py` |
 | GT labels | `data/ground_truth/combined_labels.json` |
