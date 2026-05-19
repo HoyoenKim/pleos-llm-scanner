@@ -40,10 +40,48 @@ Out of scope: remote vehicle control, real-vehicle actuation, production backend
 
 The harness intentionally records counts, booleans, hashes, exception classes, and redacted metadata rather than raw secrets or proprietary content.
 
+## Main PoC Storyline
+
+The main runtime PoC is the combined IVI chain, not the isolated LLM-provider demo.
+
+The scenario starts from a realistic Android/AAOS precondition: an attacker has already installed and launched one same-device untrusted app. The app is not assumed to be a platform-signed PleOS component. From that position, the PoC shows two IVI-relevant primitives in one attacker-controlled UI.
+
+1. The attacker app sends a route request through the exported NaviService Binder surface.
+2. Maps renders a visible route preview for the attacker-supplied destination marker.
+3. The attacker app returns to its own UI.
+4. The same app invokes a weakly protected VehicleService property path.
+5. The run records `MIRROR_FOLD` before/set/after/restore evidence as a reversible vehicle-property mutation.
+
+The resulting safety argument is conditional and should be stated exactly:
+
+| Assumption | Evidence In This Project | Safety Interpretation |
+|---|---|---|
+| Assumption 1: route selection is trusted by downstream autonomous or assisted-driving logic | The PoC confirms same-device route UI injection / route preview through NaviService. | If autonomous driving or assisted route-following trusts the injected route state, this becomes a route-influence hazard. The project does not independently prove autonomous-driving takeover. |
+| Assumption 2: route influence alone is insufficient, but vehicle-property mutation can affect driver or vehicle state | The PoC confirms reversible `MIRROR_FOLD` mutation through VehicleService. A separate earlier pentest track showed emulator VHAL `GEAR_POSITION=D` spoofing through ADB-root `car_service` injection. | Even without autonomous driving, weak vehicle-property paths are safety-relevant because they can affect manual-driving context, driver visibility/attention, or vehicle-state assumptions. The same-device app path proves `MIRROR_FOLD`, while the VHAL gear-position evidence remains a separate stronger emulator-only risk track. |
+
+Allowed main claim:
+
+> Under a same-device malicious-app threat model, the combined PoC confirms that an unprivileged app can trigger visible route-setting behavior through NaviService and can mutate a reversible vehicle property through VehicleService. If downstream driving or IVI logic trusts those route/property states, the chain is safety-relevant and should be treated as a potential IVI compromise path.
+
+Not claimed:
+
+- remote vehicle compromise
+- autonomous-driving takeover as a completed exploit
+- attacker-triggered automatic guidance start unless separately proven
+- active-route hijack of a user trip
+- steering, brake, powertrain, or gear control from the same-device app harness
+- real-vehicle actuation
+
+The `lmp-1` prompt-provider PoC remains a strong companion story for IVI LLM boundary exposure, but it is no longer the main runtime-impact narrative.
+
 ## Evidence Summary
 
 | Finding / Surface | Completed Runtime Result | Allowed Claim |
 |---|---|---|
+| `chain-1` combined IVI app | One attacker-controlled harness UI drives NaviService route preview and VehicleService `MIRROR_FOLD` mutation in the same live replay. | Main PoC: same-device route influence plus reversible vehicle-property mutation. Safety impact is conditional on downstream trust in route/property state. |
+| `navi-1` NaviService route request | The attacker app sends a route request through exported NaviService Binder and Maps renders the attacker-supplied destination as visible route UI. | L3 emulator-visible route UI injection. Do not call it autonomous-driving takeover or automatic guidance start. |
+| `vs-1` VehicleService property mutation | The attacker app binds to VehicleService and records `MIRROR_FOLD before=false -> set=true -> after=true -> restore=false`. | L2/L3 reversible vehicle-property mutation under emulator conditions, depending on whether the UI/state evidence is cited. |
+| `vhal-pentest-1` gear-position spoofing | Separate earlier pentest evidence showed emulator VHAL `GEAR_POSITION=D` spoofing through ADB-root `car_service` injection. | Supports the broader safety concern around vehicle-state trust. It is not the same same-device app Binder path and must remain separate from `chain-1`. |
 | `lmp-1` prompt provider | Same-device provider query path was exercised; prompt-provider rows were reachable without a permission denial in the emulator smoke track. | L1 provider reachability; L2 data-read strength when the local evidence pack captures redacted returned-row metadata. |
 | `vc-6` vehicle broadcast receiver | Benign explicit broadcast delivery to the receiver was exercised, and the dry-run hook can observe the payload without database mutation. | L1 receiver reachability. L2 requires a captured benign state/log diff. No vehicle actuation claim. |
 | PairedDevices provider control | `READ_PAIRED_DEVICES` / `WRITE_PAIRED_DEVICES` permission enforcement was observed. | Negative/control evidence showing the pipeline does not treat every provider-like surface as exploitable. |
@@ -56,7 +94,23 @@ The harness intentionally records counts, booleans, hashes, exception classes, a
 
 ## Per-Finding Notes
 
+### `chain-1`, `navi-1`, and `vs-1` - Combined IVI Route / Property Chain
+
+The combined chain is the main PoC narrative for runtime impact.
+
+The attacker position is a same-device app. The route step uses NaviService Binder to request an attacker-supplied destination and records Maps route-preview UI. The vehicle-property step uses VehicleService to mutate the reversible `MIRROR_FOLD` property and then restore it.
+
+Public-safe evidence may include the route marker string, route-preview screenshots with sensitive UI removed, sanitized Binder result lines, `MIRROR_FOLD` before/set/after/restore status, and the local video path. It must not include proprietary code, raw logs with sensitive state, or claims about real vehicles.
+
+Allowed claim: same-device app can influence route-setting UI and mutate a reversible vehicle property in the emulator. This is safety-relevant when downstream autonomous, assisted-driving, or manual-driving workflows trust those IVI route/property states.
+
+Not claimed: real-vehicle actuation, automatic route-following takeover, active-route hijack, steering/brake/gear/powertrain control from the same-device app, or remote exploitability.
+
+The separate VHAL gear-position pentest track strengthens the concern that vehicle-state assumptions can be safety-relevant, but it used ADB-root `car_service` injection and must not be merged into the same-device app claim.
+
 ### `lmp-1` - Prompt Provider Read
+
+The `lmp-1` demo is the companion PoC for IVI LLM boundary exposure.
 
 The static finding is an exported IVI LLM prompt/corpus provider without an adequate caller gate. The runtime PoC asks whether a same-device caller can query the provider and receive rows.
 
@@ -133,6 +187,10 @@ Runtime PoC evidence should be read as claim-strengthening evidence for selected
 
 ## Final Interpretation
 
-The PoC track shows that selected static findings were translated into safe, owner-authorized emulator checks. It provides concrete runtime support for provider reachability, receiver reachability, marker-based local state checks, and permission-gating controls.
+The PoC track shows that selected static findings were translated into safe, owner-authorized emulator checks.
 
-It does not turn the project into an exploit campaign. The final claim remains an LLM-assisted static security-analysis artifact with bounded runtime validation for selected high-value rows.
+The main runtime story is now the combined IVI route/property chain: a same-device untrusted app can trigger route-setting UI through NaviService and mutate a reversible VehicleService property. Under the explicit assumption that downstream autonomous, assisted-driving, or manual-driving workflows trust these IVI route/property states, this is a safety-relevant compromise path.
+
+The companion runtime story is `lmp-1`: the same-device attacker model can cross an IVI LLM provider boundary and read prompt/corpus output that should have been permission-gated.
+
+Neither story turns the project into a remote exploit or real-vehicle takeover claim. The final claim remains an LLM-assisted static security-analysis artifact with bounded runtime validation for selected high-value rows.

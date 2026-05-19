@@ -144,12 +144,14 @@ The paired McNemar exact test has `b+c=10` and exact two-tailed `p=0.0215`, so t
 | Bootstrap CI | Stage 1 precision 95% bootstrap CI `[70.2%, 91.5%]` | Still corpus-bound, not a universal scanner guarantee |
 | RAG intrinsic retrieval | nearest-neighbor verdict propagation 85.1%, AAOS category alignment 85.1% | Retrieval quality measured; prompted with/without-RAG LLM gain remains separate work |
 | Native static scan | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track only; dynamic JNI/Go/runtime flow is not closed |
-| Runtime PoC validation | same-device ADB proof points plus deterministic state machine, harness scripts, and Frida hooks | Claim-level evidence only; separate from the static `n=47` metric |
+| Runtime PoC validation | combined IVI route/property PoC plus same-device ADB proof points, deterministic state machine, harness scripts, and Frida hooks | Claim-level evidence only; separate from the static `n=47` metric |
 | Codex 3-model cross-read | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat Stage 3 `>=2/3`; prompt calibration and evidence packaging mattered more than model count |
 
 ### 5.6 Runtime PoC And Claim-Level Evidence
 
 The runtime PoC track was completed as a bounded validation layer for selected high-value static findings. Its purpose is not to change the Stage 1/Stage 3 precision-recall table, but to decide whether a static row remains L0 or can be strengthened to L1/L2/L3 evidence under the same-device emulator threat model.
+
+The main runtime narrative is the combined IVI chain: a malicious same-device app triggers visible route-setting behavior through NaviService and then mutates a reversible VehicleService property. The safety argument is conditional: if downstream autonomous, assisted-driving, or manual-driving workflows trust the IVI route/property state, the chain is safety-relevant. This report does not claim completed autonomous-driving takeover or real-vehicle actuation.
 
 | PoC Component | Completed Artifact | Role In The Research |
 |---|---|---|
@@ -163,6 +165,10 @@ The completed PoC work produced three kinds of positive evidence.
 
 | Finding / Surface | Runtime Evidence Status | Claim-Level Interpretation |
 |---|---|---|
+| `chain-1` combined IVI route/property PoC | One attacker-controlled harness UI drives NaviService route preview and VehicleService `MIRROR_FOLD` mutation in the same live replay. | Main runtime PoC: same-device route influence plus reversible vehicle-property mutation; safety impact depends on downstream trust in route/property state. |
+| `navi-1` NaviService route request | The attacker app sends a route request through exported NaviService Binder and Maps renders the attacker-supplied destination as visible route UI. | L3 route UI injection under emulator conditions; not autonomous-driving takeover or automatic guidance start. |
+| `vs-1` VehicleService property mutation | The attacker app records `MIRROR_FOLD before=false -> set=true -> after=true -> restore=false`. | Reversible vehicle-property mutation under emulator conditions; no steering/brake/gear/powertrain claim from the same-device app. |
+| `vhal-pentest-1` gear-position spoofing | Separate earlier pentest evidence showed emulator VHAL `GEAR_POSITION=D` spoofing through ADB-root `car_service` injection. | Supports vehicle-state trust risk, but remains separate from the same-device app Binder path. |
 | `lmp-1` prompt provider | Same-device provider query path was exercised; prompt-provider rows were reachable without a permission denial in the emulator smoke track. | Supports L1 reachability and L2 data-read strength when redacted row data is captured. |
 | `vc-6` vehicle broadcast receiver | Benign explicit broadcast delivery to the receiver was exercised in the emulator track. | Supports L1 receiver reachability; L2 requires a captured benign state/log diff. |
 | PairedDevices provider control | Permission enforcement was observed for `READ_PAIRED_DEVICES` / `WRITE_PAIRED_DEVICES`. | Serves as a negative/control check showing that not every provider-like surface is treated as exploitable. |
@@ -171,7 +177,7 @@ The completed PoC work produced three kinds of positive evidence.
 
 Runtime PoC results are intentionally local-evidence artifacts. Public docs may state the observed claim level and redacted breadcrumb, but raw APKs, harness outputs, screenshots, videos, logs, prompt rows, and proprietary code remain local-only.
 
-This track does not claim remote exploitation, real-vehicle control, credential theft in the wild, or a full end-to-end compromise chain. It shows that selected static findings were translated into safe, owner-authorized emulator checks and that some surfaces were runtime-reachable under the same-device model.
+This track does not claim remote exploitation, real-vehicle control, completed autonomous-driving takeover, credential theft in the wild, or a full end-to-end compromise chain. It shows that selected static findings were translated into safe, owner-authorized emulator checks and that some route, property, provider, and receiver surfaces were runtime-reachable under the same-device model.
 
 ## 6. Case Summary
 
