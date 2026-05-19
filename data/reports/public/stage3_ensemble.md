@@ -1,6 +1,8 @@
 > **Public masked copy** — only PleOS-prefixed findings (vc-/ssl-/lmp-) had their evidence redacted. MASTG findings (ucl1-/ucl3-) are public corpus and kept verbatim. Per-perspective rationales / attack chains / missing controls / vehicle assets are kept.
 >
 > 본 파일은 PleOS 코드 인용만 redact 한 공개용 사본. MASTG 외부 corpus는 그대로 유지.
+>
+> **Sync note (2026-05-14)**: this public copy intentionally remains the initial redacted n=12 snapshot. The current full Stage 3 result is n=47 with `>=2/3` Precision 100.0%, Recall 97.4%, F1 98.7%, McNemar p_exact=0.0215. Full n=47 details remain in the local-only `data/reports/stage3_ensemble.md/json` until R1.d.2~d.5 public redaction review is done.
 
 # Stage 3 — Multi-prompt ensemble first application (2026-04-29)
 

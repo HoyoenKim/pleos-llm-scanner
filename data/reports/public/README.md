@@ -14,7 +14,7 @@ missing control, vehicle asset, STRIDE, TARA impact 등) 는 그대로 유지된
 - [`ai.umos.vehiclecontrol_20260429.md`](ai.umos.vehiclecontrol_20260429.md) + [`.json`](ai.umos.vehiclecontrol_20260429.json)
 - [`ai.pleos.sync.syslog_20260429.md`](ai.pleos.sync.syslog_20260429.md) + [`.json`](ai.pleos.sync.syslog_20260429.json)
 - [`ai.pleos.llm.model.provider_20260429.md`](ai.pleos.llm.model.provider_20260429.md) + [`.json`](ai.pleos.llm.model.provider_20260429.json)
-- [`stage3_ensemble.md`](stage3_ensemble.md) + [`.json`](stage3_ensemble.json)
+- [`stage3_ensemble.md`](stage3_ensemble.md) + [`.json`](stage3_ensemble.json) — 공개판은 2026-04-29 초기 n=12 redacted snapshot. 현재 full n=47 Stage 3 결과는 `data/reports/stage3_ensemble.md/json` 로컬 전용본에 보관하며, R1.d.2~d.5 신규 corpus 공개는 별도 redaction review 후 진행.
 
 ## 재현
 
