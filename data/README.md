@@ -1,6 +1,6 @@
 # data/ — Inventory
 
-이 디렉토리는 파이프라인의 입력 (APK / decompiled / ground truth) 과 출력 (per-APK reports / aggregated mapping / charts / obfuscation entropy) 을 모아둔다. **APK 바이너리 / 디컴파일 결과 / per-APK 보고서**는 contractor IP 보호로 gitignored이고, 집계 산출물 / GT 라벨 / 차트만 public으로 commit된다.
+이 디렉토리는 파이프라인의 입력 (APK / decompiled / ground truth) 과 출력 (per-APK reports / aggregated mapping / charts / obfuscation entropy / runtime PoC evidence) 을 모아둔다. **APK 바이너리 / 디컴파일 결과 / per-APK 보고서 / raw runtime evidence / videos**는 contractor IP 보호와 claim-boundary 보존을 위해 gitignored이고, 집계 산출물 / GT 라벨 / 차트 / redacted public reports만 commit된다.
 
 ## Subdirectories
 
@@ -12,6 +12,9 @@
 | `deobf/` | ✓ all | 6 APK 의 obfuscation entropy 측정값 (`<APK>.json`) + UnCrackable rename 결과. 자동 생성 `<APK>.md`는 gitignored (JSON이 source of truth). 자세히는 [`deobf/README.md`](deobf/README.md). |
 | `viz/` | ✓ all | 측정값 시각화 차트 6장 (`01~06_*.png`). `src/viz/plot_metrics.py` 출력. |
 | `ground_truth/` | ✓ all | 자체 라벨 + OWASP MASTG 라벨 + combined GT. eval/ablation/aaos_map/tara_generate 가 입력으로 사용. |
+| `poc_evidence/` | ✗ gitignored | 2026-05-18 runtime PoC raw evidence. screenshots, logcat, UIAutomator dump, replay videos. 공개 전 redaction review 필수. |
+| `runtime_poc_*` | ✗ gitignored | PoC recording/final/improved/LLM-boundary demo videos and bundles. 발표용 local artifacts. |
+| `native*`, `rag/`, `tools/` | ✗ gitignored | extracted native libs, Chroma vector DB, portable radare2 등 generated/binary dependency. summary만 docs/reports에 기록. |
 
 ## File-name convention
 
@@ -30,7 +33,10 @@ data/
 │   ├── aaos_mapping_table.json # tracked
 │   ├── tara_artifact.md        # tracked
 │   ├── tara_artifact.json      # tracked
-│   └── <other>.{json,md}       # gitignored (per-APK reports)
+│   ├── <allowed RQ aggregate>.{md,json} # tracked by .gitignore negation
+│   ├── _raw/                   # gitignored (dumpsys/log/source-like raw evidence)
+│   ├── prompt_leak_attack_poc/ # gitignored (video/preview/demo bundle)
+│   └── <other>.{json,md}       # gitignored (per-APK reports / local-only runtime summaries)
 ├── deobf/
 │   ├── README.md               # tracked (요약 인덱스)
 │   ├── <APK>.json × 7          # tracked (entropy 측정 결과)
@@ -39,8 +45,8 @@ data/
 ├── viz/
 │   └── 01~06_*.png             # tracked (차트 6장)
 └── ground_truth/
-    ├── self_labels.json        # tracked (PleOS 자체 라벨 n=15)
-    ├── combined_labels.json    # tracked (n=19 = self + MASTG)
+    ├── self_labels.json        # tracked (PleOS 자체 라벨)
+    ├── combined_labels.json    # tracked (최종 n=47 combined GT)
     └── mastg/
         ├── uncrackable_level1.labels.json
         ├── uncrackable_level2_r2pay.labels.json

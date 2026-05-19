@@ -21,7 +21,14 @@ data/decompiled/
 # Binary artifacts — extracted native libs / vector DB / portable tools (not pipeline source)
 data/native/
 data/native_libs/
+data/native_deep_dive/
 data/rag/
+data/runtime_poc_harness/
+data/runtime_poc_recordings/
+data/runtime_poc_final_demo/
+data/runtime_poc_improved_demo/
+data/runtime_poc_llm_boundary_demo/
+data/poc_evidence/
 tools/
 
 # Reports — per-APK private until report-finalisation review
@@ -30,6 +37,11 @@ data/reports/*.json
 data/reports/*.md
 # Codex multi-model per-scope detail — local only (summary codex_multimodel_agreement* is committed)
 data/reports/codex_multimodel/
+# RAG end-to-end prompt packages / model judgment outputs — local only
+data/reports/rag_end_to_end/
+# Runtime PoC raw evidence / prompt-leak demo bundles — local only
+data/reports/_raw/
+data/reports/prompt_leak_attack_poc/
 # Exception: meta-analysis aggregation tables (no PleOS source, GT-derived only)
 !data/reports/aaos_mapping_table*
 !data/reports/tara_artifact*
