@@ -144,8 +144,34 @@ The paired McNemar exact test has `b+c=10` and exact two-tailed `p=0.0215`, so t
 | Bootstrap CI | Stage 1 precision 95% bootstrap CI `[70.2%, 91.5%]` | Still corpus-bound, not a universal scanner guarantee |
 | RAG intrinsic retrieval | nearest-neighbor verdict propagation 85.1%, AAOS category alignment 85.1% | Retrieval quality measured; prompted with/without-RAG LLM gain remains separate work |
 | Native static scan | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track only; dynamic JNI/Go/runtime flow is not closed |
-| Dynamic verification scaffolding | deterministic state machine plus Frida hook scripts | Infrastructure exists; runtime evidence is separate from the static `n=47` metric |
+| Runtime PoC validation | same-device ADB proof points plus deterministic state machine, harness scripts, and Frida hooks | Claim-level evidence only; separate from the static `n=47` metric |
 | Codex 3-model cross-read | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat Stage 3 `>=2/3`; prompt calibration and evidence packaging mattered more than model count |
+
+### 5.6 Runtime PoC And Claim-Level Evidence
+
+The runtime PoC track was completed as a bounded validation layer for selected high-value static findings. Its purpose is not to change the Stage 1/Stage 3 precision-recall table, but to decide whether a static row remains L0 or can be strengthened to L1/L2/L3 evidence under the same-device emulator threat model.
+
+| PoC Component | Completed Artifact | Role In The Research |
+|---|---|---|
+| Runtime harness | `scripts/runtime_poc/research_runtime_poc_harness.py` and recording wrappers | Builds and drives a same-device test APK for safe provider, broadcast, Activity, Binder, and marker checks |
+| Static-to-dynamic state machine | `src/dynamic/state_machine.py` | Routes selected findings from static verdicts to runtime-observation correlation |
+| Frida hook set | `src/dynamic/hooks/` | Captures caller UID, receiver payloads, provider queries, token/log emission paths, KDF passphrase use, and native command candidates |
+| Compromise scenario matrix | `scripts/research/research_compromise_scenarios.py` | Translates findings into safe local PoC feasibility, attacker position, required evidence, and claim status |
+| Recording helpers | `scripts/runtime_poc/record_*` and `run_*` scripts | Produce local-only evidence runs and video/report artifacts without publishing raw logs or proprietary data |
+
+The completed PoC work produced three kinds of positive evidence.
+
+| Finding / Surface | Runtime Evidence Status | Claim-Level Interpretation |
+|---|---|---|
+| `lmp-1` prompt provider | Same-device provider query path was exercised; prompt-provider rows were reachable without a permission denial in the emulator smoke track. | Supports L1 reachability and L2 data-read strength when redacted row data is captured. |
+| `vc-6` vehicle broadcast receiver | Benign explicit broadcast delivery to the receiver was exercised in the emulator track. | Supports L1 receiver reachability; L2 requires a captured benign state/log diff. |
+| PairedDevices provider control | Permission enforcement was observed for `READ_PAIRED_DEVICES` / `WRITE_PAIRED_DEVICES`. | Serves as a negative/control check showing that not every provider-like surface is treated as exploitable. |
+| `am-1` AppMarket suggestions provider | Harness and evidence-check scripts implement marker write/read and cleanup checks for the exported suggestion surface. | Designed to support L2 only when harmless marker read/write evidence is captured; UI effect would require L3 evidence. |
+| `acc-4`, `ssl-2`, `ssl-5`, `vc-5`, native command candidate | Hook scripts and runtime plans exist for boundary, token/log, KDF, implicit-broadcast, and native-command observation. | Completed as validation infrastructure; individual claim upgrades require local redacted runtime traces. |
+
+Runtime PoC results are intentionally local-evidence artifacts. Public docs may state the observed claim level and redacted breadcrumb, but raw APKs, harness outputs, screenshots, videos, logs, prompt rows, and proprietary code remain local-only.
+
+This track does not claim remote exploitation, real-vehicle control, credential theft in the wild, or a full end-to-end compromise chain. It shows that selected static findings were translated into safe, owner-authorized emulator checks and that some surfaces were runtime-reachable under the same-device model.
 
 ## 6. Case Summary
 
@@ -170,6 +196,7 @@ Representative final cases are documented in `03_case_studies.md`.
 | Label bias | External corpora were added | PleOS-customized labels still need independent reviewer validation |
 | Corpus selection | Security-value selected corpus | Not an app-store random benchmark |
 | Native/runtime behavior | Native static sample and dynamic scaffolding exist | Dynamic JNI, Go runtime, and syscall argument flow remain only partially observed |
+| Runtime PoC evidence | Same-device ADB proof points and harness/hook infrastructure exist | Raw traces remain local-only; PoC evidence does not imply real-vehicle exploitation |
 | RAG effect | Intrinsic retrieval quality measured | End-to-end prompted LLM improvement is not yet measured |
 | ProGuard-heavy APKs | Priority-class yield can drop | Stronger Stage 0 and manifest-only modes remain useful |
 | Stage 2 automation | Semi-automated contextual verification works on this corpus | Not a complete Android reachability engine |
@@ -182,9 +209,31 @@ Representative final cases are documented in `03_case_studies.md`.
 3. Paired evidence that contextual evidence packaging and multi-perspective verification reduce measured false positives.
 4. AAOS / MASVS / TARA mapping artifacts that translate code-level findings into automotive-security language.
 5. A public/private artifact boundary for redacted reporting without publishing proprietary PleOS evidence.
-6. Completed reinforcement tracks covering statistics, RAG, native static analysis, dynamic scaffolding, and Codex cross-read.
+6. Completed reinforcement tracks covering statistics, RAG, native static analysis, runtime PoC validation, and Codex cross-read.
 
-## 9. Artifact Index
+## 9. Completed Research Coverage
+
+This report covers the completed research tracks at result level. Detailed evidence, scripts, and local-only runtime artifacts are referenced rather than embedded.
+
+| Completed Track | Covered In This Report | Detail Location |
+|---|---|---|
+| APK collection, JADX decompilation, keyword triage | Approach | `README.md`, `scripts/apk/`, `configs/keywords.yaml` |
+| Stage 0 obfuscation and rename-plausibility screen | Approach, supporting tracks | `src/deobf/`, `data/deobf/` |
+| Stage 1 LLM candidate detection | Approach, main metric | `configs/prompts/stage1_detect.md`, `data/reports/` |
+| Stage 2 contextual verification | Approach, FP attribution | `docs/04_methodology_stage2.md` |
+| Stage 3 multi-perspective consensus | Approach, main metric, FN analysis | `configs/prompts/stage3_*.md`, `data/reports/public/stage3_ensemble.md` |
+| Combined GT and final metrics | Dataset, labels, results | `data/ground_truth/combined_labels.json`, `data/reports/aggregate/` |
+| Bootstrap, ablation, and significance checks | Results, supporting tracks | `data/reports/aggregate/`, `src/evaluation/` |
+| AAOS / MASVS / TARA mapping | Contributions, artifact index | `src/mapping/`, `data/reports/aggregate/` |
+| RAG intrinsic retrieval evaluation | Supporting tracks | `src/rag/`, `docs/08_completed_reinforcements.md` |
+| Native static boundary scan | Supporting tracks, limitations | `src/native/`, `docs/08_completed_reinforcements.md` |
+| Runtime PoC validation | Runtime PoC and claim-level evidence | `scripts/runtime_poc/`, `src/dynamic/` |
+| Codex cross-read reinforcement | Supporting tracks | `docs/08_completed_reinforcements.md` |
+| Public disclosure and redaction boundary | Threat model, limitations, artifact index | `docs/10_project_inventory.md` |
+
+Failed or inconclusive experiments are not promoted into final claims. They remain visible only as limitations or remaining-work boundaries when they affect interpretation.
+
+## 10. Artifact Index
 
 | Purpose | Path |
 |---|---|
@@ -195,6 +244,8 @@ Representative final cases are documented in `03_case_studies.md`.
 | Limitations and cost | `docs/06_limitations_and_costs.md` |
 | Remaining work | `docs/07_remaining_work.md` |
 | Completed A-E tracks | `docs/08_completed_reinforcements.md` |
+| Runtime PoC tooling | `scripts/runtime_poc/`, `src/dynamic/` |
+| PoC feasibility matrix | `scripts/research/research_compromise_scenarios.py` |
 | GT labels | `data/ground_truth/combined_labels.json` |
 | Aggregate reports | `data/reports/aggregate/` |
 | Public masked reports | `data/reports/public/` |
