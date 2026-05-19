@@ -85,7 +85,7 @@ This repository separates local evidence, configuration, evaluation data, report
 
 ## Evaluation Summary
 
-The main evaluation compares broad candidate generation against verified reporting. The final labelled corpus contains `n=47` finding-level labels: 30 PleOS-customized findings, 13 external vulnerable-corpus findings, and 4 AOSP-derived findings. A finding is a labelled security-relevant candidate row, not an APK-level score.
+The main evaluation compares broad candidate generation against verified reporting. The final labelled corpus contains `n=47` finding-level labels: 30 PleOS-customized findings, 13 external vulnerable-corpus findings, and 4 AOSP-derived findings. A finding is a labelled security-relevant candidate, not an APK-level score.
 
 The result is that the first LLM pass is useful for recall-oriented candidate collection, while the full verification pipeline is what makes the findings reportable.
 
@@ -106,8 +106,8 @@ These measurements do not replace the main precision/recall comparison. They che
 
 | Check | Result | Takeaway |
 |---|---|---|
-| Native static sample | 4 `.so` samples checked, 0 additional native-bound vulnerabilities | Native analysis reduced a blind spot, but did not add new confirmed findings in the sampled set. |
-| Local RAG evaluation | nearest-neighbor verdict 85.1%, AAOS category alignment 85.1% | Retrieval helps organize domain knowledge; end-to-end LLM gain is separate. |
+| Native static sample | 4 `.so` samples checked, 0 additional native-code-boundary vulnerabilities | Native analysis reduced a blind spot, but did not add new confirmed findings in the sampled set. |
+| Retrieval-grounded consistency check | nearest-neighbor verdict 85.1%, AAOS category alignment 85.1% | Retrieval helps organize domain knowledge; end-to-end LLM gain is separate. |
 
 ## Runtime Validation
 
@@ -169,7 +169,7 @@ This section maps the research pipeline to the source files, configs, and report
 | RAG support | Domain-knowledge retrieval and intrinsic agreement checks. | `src/rag/`, `data/reports/aggregate/` |
 | Native scan | Native-library inventory and selected `.so` scans. | `src/native/`, `data/reports/aggregate/native_lib_inventory.md` |
 | Runtime validation | Emulator PoC harnesses and Frida hooks. | `scripts/runtime_poc/`, `src/dynamic/` |
-| Codex cross-read | Independent model cross-read against the main baseline. | `configs/prompts/codex_multimodel_cross_read.md`, `data/reports/aggregate/codex_multimodel_agreement.md` |
+| Independent LLM cross-review | Independent model cross-review against the main baseline. | `configs/prompts/codex_multimodel_cross_read.md`, `data/reports/aggregate/codex_multimodel_agreement.md` |
 
 ## Repository Layout
 
@@ -272,7 +272,7 @@ Do not publish or force-add local-only APKs, decompiled code, screenshots, video
 | [Chart Inventory](docs/05_charts.md) | List of chart artifacts used in the report, including their source data and regeneration path. |
 | [Limitations And Cost Model](docs/06_limitations_and_costs.md) | Remaining technical limits, operating constraints, manual/LLM cost trade-offs, and evidence boundaries. |
 | [Open Follow-Up Work](docs/07_remaining_work.md) | Work still outside the current evidence base; already integrated validation tracks are not treated as unresolved. |
-| [Validation Tracks A-E](docs/08_completed_reinforcements.md) | Corpus/statistics, RAG, native scan, runtime PoC, and Codex cross-read tracks integrated into the final results. |
+| [Validation Tracks A-E](docs/08_completed_reinforcements.md) | Corpus/statistics, retrieval, native scan, runtime PoC, and independent LLM cross-review tracks integrated into the final results. |
 | [Research Extension Plan](docs/09_research_extension_plan.md) | Optional longer-term research directions that build beyond the current pipeline and evaluation artifacts. |
 | [Repository Inventory](docs/10_project_inventory.md) | Inventory of tracked repository files, generated artifacts, and public/local disclosure boundaries. |
 

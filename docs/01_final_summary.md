@@ -217,7 +217,7 @@ Representative final cases are documented in `03_case_studies.md`.
 3. Paired evidence that contextual evidence packaging and multi-perspective verification reduce measured false positives.
 4. AAOS / MASVS / TARA mapping artifacts that translate code-level findings into automotive-security language.
 5. A public/private artifact boundary for redacted reporting without publishing proprietary PleOS evidence.
-6. Completed reinforcement tracks covering statistics, RAG, native static analysis, runtime PoC validation, and Codex cross-read.
+6. Completed reinforcement tracks covering statistics, retrieval-grounded consistency, native-code boundary analysis, runtime PoC validation, and independent LLM cross-review.
 
 ## 9. Completed Research Coverage
 
@@ -236,7 +236,7 @@ This report covers the completed research tracks at result level. Detailed evide
 | RAG intrinsic retrieval evaluation | Supporting tracks | `src/rag/`, `docs/08_completed_reinforcements.md` |
 | Native static boundary scan | Supporting tracks, limitations | `src/native/`, `docs/08_completed_reinforcements.md` |
 | Runtime PoC validation | Runtime PoC and claim-level evidence | `docs/12_runtime_poc_details.md`, `scripts/runtime_poc/`, `src/dynamic/` |
-| Codex cross-read reinforcement | Supporting tracks | `docs/08_completed_reinforcements.md` |
+| Independent LLM cross-review reinforcement | Supporting tracks | `docs/08_completed_reinforcements.md` |
 | Public disclosure and redaction boundary | Threat model, limitations, artifact index | `docs/10_project_inventory.md` |
 
 Failed or inconclusive experiments are not promoted into final claims. They remain visible only as limitations or remaining-work boundaries when they affect interpretation.

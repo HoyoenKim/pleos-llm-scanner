@@ -84,9 +84,9 @@ The dynamic track added deterministic state-machine logic and Frida hook scripts
 
 Claim boundary: verification infrastructure is complete, but runtime capture is environment-dependent and separate from the static `n=47` measurement.
 
-## E. Codex Multi-Model Cross-Read
+## E. Independent LLM Cross-Review
 
-The Codex cross-read used three model perspectives as an independent check against the Claude Code multi-perspective baseline.
+The independent LLM cross-review used three model perspectives as a check against the Claude Code multi-perspective baseline.
 
 | System | Precision | Recall | F1 |
 |---|---:|---:|---:|
