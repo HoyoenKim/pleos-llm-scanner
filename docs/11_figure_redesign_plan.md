@@ -100,21 +100,21 @@ Purpose: show where the 47 candidates came from.
 
 ### Appendix Figure A2: Bootstrap Confidence Interval
 
-Purpose: show uncertainty around the headline metrics.
+Purpose: show uncertainty around candidate-generation metrics.
 
 - Chart type: error-bar chart.
 - Metrics: precision, F1, and false-positive rate.
 - Source: `data/reports/aggregate/bootstrap_ci.*`.
-- Main message: corpus expansion reduces uncertainty, but the result is still a measured corpus result rather than a universal benchmark.
+- Main message: corpus expansion reduces uncertainty around the first LLM scan, but the result is still a measured corpus result rather than a universal benchmark.
 
 ### Appendix Figure A3: Obfuscation Score Distribution
 
-Purpose: provide the technical evidence behind Main Figure 5.
+Purpose: provide the technical evidence behind Main Figure 1.
 
 - Chart type: boxplot.
 - Y-axis: composite obfuscation score.
 - Threshold lines: `HIGH = 0.7`, `MEDIUM = 0.4`.
-- Main message: PleOS score distribution is low relative to hand-crafted MASTG obfuscation.
+- Main message: the obfuscation screen is a decompiled-code readability check based on identifier-pattern scores, not a vulnerability metric or a general obfuscation benchmark.
 - Current source: `data/viz/appendix_a3_obfuscation_score_distribution.png`.
 
 ### Appendix Figure A4: AAOS / MASVS / TARA Mapping Summary

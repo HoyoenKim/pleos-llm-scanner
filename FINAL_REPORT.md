@@ -104,6 +104,8 @@ The final reporting threshold is majority consensus (`>=2/3`). It kept precision
 
 ![Consensus threshold trade-off](data/viz/05_consensus_threshold_tradeoff.png)
 
+Figure 5 explains why majority consensus is the final reporting gate. Any-flag consensus keeps full recall but still admits false positives; unanimous consensus is stricter but removes too many true findings. Majority consensus is the balanced threshold used for the final metric table.
+
 The one missed item is `vc-7`, a low-severity API 34 receiver-hardening item. It remains counted as a false negative rather than being manually corrected after the fact.
 
 The paired comparison is:
@@ -185,9 +187,33 @@ Supporting tracks clarify robustness, blind spots, and boundaries. They do not r
 | Native static scan | 4 `.so` samples, 0 additional native-bound vulnerabilities | Static sample-level boundary check; dynamic JNI/Go/runtime flow remains limited. |
 | Codex 3-model cross-read | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat the calibrated majority-consensus baseline; evidence packaging mattered more than model count. |
 
-Appendix figures in `data/viz/` provide corpus composition, bootstrap interval, obfuscation score distribution, mapping summary, and cross-validation comparison views.
+Figure 6 summarizes validation tracks that support the main result without changing the main finding count. These checks explain uncertainty, retrieval quality, native-code coverage, and cross-read behavior around the core static-analysis metric.
 
-## 10. Runtime PoC Evidence Boundary
+## 10. Appendix Figure Set
+
+The appendix figures are part of the final report. They keep supporting evidence visible without interrupting the main narrative sequence.
+
+Appendix Figure A1 explains where the 47 evaluation candidates came from. This is the source-composition view behind the corpus table: PleOS-customized rows are the project target, while MASTG, InsecureBankv2, and AOSP-derived rows provide external controls and framework-blocking cases.
+
+![Appendix A1 corpus composition](data/viz/appendix_a1_corpus_composition.png)
+
+Appendix Figure A2 shows bootstrap confidence intervals for candidate-generation precision, F1, and false-positive rate. It is an uncertainty view for the first LLM scan, not a new verified-reporting metric.
+
+![Appendix A2 bootstrap confidence intervals](data/viz/appendix_a2_bootstrap_ci.png)
+
+Appendix Figure A3 shows the full obfuscation-score distribution behind Figure 1. Figure 1 uses HIGH-class counts for readability; this appendix view preserves the score spread so the obfuscation screen can be inspected in more detail.
+
+![Appendix A3 obfuscation score distribution](data/viz/appendix_a3_obfuscation_score_distribution.png)
+
+Appendix Figure A4 groups verified vulnerabilities into AAOS / MASVS / TARA-oriented control areas. It supports the automotive mapping section by showing how code-level findings are translated into security-reporting categories.
+
+![Appendix A4 mapping summary](data/viz/appendix_a4_mapping_summary.png)
+
+Appendix Figure A5 compares supporting validation tracks against the final majority-consensus result. It reinforces the report boundary: RAG, native static analysis, and Codex cross-read are robustness checks, not replacements for the main verified-reporting metric.
+
+![Appendix A5 validation track comparison](data/viz/appendix_a5_validation_track_comparison.png)
+
+## 11. Runtime PoC Evidence Boundary
 
 The runtime PoC track is a validation layer for selected high-value findings. It is not the source of the main precision/recall table.
 
@@ -210,7 +236,7 @@ Claim-level examples:
 
 Raw APKs, harness outputs, logs, screenshots, videos, prompt rows, and unredacted proprietary evidence stay local-only under `data/_local/` or `data/reports/*_local/`.
 
-## 11. Limitations
+## 12. Limitations
 
 | Limit | Current State | Remaining Boundary |
 |---|---|---|
@@ -223,7 +249,7 @@ Raw APKs, harness outputs, logs, screenshots, videos, prompt rows, and unredacte
 | Runtime PoC | Same-device emulator evidence and harnesses exist. | Does not imply remote exploitation or real-vehicle control. |
 | Public disclosure | Redacted public artifacts exist. | Raw APKs, JADX output, logs, videos, and unredacted evidence remain local-only. |
 
-## 12. Contributions
+## 13. Contributions
 
 1. A role-based LLM-assisted static APK security-analysis pipeline for PleOS / AAOS IVI targets.
 2. A 47-candidate evaluation set with explicit finding-unit rules and source boundaries.
@@ -232,7 +258,7 @@ Raw APKs, harness outputs, logs, screenshots, videos, prompt rows, and unredacte
 5. A public/private artifact boundary that supports redacted reporting without publishing proprietary PleOS evidence.
 6. Completed reinforcement tracks covering statistics, RAG, native static analysis, runtime PoC validation, and Codex cross-read.
 
-## 13. Artifact Index
+## 14. Artifact Index
 
 | Purpose | Path |
 |---|---|
