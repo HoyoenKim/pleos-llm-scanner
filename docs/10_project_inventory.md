@@ -15,7 +15,6 @@ This document states what belongs in the public repository and what stays local-
 | File | Role |
 |---|---|
 | `README.md` | repo map and quickstart |
-| `PROJECT_STATUS.md` | compact final state |
 | `docs/00_reading_guide.md` | reading paths |
 | `docs/01_final_report.md` | measured-claim source of truth |
 | `docs/02_final_brief.md` | one-page evaluator brief |
