@@ -4,9 +4,22 @@ LLM-assisted static security analysis pipeline for Android Automotive / PleOS IV
 
 ## Overview
 
-`pleos-llm-scanner` analyzes Android APKs from PleOS / AAOS environments and turns decompiled code into security findings, verification evidence, automotive-security mappings, and public-safe reports.
+`pleos-llm-scanner` is the final 15-week research archive for an LLM-assisted static security analysis pipeline targeting PleOS / AAOS IVI APKs. It turns decompiled Android code into security findings, verification evidence, automotive-security mappings, and public-safe reports.
 
-The repository uses scripts for deterministic work such as APK extraction, JADX decompilation, keyword triage, evaluation, chart generation, and AAOS/TARA mapping. LLM sessions are used for the parts that need security reasoning: interpreting candidate findings, checking Android context, and comparing attacker / defender / domain-expert views.
+The repository uses scripts for deterministic work such as APK extraction, JADX decompilation, keyword triage, evaluation, chart generation, and AAOS/TARA mapping. Interactive Codex / Claude Code sessions were used for the parts that need security reasoning: interpreting candidate findings, checking Android context, and comparing attacker / defender / domain-expert views.
+
+This is not a turnkey automated LLM scanner. It is a research artifact that combines reproducible scripts, prompt protocols, session-derived review artifacts, and redacted reports.
+
+## How To Read This Repository
+
+Read the public files as a final archive after all 15 weeks of work. Reinforcement experiments A-E are completed and integrated into the final result; they are not unresolved future work.
+
+| Question | Short Answer | Where To Look |
+|---|---|---|
+| Can I inspect the public result without private PleOS data? | Yes. Public docs, labels, aggregate metrics, prompt protocols, redacted PleOS reports, and external-corpus reports are tracked. | `README.md`, `docs/`, `configs/prompts/`, `data/ground_truth/`, `data/reports/aggregate/`, `data/reports/public/`, `data/reports/external/` |
+| Can I fully recompute the row-level `n=47` metrics from only the public repo? | No. Full row-level recomputation depends on local/private reports and the local Stage 3 ensemble. | `data/reports/local/`, `data/reports/per_apk_local/` |
+| Does public-safe inspection call an external LLM API? | No. LLM judgments are represented as prompts, session-derived artifacts, and redacted reports. | `configs/prompts/`, `data/reports/public/`, `docs/04_methodology_stage2.md` |
+| Are raw APKs, JADX output, screenshots, logs, and videos public? | No. They stay local-only. | `data/_local/`, `data/reports/*_local/` |
 
 ## Motivation
 
@@ -45,6 +58,17 @@ flowchart LR
 
 The key design choice is that the LLM is not the scanner by itself. It is a reasoning layer between deterministic triage and Android/automotive-specific verification.
 
+### Stage Definition
+
+| Stage | Input | Method | Output | Artifact Path | Execution Type |
+|---|---|---|---|---|---|
+| Stage 0 | Decompiled Java/Kotlin sources | Entropy and JADX-name-pattern measurement; optional rename prompt for heavily obfuscated classes | Obfuscation score and rename-plausibility notes | `src/deobf/`, `configs/prompts/stage0_deobfuscate.md`, `data/deobf/` | Deterministic script plus optional interactive prompt |
+| Stage 1 | Priority classes from keyword triage | High-recall LLM candidate detection over narrowed code | Candidate findings with category, severity, evidence, and rationale | `configs/prompts/stage1_detect.md`, `data/reports/` | Interactive Codex / Claude Code review |
+| Stage 2 | Stage 1 candidates plus manifest/source context | Caller-chain, manifest, permission, route, protected-broadcast, and trust-boundary checks | TP / FP / uncertain contextual verdicts | `docs/04_methodology_stage2.md`, `docs/03_case_studies.md` | Hybrid deterministic inspection and human/LLM reasoning |
+| Stage 3 | Stage 2 candidates and evidence packages | Same-model attacker / defender / IVI-domain perspectives with consensus merge | Final report decision; `>=2/3` is the default reporting threshold | `configs/prompts/stage3_*.md`, `data/reports/local/stage3_ensemble.json`, `data/reports/public/stage3_ensemble.md` | Interactive multi-perspective review |
+
+Stage 2 materially reduces false positives, but it is not a complete general Android reachability engine. Stage 3 is a same-model multi-perspective consensus, not a multi-vendor model ensemble.
+
 ## Artifacts
 
 This repository separates local evidence, configuration, evaluation data, reports, and tooling. The table below shows what each artifact group is for and where to find it.
@@ -55,22 +79,24 @@ This repository separates local evidence, configuration, evaluation data, report
 | Configuration | Keyword rules, result schema, AAOS mapping, and prompt protocols. | `configs/` |
 | Evaluation data | Ground-truth labels used for precision/recall/F1 and statistical tests. | `data/ground_truth/` |
 | Reports | Per-APK finding reports and redacted public reports. | `data/reports/`, `data/reports/public/`, `data/reports/external/` |
-| Aggregate results | Metrics, ablations, bootstrap CI, McNemar test, RAG/native/model summaries, AAOS/TARA tables. | `data/reports/aggregate/` |
+| Aggregate results | Final headline metrics, ablations, bootstrap CI, McNemar test, RAG/native/model summaries, AAOS/TARA tables. | `data/reports/aggregate/final_metrics_n47.md`, `data/reports/aggregate/` |
 | Runtime PoC tooling | Harness scripts and Frida hooks used for emulator-only dynamic evidence. | `scripts/runtime_poc/`, `src/dynamic/` |
 | Visuals | Charts used in reports and presentations. | `data/viz/` |
 
 ## Evaluation Summary
 
-The main evaluation compares broad candidate generation against verified reporting. The labelled corpus contains 47 findings from PleOS-customized APKs, OWASP MASTG, InsecureBankv2, and AOSP-derived samples.
+The main evaluation compares broad candidate generation against verified reporting. The final labelled corpus contains `n=47` finding-level labels: 30 PleOS-customized findings, 13 external vulnerable-corpus findings, and 4 AOSP-derived findings. A finding is a labelled security-relevant candidate row, not an APK-level score.
 
 The result is that the first LLM pass is useful for recall-oriented candidate collection, while the full verification pipeline is what makes the findings reportable.
 
-| Evaluation Step | Precision | Recall | F1 | Takeaway |
-|---|---:|---:|---:|---|
-| Candidate generation | 80.9% | 100.0% | 0.894 | Broad coverage, but still includes false positives. |
-| Verified reporting | 100.0% | 97.4% | 0.987 | Context checks removed the measured false positives with one low-severity miss. |
+| Evaluation Step | TP | FP | FN | Precision | Recall | F1 | Takeaway |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Stage 1 candidate generation | 38 | 9 | 0 | 80.9% | 100.0% | 0.894 | Broad coverage, but still includes false positives. |
+| Stage 3 `>=2/3` verified reporting | 37 | 0 | 1 | 100.0% | 97.4% | 0.987 | Consensus reporting removed the measured false positives with one low-severity miss. |
 
 The improvement is statistically visible on paired labels: McNemar exact test `p=0.0215`.
+
+The headline metric source of truth is `data/reports/aggregate/final_metrics_n47.md`. Some aggregate files are intentionally retained as historical/intermediate `n=28` measurement records; use the final `n=47` files for the final archive claims.
 
 ### Supporting Measurements
 
@@ -87,6 +113,16 @@ Selected static findings were checked in a PleOS emulator to determine whether t
 
 The runtime work uses safe same-device probes, generated harness APKs, and Frida hooks. The goal is to record observable evidence such as provider reads, broadcast delivery, Binder calls, UI markers, or state changes. It does not claim remote exploitation or real-vehicle control.
 
+### Runtime Claim Levels
+
+| Level | Meaning | Boundary |
+|---|---|---|
+| L0 | Static-only observation | Decompiled code, manifest, or config evidence only; no runtime observation. |
+| L1 | Runtime reachability observed | Component invocation, provider query, broadcast delivery, Binder call, or hook trigger observed; no confirmed data/state/UI effect yet. |
+| L2 | Data or local state effect observed | Safe read/write, marker value, provider response, log emission, or preference/database state change observed under same-device lab conditions. |
+| L3 | UI or IVI behavior effect observed | Reversible UI marker, navigation effect, or emulator-visible IVI behavior observed; still not real-vehicle control. |
+| L4 | End-to-end exploit impact | Full exploit chain with externally meaningful impact. This project does not claim L4 unless explicitly supported by evidence. |
+
 ```mermaid
 flowchart LR
     A["Static finding"] --> B["PoC ranking<br/>claim level L0-L4"]
@@ -97,12 +133,12 @@ flowchart LR
     E --> F["Claim update<br/>reachability, data effect,<br/>UI effect, or no upgrade"]
 ```
 
-| Track | Runtime Evidence | Claim Level |
+| Track | Runtime Evidence | Conservative Claim Level |
 |---|---|---|
-| `lmp-1` prompt provider | Provider query returns internal LLM prompt/corpus data. | Same-device prompt/corpus disclosure under emulator conditions. |
-| `vc-6` vehicle broadcast receiver | Broadcast delivery and receiver reachability observed with dry-run hooks. | Receiver reachability confirmed; state mutation requires a captured state diff. |
-| `am-1` AppMarket suggestions provider | Harmless marker write/read can be checked against the exported suggestions provider. | Provider-local write/read effect; UI impact requires user-visible marker evidence. |
-| `navi-1` / `vs-1` Binder expansion | Route UI injection and reversible mirror-fold property mutation in the emulator track. | Same-device IVI primitive under lab conditions. |
+| `lmp-1` prompt provider | Provider query response observed in the emulator track. | L2 when response data is captured; otherwise L1 reachability only. |
+| `vc-6` vehicle broadcast receiver | Broadcast delivery and receiver reachability observed with dry-run hooks. | L1 unless a captured state diff upgrades it to L2. |
+| `am-1` AppMarket suggestions provider | Harmless marker write/read can be checked against the exported suggestions provider. | L2 only when marker write/read evidence is captured; UI impact would require L3 evidence. |
+| `navi-1` / `vs-1` Binder expansion | Binder and UI/state experiments are tracked in local runtime evidence. | L3 only when emulator UI/state effect is recorded; otherwise L1/L2 depending on the captured observation. |
 
 Tracked PoC code lives in `scripts/runtime_poc/` and `src/dynamic/`. Raw APKs, videos, screenshots, unredacted logs, and generated harness outputs stay local-only under `data/_local/` and `data/reports/runtime_local/`.
 
@@ -119,8 +155,8 @@ This section maps the research pipeline to the source files, configs, and report
 | Obfuscation screen | Measure identifier entropy and test rename plausibility. | `src/deobf/`, `data/deobf/` |
 | Candidate review | Generate first-pass LLM security findings. | `configs/prompts/stage1_detect.md`, `data/reports/` |
 | Context verification | Check manifest, caller chain, permissions, routes, and trust boundary. | `docs/04_methodology_stage2.md`, `docs/03_case_studies.md` |
-| Consensus review | Compare attacker, defender, and domain-expert perspectives. | `configs/prompts/stage3_*.md`, `data/reports/public/stage3_ensemble.md` |
-| Evaluation | Evaluate labels, metrics, ablations, bootstrap CI, and McNemar test. | `data/ground_truth/`, `src/evaluation/`, `data/reports/aggregate/` |
+| Consensus review | Compare attacker, defender, and domain-expert perspectives. | `configs/prompts/stage3_*.md`, `data/reports/local/stage3_ensemble.json`, `data/reports/public/stage3_ensemble.md` |
+| Evaluation | Evaluate labels, metrics, ablations, bootstrap CI, and McNemar test. | `data/ground_truth/`, `src/evaluation/`, `data/reports/aggregate/final_metrics_n47.md`, `data/reports/aggregate/` |
 | Automotive mapping | Generate AAOS/MASVS/TARA outputs. | `src/mapping/`, `configs/aaos_mapping.yaml` |
 | Public reporting | Keep public artifacts redacted and publishable. | `data/reports/public/`, `docs/` |
 
@@ -169,7 +205,28 @@ PleOS proprietary code excerpts must stay redacted in public-facing files.
 
 ## Quickstart
 
-Run commands from the repository root. APK pull/decompile commands require a booted Android Automotive / PleOS emulator with `adb` access. Metric commands assume the local/private report JSONs referenced by the glob are available; public-safe aggregate results are already tracked in `data/reports/aggregate/`.
+Run commands from the repository root.
+
+### Public-Only Inspection
+
+The public-safe path does not require APKs, JADX output, raw runtime evidence, or external LLM API calls. It lets an evaluator inspect the final archive, validate JSON syntax, and read the headline metrics.
+
+```bash
+# Validate public JSON artifacts.
+python -m json.tool data/ground_truth/combined_labels.json > /dev/null
+python -m json.tool data/reports/aggregate/final_metrics_n47.json > /dev/null
+python -m json.tool data/reports/aggregate/mcnemar_test.json > /dev/null
+
+# Read the final headline metrics and the prompt protocol.
+cat data/reports/aggregate/final_metrics_n47.md
+cat configs/prompts/README.md
+```
+
+Public redacted reports and aggregate summaries are already tracked under `data/reports/public/`, `data/reports/external/`, and `data/reports/aggregate/`.
+
+### Local-Evidence Workflow
+
+APK pull/decompile commands require a booted Android Automotive / PleOS emulator with `adb` access. Full row-level `n=47` metric recomputation requires local/private report JSONs and the local Stage 3 ensemble, which are not all public-safe.
 
 ```bash
 # Pull system APKs from an emulator into the local-only bucket.
@@ -178,7 +235,8 @@ bash scripts/apk/pull_apks.sh
 # Decompile one APK with jadx into the local-only bucket.
 bash scripts/apk/decompile.sh data/_local/apks/<package>.apk
 
-# Measure candidate-generation findings against the combined ground truth.
+# Measure candidate-generation findings against the combined ground truth
+# when local/private report JSONs are available.
 python src/evaluation/eval.py \
   --labels data/ground_truth/combined_labels.json \
   --reports 'data/reports/**/*.json'
@@ -194,6 +252,8 @@ python src/evaluation/ablation.py \
 python src/mapping/aaos_map.py
 python src/mapping/tara_generate.py
 ```
+
+Do not publish or force-add local-only APKs, decompiled code, screenshots, videos, unredacted reports, generated harnesses, vector DBs, or binary tools.
 
 ## Documentation
 

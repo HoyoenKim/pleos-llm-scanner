@@ -1,0 +1,62 @@
+{
+  "artifact": "final_metrics_n47",
+  "scope": "final n=47 combined ground truth",
+  "ground_truth": {
+    "n_findings": 47,
+    "source_mix": {
+      "pleos_customized": 30,
+      "external_vulnerable_corpus": 13,
+      "aosp_derived": 4
+    },
+    "labels": {
+      "true_positive": 38,
+      "false_positive": 9,
+      "uncertain": 0
+    }
+  },
+  "stage1_candidate_generation": {
+    "tp": 38,
+    "fp": 9,
+    "fn": 0,
+    "precision": 0.809,
+    "false_positive_rate": 0.191,
+    "recall": 1.0,
+    "f1": 0.894
+  },
+  "stage3_verified_reporting_ge_2_of_3": {
+    "tp": 37,
+    "fp": 0,
+    "fn": 1,
+    "precision": 1.0,
+    "false_positive_rate": 0.0,
+    "recall": 0.974,
+    "f1": 0.987
+  },
+  "mcnemar": {
+    "contingency_a_b_c_d": [37, 1, 9, 0],
+    "exact_binomial_two_tailed_p": 0.0215
+  },
+  "supporting_measurements": {
+    "native_static_scan_sample": {
+      "n_samples": 4,
+      "additional_native_bound_vulnerabilities": 0
+    },
+    "rag_intrinsic_ablation": {
+      "nearest_neighbor_verdict_propagation": 0.851,
+      "aaos_category_alignment": 0.851
+    },
+    "codex_multimodel_cross_read": {
+      "summary": "Codex 3-model cross-read did not beat Claude Code Stage 3; prompt calibration and evidence packaging mattered more than model count."
+    }
+  },
+  "source_artifacts": [
+    "data/ground_truth/combined_labels.json",
+    "data/reports/aggregate/mcnemar_test.json",
+    "data/reports/aggregate/codex_multimodel_agreement.md",
+    "docs/08_completed_reinforcements.md"
+  ],
+  "notes": [
+    "Stage 2 upper-bound rows in older ablation outputs are not independent automated performance claims.",
+    "Some aggregate artifacts are historical n=28 measurement passes and are retained as intermediate records."
+  ]
+}

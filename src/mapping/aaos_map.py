@@ -2,7 +2,7 @@
 
 Reads:
   - configs/aaos_mapping.yaml (category -> AAOS/MASVS/TARA mapping)
-  - data/ground_truth/combined_labels.json (combined GT, n=19)
+  - data/ground_truth/combined_labels.json (final combined GT)
 
 Writes:
   - data/reports/aggregate/aaos_mapping_table.{md,json}  (overwritten each run; the md
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import sys
+from collections import Counter
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -81,7 +82,11 @@ def to_md(rows: list[dict[str, Any]]) -> str:
     lines = []
     lines.append("# AAOS / MASVS / TARA Mapping Table\n")
     lines.append(f"_Generated: {date.today().isoformat()} (deterministic from `configs/aaos_mapping.yaml` + GT)_\n")
-    lines.append(f"**n = {len(rows)}** (PleOS self {sum(1 for r in rows if r['source']=='self')} + MASTG {sum(1 for r in rows if r['source']=='mastg')})\n")
+    source_counts = Counter((r.get("source") or "unknown") for r in rows)
+    source_summary = " + ".join(
+        f"{source} {count}" for source, count in sorted(source_counts.items())
+    )
+    lines.append(f"**n = {len(rows)}** ({source_summary})\n")
 
     # Section 1: Per-finding mapping
     lines.append("## 1. Finding-level Mapping\n")

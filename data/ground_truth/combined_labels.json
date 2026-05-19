@@ -1,14 +1,18 @@
 {
   "schema_version": "0.1",
   "labeled_at": "2026-05-11",
-  "labeler": "self (PleOS APKs) + external OWASP MASTG (UnCrackable-Level1/3) + InsecureBankv2 + PleOS Connect 'android.car.usb.handler' (R1.d.2 expansion 2026-05-11)",
-  "scope": "Combined ground truth = self_labels.json (n=15, 3 PleOS APKs) + mastg/uncrackable_level1.labels.json (n=3) + mastg/uncrackable_level3.labels.json (n=1) + insecurebankv2.labels.json (n=9) + usb_handler.labels (n=3, R1.d.2 expansion 2026-05-11 — AAOS-derived car USB host handler in PleOS Connect). Total n=31.",
+  "last_updated": "2026-05-19",
+  "labeler": "self-labeled PleOS-customized findings + external benchmark labels + AOSP-derived samples; final 15-week archive metadata update",
+  "scope": "Combined ground truth for final archive: n=47 findings = PleOS-customized 30 + external vulnerable corpus 13 + AOSP-derived 4; totals: 38 TP, 9 FP.",
   "merged_from": [
     "data/ground_truth/self_labels.json",
     "data/ground_truth/mastg/uncrackable_level1.labels.json",
+    "data/ground_truth/mastg/uncrackable_level2_r2pay.labels.json",
     "data/ground_truth/mastg/uncrackable_level3.labels.json",
+    "data/ground_truth/mastg/helloworldjni_certpinxamarin.labels.json",
     "data/ground_truth/insecurebankv2.labels.json",
-    "data/ground_truth/usb_handler.labels.inline (R1.d.2 expansion 2026-05-11)"
+    "inline PleOS-customized expansions in combined_labels.json",
+    "inline AOSP-derived samples in combined_labels.json"
   ],
   "labels": [
     {
