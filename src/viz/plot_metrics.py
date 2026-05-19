@@ -3,7 +3,7 @@
 Generate publication-quality charts from the GT + ablation + entropy measurements.
 
 Outputs (data/viz/*.png):
-- 01_category_distribution.png   : finding 카테고리 분포 (combined n=47)
+- 01_category_distribution.png   : LLM candidates by vulnerability pattern after context checks
 - 02_apk_severity_heatmap.png    : APK × severity 히트맵 (12 APK, n=47)
 - 03_fp_rate_trend.png           : 1차/2차/3차 오탐률 (PPT 가설 vs 실측 n=18/n=47)
 - 04_deobf_accuracy_trend.png    : Corpus별 난독화 분포 + LLM rename 정확도 (단일 측정, 시간축 아님)
@@ -40,19 +40,31 @@ matplotlib.rcParams["font.size"] = 10
 OUT_DIR = Path("data/viz")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# ---------------------------------------------------------------- 01 category distribution
+# ---------------------------------------------------------------- 01 candidate verification by vulnerability pattern
 def chart_category_distribution() -> None:
-    # combined_labels.json n=47 기준 (is_real → TP/FP, stage1_category 그룹)
-    cats = ["intent", "hardcoded", "network", "crypto", "permission", "reflection_dynamic"]
-    tp = [14, 11, 7, 5, 0, 1]
-    fp = [4, 0, 2, 0, 3, 0]
+    # combined_labels.json n=47 (is_real -> kept/rejected, grouped by original candidate category)
+    cats = [
+        "Intent /\nexported component",
+        "Hardcoded\nsecret",
+        "Network\nconfig",
+        "Crypto\nmisuse",
+        "Permission\nexposure",
+        "Dynamic code /\nreflection",
+    ]
+    kept = [14, 11, 7, 5, 0, 1]
+    rejected = [4, 0, 2, 0, 3, 0]
     x = np.arange(len(cats))
     width = 0.42
-    fig, ax = plt.subplots(figsize=(9.0, 4.4))
-    b1 = ax.bar(x - width / 2, tp, width, label="True Positive", color="#3a7d44")
-    b2 = ax.bar(x + width / 2, fp, width, label="False Positive", color="#c73e1d")
-    ax.set_ylabel("개수 (n=47)")
-    ax.set_title("Stage 1 카테고리별 정·오탐 분포 (combined n=47)")
+    fig, ax = plt.subplots(figsize=(10.4, 5.2))
+    b1 = ax.bar(x - width / 2, kept, width, label="Kept for reporting (TP)", color="#2f6f9f")
+    b2 = ax.bar(x + width / 2, rejected, width, label="Rejected after context check (FP)", color="#d9902f")
+    ax.set_ylabel("Number of LLM-proposed candidates")
+    ax.set_title("LLM Security Candidates After Context Verification", pad=24)
+    ax.text(
+        0.5, 1.03,
+        "47 candidates proposed from decompiled APK code; 38 kept for reporting, 9 rejected after Android context checks.",
+        transform=ax.transAxes, ha="center", va="bottom", fontsize=9.5, color="#555",
+    )
     ax.set_xticks(x)
     ax.set_xticklabels(cats, fontsize=9)
     ax.set_yticks(range(0, 16, 2))
@@ -64,11 +76,18 @@ def chart_category_distribution() -> None:
             h = b.get_height()
             if h:
                 ax.text(b.get_x() + b.get_width() / 2, h + 0.12, f"{int(h)}", ha="center", fontsize=9)
-    ax.text(
-        0.99, -0.18,
-        "combined GT n=47 — PleOS-customized 30 + MASTG 4 + InsecureBankv2 9 + AOSP-derived 4 (TP 38 / FP 9)",
-        transform=ax.transAxes, ha="right", va="center", fontsize=8, color="#666",
+    fig.text(
+        0.5, 0.105,
+        "Context verification checked manifest exposure, caller reachability, permission gates, route binding,\n"
+        "and Android framework controls before deciding whether each candidate should remain reportable.",
+        ha="center", va="center", fontsize=8.5, color="#555",
     )
+    fig.text(
+        0.5, 0.060,
+        "Candidate sources: PleOS (30), MASTG (4), InsecureBankv2 (9), AOSP (4).",
+        ha="center", va="center", fontsize=8.2, color="#666",
+    )
+    fig.subplots_adjust(bottom=0.24, top=0.82)
     fig.savefig(OUT_DIR / "01_category_distribution.png")
     plt.close(fig)
 

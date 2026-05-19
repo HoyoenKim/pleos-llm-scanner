@@ -1,81 +1,93 @@
 # Stage 2 Contextual Verification Methodology
 
-Stage 2 exists because Stage 1 intentionally over-collects suspicious API patterns. Android security findings are rarely valid from an API name alone; reachability and platform controls decide exploitability.
+Stage 2 is semi-automated contextual verification. It exists because Stage 1 intentionally over-collects suspicious API patterns, while Android exploitability depends on caller reachability, platform controls, component boundaries, and permissions.
 
-## Inputs
+Stage 2 is not a complete Android reachability engine. It is a structured verification layer that materially reduces false positives before Stage 3 consensus.
+
+## 1. Purpose
+
+Stage 2 answers a narrow question:
+
+```text
+Given a Stage 1 candidate, does Android/PleOS context support reporting it as a security finding?
+```
+
+The goal is to separate reportable findings from API-name false positives.
+
+## 2. Inputs
 
 | Input | Role |
 |---|---|
-| Stage 1 finding | candidate category, severity, class, line, evidence |
-| `AndroidManifest.xml` | exported state, permissions, intent filters |
-| Decompiled source | caller chain, route binding, package/component restriction |
-| Framework semantics | protected broadcasts, signature permissions, system UID assumptions |
-| GT and case notes | final validation and metric evaluation |
+| Stage 1 finding | Candidate category, severity, class, line, evidence, and rationale |
+| `AndroidManifest.xml` | Exported state, permissions, intent filters, providers, receivers, services, and activities |
+| Decompiled source | Caller chain, route binding, package/component restriction, value flow, and use site |
+| Android framework semantics | Protected broadcasts, signature permissions, permission-manager ownership, and system UID assumptions |
+| GT and case notes | Final validation and metric evaluation |
 
-## Verification Questions
-
-Stage 2 asks:
+## 3. Verification Questions
 
 1. Can an untrusted caller reach this component or code path?
 2. Is the component exported?
-3. Is a signature/system permission required?
-4. Is the intent explicit or package/component-restricted?
-5. Is the route internal-only, such as Compose Nav state not bound to external URI?
+3. Is a signature, privileged, or system permission required?
+4. Is the intent explicit or restricted by package/component binding?
+5. Is the route internal-only, such as Compose Nav state not bound to an external URI?
 6. Is the broadcast protected by Android?
-7. Does the sensitive value cross a process/component boundary?
+7. Does the sensitive value cross a process, component, or trust boundary?
 8. Is this production code or a dead/dev-only artifact?
+9. Does a framework guard turn the apparent vulnerability into a blocked path?
 
-## Common Rules
+## 4. Rule Table
 
-| Pattern | Stage 1 Risk | Stage 2 Check |
-|---|---|---|
-| `grantRuntimePermission` / `revokeRuntimePermission` | permission abuse | caller reachability, permission manager ownership, route binding |
-| exported `Activity` / `Receiver` / `Provider` | component exposure | manifest export, permission gate, caller control |
-| `BOOT_COMPLETED` receiver | broadcast spoofing | protected broadcast semantics |
-| WebView URL/content path | network/content injection | external deep link, trusted data source, sanitization |
-| implicit broadcast | spoofing/tampering | package restriction, target binding, receiver permission |
-| hardcoded credential | credential exposure | use site, production reachability, secret vs identifier distinction |
-| plaintext transport | network exposure | API-level transport setting, endpoint role, prod/dev separation |
+| Pattern | Stage 1 Risk | Stage 2 Check | Typical Stage 2 Outcome |
+|---|---|---|---|
+| Exported activity/service/receiver | Intent abuse | Manifest export state, permission, action, package restriction, caller path | TP if reachable by untrusted caller; FP if protected or internal-only |
+| Exported provider | Data exposure or mutation | Provider export state, read/write permission, URI access, caller assumptions | TP if sensitive rows are reachable; uncertain if runtime-only |
+| `grantRuntimePermission` / `revokeRuntimePermission` | Permission abuse | Caller reachability, permission-manager ownership, route binding | Often FP when route is internal-only |
+| `sendBroadcast` / receiver handling | Broadcast spoofing or leak | Protected broadcast list, explicit component, package binding, sender privilege | TP only if normal caller can trigger meaningful behavior |
+| `.usePlaintext()` / cleartext network | Transport risk | Production endpoint, diagnostic context, network security config, dead-code check | TP if production path remains plausible |
+| WebView / JS bridge | Code or data exposure | Exported entrypoint, URL source, JS interface use, navigation constraints | TP only when untrusted content can reach sensitive bridge |
+| Hardcoded credential | Secret exposure | Secret vs identifier distinction, use site, production reachability, redaction boundary | TP if credential-like material is production-relevant |
+| Reflection/dynamic loading | Code integrity risk | Source of class/path, caller-controlled input, package trust boundary | TP only with controllable loading path |
 
-## Verdicts
+## 5. Verdict Rubric
 
 | Verdict | Meaning |
 |---|---|
-| TP | exploitable or security-relevant under project threat model |
-| FP | blocked by platform/app control or not security-relevant |
-| uncertain | insufficient evidence; requires runtime or owner validation |
+| TP | Context supports reporting the Stage 1 candidate as a security finding |
+| FP | Context blocks the candidate or shows it is not security-relevant |
+| Uncertain | Static context is insufficient; keep out of final reporting or route to runtime verification |
+| Runtime follow-up | Static finding is plausible, but claim level depends on captured emulator evidence |
 
-Stage 2 should not silently convert uncertainty into a vulnerability. If reachability cannot be established, the finding remains uncertain or goes to dynamic verification.
+Stage 2 must not silently convert uncertainty into a vulnerability. If reachability cannot be established, the finding remains uncertain or is routed to dynamic verification.
 
-## Example: `vc-3` / `vc-4`
+## 6. Examples
 
-Stage 1 flagged permission grant/revoke calls in `AppPermissionManager`. Stage 2 found:
+### `vc-3` / `vc-4`
 
-- no external URI route to the path
-- Compose navigation was internal-only
-- caller-controlled path did not bind to privileged operation
-- app-level permission manager logic did not expose arbitrary third-party grant/revoke
+Stage 1 flagged permission-management APIs because they are sensitive. Stage 2 checked manifest exposure, navigation binding, and caller route. The dangerous-looking API calls were not reachable from an untrusted external path in the final evidence package, so these rows became false positives.
 
-Final verdict: FP. This case is the main evidence that the pipeline is not just keyword scanning.
+### `ss-1`
 
-## Example: `ss-1`
+Stage 1 flagged an exported receiver. Stage 2 applied Android protected-broadcast semantics: a normal third-party app cannot send `BOOT_COMPLETED`. The receiver therefore became a false positive control case.
 
-Stage 1 flagged an exported `BOOT_COMPLETED` receiver. Stage 2 applied Android protected-broadcast semantics: normal third-party apps cannot spoof `BOOT_COMPLETED`.
+### `lmp-1`
 
-Final verdict: FP.
+Stage 1 flagged a sensitive provider surface. Stage 2 kept it because provider exposure was meaningful under the IVI LLM threat model. Runtime evidence can strengthen the claim level, but the static finding remains separate from runtime capture.
 
-## Relationship To Stage 3
+## 7. Relationship To Stage 3
 
-Stage 2 produces grounded context. Stage 3 then re-reads the finding from three perspectives:
+Stage 2 prepares evidence packages for Stage 3. Stage 3 then asks three calibrated perspectives to review the evidence:
 
-- attacker: can this be abused?
-- defender: what existing control blocks it?
-- IVI domain expert: does it matter for vehicle/IVI assets?
+- attacker perspective
+- defender perspective
+- IVI domain-expert perspective
 
-The final reporting threshold is Stage 3 `>=2/3`.
+The final reporting threshold is Stage 3 `>=2/3`. Stage 2 removes obvious context-blocked false positives before that consensus step.
 
-## Automation Boundary
+## 8. Automation Boundary
 
-The current Stage 2 implementation combines deterministic scripts, rule dictionaries, and human/Codex inspection. It is not a full general-purpose Android static analyzer. The correct final claim is:
+The implementation combines deterministic scripts, rule dictionaries, and human/Codex inspection. The correct final claim is:
 
-> Stage 2 provides contextual verification rules that materially reduce false positives on the final corpus; it is not an independent complete Android reachability engine.
+> Stage 2 provides semi-automated contextual verification rules that materially reduce false positives on the final corpus; it is not an independent complete Android reachability engine.
+
+This boundary matters for reporting. Stage 2 is a structured review method, not a guarantee that every possible Android call path has been exhaustively enumerated.
