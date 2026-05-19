@@ -91,8 +91,8 @@ The result is that the first LLM pass is useful for recall-oriented candidate co
 
 | Evaluation Step | TP | FP | FN | Precision | Recall | F1 | Takeaway |
 |---|---:|---:|---:|---:|---:|---:|---|
-| Stage 1 candidate generation | 38 | 9 | 0 | 80.9% | 100.0% | 0.894 | Broad coverage, but still includes false positives. |
-| Stage 3 `>=2/3` verified reporting | 37 | 0 | 1 | 100.0% | 97.4% | 0.987 | Consensus reporting removed the measured false positives with one low-severity miss. |
+| LLM candidate scan | 38 | 9 | 0 | 80.9% | 100.0% | 0.894 | Broad coverage, but still includes false positives. |
+| Final `>=2`-role reporting rule | 37 | 0 | 1 | 100.0% | 97.4% | 0.987 | Reports 37 findings against the 38-reference-positive set, with one low-severity miss. |
 
 The improvement is statistically visible on paired labels: McNemar exact test `p=0.0215`.
 
@@ -106,7 +106,7 @@ These measurements do not replace the main precision/recall comparison. They che
 
 | Check | Result | Takeaway |
 |---|---|---|
-| Native static sample | 4 `.so` samples checked, 0 additional native-code-boundary vulnerabilities | Native analysis reduced a blind spot, but did not add new confirmed findings in the sampled set. |
+| Native static sample | 4 `.so` samples checked, 0 additional native-code-boundary vulnerabilities | Native analysis reduced a blind spot, but did not add new reported findings in the sampled set. |
 | Retrieval-grounded consistency check | nearest-neighbor verdict 85.1%, AAOS category alignment 85.1% | Retrieval helps organize domain knowledge; end-to-end LLM gain is separate. |
 
 ## Runtime Validation

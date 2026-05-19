@@ -8,9 +8,9 @@ These tracks started as late-stage reinforcement ideas and were completed by the
 |---|---|---|---|---|
 | A | Corpus and statistics | GT labels and aggregate metric reports | combined GT `n=47`, McNemar `p=0.0215` | Strengthens paired evidence on this corpus; not a universal benchmark |
 | B | RAG domain knowledge | `src/rag/`, `data/reports/rag_local/rag_ablation.*` | nearest-neighbor verdict 85.1%, AAOS alignment 85.1% | Intrinsic retrieval only; prompted LLM gain remains separate |
-| C | Native static scan | native inventory and local native reports | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track; dynamic native/runtime flow not closed |
+| C | Native-code boundary scan | native inventory and local native reports | sample `n=4`, additional native-code-boundary vulnerabilities 0 | Static sample-level track; dynamic native/runtime flow not closed |
 | D | Dynamic verification scaffolding | `src/dynamic/`, `scripts/runtime_poc/`, `data/reports/runtime_local/` | deterministic state machine plus Frida hook scripts | Infrastructure complete; runtime traces separate from static `n=47` metrics |
-| E | Codex multi-model cross-read | `data/reports/aggregate/codex_multimodel_agreement.*`, `data/reports/local/codex_multimodel/` | precision 100.0%, recall 76.3%, F1 0.866 | Independent check; did not beat calibrated Stage 3 |
+| E | Independent LLM cross-review | `data/reports/aggregate/codex_multimodel_agreement.*`, `data/reports/local/codex_multimodel/` | precision 100.0%, recall 76.3%, F1 0.866 | Independent check; did not beat calibrated Stage 3 |
 
 ## A. Corpus And Statistics
 
@@ -54,7 +54,7 @@ The intrinsic ablation used the final `n=47` finding rows as retrieval queries. 
 
 Claim boundary: retrieval quality is promising for calibration, but this is not an end-to-end prompted LLM ablation.
 
-## C. Native Static Scan
+## C. Native-Code Boundary Scan
 
 The native track was added because Java/Kotlin `jadx` analysis does not cover `.so` behavior.
 

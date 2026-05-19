@@ -9,7 +9,7 @@ This document records the chart artifacts used by `FINAL_REPORT.md`. The chart i
 | 1 | `data/viz/01_obfuscation_profile_across_test_apks.png` | Static-review readability pre-screen based on JADX-decompiled identifier-name patterns such as `C0010a`, `m5a`, and `f2a`. | `data/deobf/*.json` |
 | 2 | `data/viz/02_candidate_verification_by_pattern.png` | Final outcomes for LLM-proposed candidate findings by vulnerability category. | Final 47-candidate summary embedded in `src/viz/plot_metrics.py` |
 | 3 | `data/viz/03_scan_quality_before_after_verification.png` | How context-aware review changes precision, recall, and F1 over the same 47 candidate findings. | `data/reports/aggregate/final_metrics_n47.json` values embedded in the plotting script |
-| 4 | `data/viz/04_verified_vulnerabilities_by_apk_severity.png` | Which APK/severity cells should drive follow-up analysis after findings are confirmed. | Confirmed-vulnerability APK/severity matrix in the plotting script |
+| 4 | `data/viz/04_verified_vulnerabilities_by_apk_severity.png` | Which APK/severity cells should drive follow-up analysis after final reporting. | Final reported finding APK/severity matrix in the plotting script |
 | 5 | `data/viz/05_accept_candidates_as_vulnerabilities_by_three_role_review.png` | Precision-recall trade-off for role-prompted reviewer consensus thresholds. | Final role-agreement threshold values embedded in the plotting script |
 
 ## Appendix Figure Set
@@ -24,14 +24,14 @@ This document records the chart artifacts used by `FINAL_REPORT.md`. The chart i
 
 ## Reading Rules
 
-- Figures should be read in the main sequence: decompiled-code readability, candidate filtering, metric improvement, confirmed-vulnerability analysis, then consensus-threshold choice.
+- Figures should be read in the main sequence: decompiled-code readability, candidate filtering, metric improvement, final reported finding analysis, then consensus-threshold choice.
 - Figure 1 is a readability screen for static analysis, not a validated obfuscation benchmark or vulnerability metric. It uses flagged-class counts plus `flagged / analyzed classes` labels so small benchmark APKs are not overread through ratio alone. A flagged class means its decompiled identifiers matched the heuristic detector, for example `C0010a`-style class names or `m5a`/`f2a`-style member names.
-- Figure 2 should be read as candidate-finding outcome filtering. It asks which LLM-proposed candidate findings become confirmed vulnerabilities, which are rejected as false positives, and which true vulnerability is missed by the selected threshold.
+- Figure 2 should be read as candidate-finding outcome filtering. It asks which LLM-proposed candidate findings become final reported findings, which are rejected as false positives, and which true vulnerability is missed by the selected threshold.
 - Figure 3 is the headline quality comparison. F1 is plotted as a percentage so it can be read on the same axis as precision and recall; all values refer to the same 47 candidate findings.
 - Figure 4 is a follow-up priority map, not a prevalence claim about the full PleOS/AAOS ecosystem or external vulnerable corpora.
 - Figure 5 shows how precision, recall, and F1 change under `>=1`, `>=2`, and `3/3` role-prompted reviewer thresholds. The selected threshold is `>=2`.
 - Appendix A5 summarizes supporting checks. It does not create new vulnerability counts.
-- Appendix A1 uses candidate findings as the unit, not APKs. Appendix A2 is limited to the LLM-only candidate scan and uses false discovery share, not the standard false-positive-rate definition. Appendix A3 is the detailed identifier-name score distribution behind Figure 1. Appendix A4 maps the 38-finding reference set, while Figure 5/A5 explain that the primary `>=2` rule confirms 37 of those 38. Appendix A5 is intentionally a table because F1, paired-test p-values, native-boundary counts, and retrieval-alignment rates should not be plotted as one comparable score.
+- Appendix A1 uses candidate findings as the unit, not APKs. Appendix A2 is limited to the LLM-only candidate scan and uses false discovery share, not the standard false-positive-rate definition. Appendix A3 is the detailed identifier-name score distribution behind Figure 1. Appendix A4 maps the 38-finding reference set, while Figure 5/A5 explain that the primary `>=2` rule reports 37 of those 38. Appendix A5 is intentionally a table because F1, paired-test p-values, native-boundary counts, and retrieval-alignment rates should not be plotted as one comparable score.
 - Runtime/local PoC evidence remains separate from this static-analysis chart set unless redaction review is complete.
 
 ## Final Numbers To Preserve

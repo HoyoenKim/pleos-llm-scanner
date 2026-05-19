@@ -50,7 +50,7 @@ APK
 | Stage 3 | Same-model multi-perspective consensus | Attacker, defender, and IVI-domain views; `>=2/3` is the final reporting threshold |
 | Mapping | Automotive-security translation | AAOS / MASVS / TARA labels and risk-language output |
 
-Stage 3 is multi-perspective consensus, not a multi-vendor model ensemble. The Codex 3-model cross-read was a separate reinforcement check and did not outperform the calibrated Stage 3 baseline.
+Stage 3 is multi-perspective consensus, not a multi-vendor model ensemble. The independent LLM cross-review was a separate reinforcement check and did not outperform the calibrated Stage 3 baseline.
 
 ## 4. Dataset And Labels
 
@@ -93,7 +93,7 @@ False positives concentrate in `intent`, `network`, and `permission`, which is w
 
 ### 5.1 Main Metric
 
-| Variant | Accepted | TP | FP | FN | Precision | Recall | F1 |
+| Variant | Reported | TP | FP | FN | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Stage 1 initial detection | 47 | 38 | 9 | 0 | 80.9% | 100.0% | 0.894 |
 | Stage 3 `>=1/3` | 45 | 38 | 7 | 0 | 84.4% | 100.0% | 0.916 |
@@ -144,10 +144,10 @@ The paired McNemar exact test has `b+c=10` and exact two-tailed `p=0.0215`, so t
 | Track | Measured Result | Boundary |
 |---|---|---|
 | Bootstrap CI | Stage 1 precision 95% bootstrap CI `[70.2%, 91.5%]` | Still corpus-bound, not a universal scanner guarantee |
-| RAG intrinsic retrieval | nearest-neighbor verdict propagation 85.1%, AAOS category alignment 85.1% | Retrieval quality measured; prompted with/without-RAG LLM gain remains separate work |
-| Native static scan | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track only; dynamic JNI/Go/runtime flow is not closed |
+| Retrieval-grounded consistency check | nearest-neighbor verdict propagation 85.1%, AAOS category alignment 85.1% | Retrieval quality measured; prompted with/without-retrieval LLM gain remains separate work |
+| Native-code boundary scan | sample `n=4`, additional native-code-boundary vulnerabilities 0 | Static sample-level track only; dynamic JNI/Go/runtime flow is not closed |
 | Runtime PoC validation | combined IVI route/property PoC plus same-device ADB proof points, deterministic state machine, harness scripts, and Frida hooks | Claim-level evidence only; separate from the static `n=47` metric |
-| Codex 3-model cross-read | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat Stage 3 `>=2/3`; prompt calibration and evidence packaging mattered more than model count |
+| Independent LLM cross-review | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat Stage 3 `>=2/3`; prompt calibration and evidence packaging mattered more than model count |
 
 ### 5.6 Runtime PoC And Claim-Level Evidence
 
@@ -233,7 +233,7 @@ This report covers the completed research tracks at result level. Detailed evide
 | Combined GT and final metrics | Dataset, labels, results | `data/ground_truth/combined_labels.json`, `data/reports/aggregate/` |
 | Bootstrap, ablation, and significance checks | Results, supporting tracks | `data/reports/aggregate/`, `src/evaluation/` |
 | AAOS / MASVS / TARA mapping | Contributions, artifact index | `src/mapping/`, `data/reports/aggregate/` |
-| RAG intrinsic retrieval evaluation | Supporting tracks | `src/rag/`, `docs/08_completed_reinforcements.md` |
+| Retrieval-grounded consistency check | Supporting tracks | `src/rag/`, `docs/08_completed_reinforcements.md` |
 | Native static boundary scan | Supporting tracks, limitations | `src/native/`, `docs/08_completed_reinforcements.md` |
 | Runtime PoC validation | Runtime PoC and claim-level evidence | `docs/12_runtime_poc_details.md`, `scripts/runtime_poc/`, `src/dynamic/` |
 | Independent LLM cross-review reinforcement | Supporting tracks | `docs/08_completed_reinforcements.md` |

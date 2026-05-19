@@ -11,7 +11,7 @@ This document describes future experiment designs that build beyond the final 15
 | Stage 3 `>=2/3` Precision / Recall / F1 | 100.0% / 97.4% / 0.987 |
 | McNemar exact p-value | 0.0215 |
 | Native static sample | 4 |
-| Additional native-bound vulnerabilities | 0 |
+| Additional native-code-boundary vulnerabilities | 0 |
 
 Any extension should treat Stage 3 `>=2/3` as the current baseline.
 
@@ -56,7 +56,7 @@ The goal is not to change the static metric table. The goal is to attach runtime
 
 ## Native Deep Dive
 
-The native static scan found no additional vulnerabilities in the checked sample. A deeper track should focus on:
+The native-code boundary scan found no additional vulnerabilities in the checked sample. A deeper track should focus on:
 
 - Go symbol/function recovery for `libgojni.so`
 - endpoint and certificate-verification use sites

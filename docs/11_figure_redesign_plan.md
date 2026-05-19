@@ -11,11 +11,11 @@ JADX output is checked for Java/Kotlin readability
   -> LLM scan creates candidate findings
   -> Android context validation filters candidate findings
   -> metrics improve
-  -> confirmed vulnerability findings are analyzed by APK/severity
+  -> final reported findings are analyzed by APK/severity
   -> multi-role reviewer consensus threshold is justified
 ```
 
-Use reader-facing labels such as `LLM-proposed candidate findings`, `Android context validation`, `confirmed vulnerabilities`, and `role-prompted reviewers`. Avoid using `Stage 1/2/3`, `combined n=47`, `rows`, or `labelled findings` as front-facing chart language unless the chart specifically explains the evaluation protocol.
+Use reader-facing labels such as `LLM-proposed candidate findings`, `Android context validation`, `final reported findings`, and `role-prompted reviewers`. Avoid using `Stage 1/2/3`, `combined n=47`, `rows`, or `labelled findings` as front-facing chart language unless the chart specifically explains the evaluation protocol.
 
 ## Main Figures
 
@@ -39,7 +39,7 @@ Purpose: show which LLM-proposed candidate findings are confirmed, rejected as f
 
 - Chart type: grouped bar.
 - X-axis: vulnerability category.
-- Series: `Confirmed vulnerabilities`, `Rejected as false positives`, and `Missed true vulnerability`.
+- Series: `Final reported findings`, `Rejected as false positives`, and `Missed true vulnerability`.
 - Main message: final outcomes are 37 confirmed, 9 rejected as false positives, and one low-severity true vulnerability missed.
 - Current source: `data/viz/02_candidate_verification_by_pattern.png`.
 
@@ -54,9 +54,9 @@ Purpose: show the headline metric improvement from adding context verification a
 - Main message: context-aware review removes measured false positives with one low-severity miss.
 - Current source: `data/viz/03_scan_quality_before_after_verification.png`.
 
-### Main Figure 4: Confirmed Vulnerability Findings By APK And Severity
+### Main Figure 4: Final Reported Findings By APK And Severity
 
-Purpose: show where confirmed vulnerability findings appear and which PleOS APKs are priority targets for follow-up analysis.
+Purpose: show where final reported findings appear and which PleOS APKs are priority targets for follow-up analysis.
 
 - Chart type: heatmap.
 - Entries: APK/sample name with source tag: `[PleOS]`, `[MASTG]`, `[External]`, `[AOSP]`.
