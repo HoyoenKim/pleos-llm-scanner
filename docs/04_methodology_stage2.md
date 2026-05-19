@@ -64,7 +64,9 @@ Stage 2 must not silently convert uncertainty into a vulnerability. If reachabil
 
 ### `vc-3` / `vc-4`
 
-Stage 1 flagged permission-management APIs because they are sensitive. Stage 2 checked manifest exposure, navigation binding, and caller route. The dangerous-looking API calls were not reachable from an untrusted external path in the final evidence package, so these rows became false positives.
+Stage 1 flagged permission-management APIs because they are sensitive. Stage 2 checked manifest exposure, navigation binding, and caller route.
+
+The dangerous-looking API calls were not reachable from an untrusted external path in the final evidence package, so these rows became false positives.
 
 ### `ss-1`
 
@@ -76,13 +78,19 @@ Stage 1 flagged a sensitive provider surface. Stage 2 kept it because provider e
 
 ## 7. Relationship To Stage 3
 
-Stage 2 prepares evidence packages for Stage 3. Stage 3 then asks three calibrated perspectives to review the evidence:
+Stage 2 prepares evidence packages for Stage 3. It is the context-filtering layer that gathers manifest, caller-chain, permission, route, and trust-boundary evidence before the final reporting decision.
+
+Stage 3 is the final reporting gate. It asks three calibrated perspectives to review the Stage 2 evidence:
 
 - attacker perspective
 - defender perspective
 - IVI domain-expert perspective
 
-The final reporting threshold is Stage 3 `>=2/3`. Stage 2 removes obvious context-blocked false positives before that consensus step.
+The final reporting threshold is Stage 3 `>=2/3`. Stage 2 removes or demotes obvious context-blocked candidates before that consensus step, while Stage 3 decides whether the evidence package is strong enough to report.
+
+The headline metric is Stage 1 vs Stage 3 because Stage 3 is the final reporting decision.
+
+Stage 2 is not reported as a standalone automated classifier unless a separate Stage 2-only evaluation table is provided. The final `n=47` false-positive attribution table is in `docs/01_final_report.md`.
 
 ## 8. Automation Boundary
 

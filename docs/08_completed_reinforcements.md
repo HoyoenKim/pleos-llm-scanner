@@ -6,9 +6,9 @@ These tracks started as late-stage reinforcement ideas and were completed by the
 
 | Code | Reinforcement | Artifact Path | Metric | Claim Boundary |
 |---|---|---|---|---|
-| A | Corpus and statistics | `data/ground_truth/combined_labels.json`, `data/reports/aggregate/mcnemar_test.*`, `data/reports/aggregate/bootstrap_ci.*` | combined GT `n=47`, McNemar `p=0.0215` | Strengthens paired evidence on this corpus; not a universal benchmark |
+| A | Corpus and statistics | GT labels and aggregate metric reports | combined GT `n=47`, McNemar `p=0.0215` | Strengthens paired evidence on this corpus; not a universal benchmark |
 | B | RAG domain knowledge | `src/rag/`, `data/reports/rag_local/rag_ablation.*` | nearest-neighbor verdict 85.1%, AAOS alignment 85.1% | Intrinsic retrieval only; prompted LLM gain remains separate |
-| C | Native static scan | `src/native/`, `data/reports/aggregate/native_lib_inventory.*`, `data/reports/native_local/` | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track; dynamic native/runtime flow not closed |
+| C | Native static scan | native inventory and local native reports | sample `n=4`, additional native-bound vulnerability 0 | Static sample-level track; dynamic native/runtime flow not closed |
 | D | Dynamic verification scaffolding | `src/dynamic/`, `scripts/runtime_poc/`, `data/reports/runtime_local/` | deterministic state machine plus Frida hook scripts | Infrastructure complete; runtime traces separate from static `n=47` metrics |
 | E | Codex multi-model cross-read | `data/reports/aggregate/codex_multimodel_agreement.*`, `data/reports/local/codex_multimodel/` | precision 100.0%, recall 76.3%, F1 0.866 | Independent check; did not beat calibrated Stage 3 |
 
@@ -38,11 +38,19 @@ The RAG track created a local retrieval base without external embedding API call
 | `tara_templates` | threat and risk templates |
 | `finding_patterns_historical` | historical GT finding patterns |
 
+The intrinsic ablation used the final `n=47` finding rows as retrieval queries. It measured top-1 retrieval behavior, not an end-to-end LLM-with-RAG improvement.
+
 | Metric | Value |
 |---|---:|
 | nearest-neighbor verdict propagation | 85.1% |
 | AAOS category alignment | 85.1% |
 | MASVS area match | 23.4% |
+
+| Metric | Measurement Unit |
+|---|---|
+| nearest-neighbor verdict propagation | For each finding query, exclude the query itself and check whether the top-1 historical finding's TP/FP verdict matches GT |
+| AAOS category alignment | For each finding query, check whether the top-1 AAOS guideline category matches the finding's Stage 1 category |
+| MASVS area match | For each finding query, check whether the top-1 MASVS control covers the expected MASVS area mapping |
 
 Claim boundary: retrieval quality is promising for calibration, but this is not an end-to-end prompted LLM ablation.
 
@@ -50,13 +58,17 @@ Claim boundary: retrieval quality is promising for calibration, but this is not 
 
 The native track was added because Java/Kotlin `jadx` analysis does not cover `.so` behavior.
 
+The inventory denominator was 207 system APKs from the PleOS Connect emulator: 22 APKs had at least one native library, with 221 `.so` files total.
+
+The static deep-check sample covered 4 `.so` samples selected from security-relevant native-bearing packages.
+
 | Sample | Result |
 |---|---|
 | `libgojni.so` variants | Go crypto/tls and x509 signals present; no additional vulnerability |
 | `libairspeech_stt` | no additional static vulnerability in checked surface |
 | `libmapbox-maps` | no additional static vulnerability in checked surface |
 
-Claim boundary: native static analysis reduced the blind spot from "not inspected" to "sample-level static track exists." It did not close dynamic native/runtime behavior.
+Claim boundary: native static analysis reduced the blind spot from "not inspected" to "sample-level static track exists." The "0 additional vulnerability" result applies only to the checked static sample, not to the full native/runtime closure.
 
 ## D. Dynamic Verification Scaffolding
 

@@ -1,14 +1,31 @@
 # LLM-Assisted Security Analysis of PleOS/AAOS IVI APKs
 
-This report is the measured-claim source of truth for the final 15-week archive. Completed reinforcement experiments A-E are integrated into the final result and are summarized only as supporting tracks here; detailed A-E records live in `08_completed_reinforcements.md`.
+This report is the measured-claim source of truth for the final 15-week archive.
+
+Completed reinforcement experiments A-E are integrated into the final result and are summarized only as supporting tracks here; detailed A-E records live in `08_completed_reinforcements.md`.
 
 ## 1. Problem
 
-PleOS / AAOS IVI APKs combine Android application surfaces with vehicle-adjacent permissions, exported components, local providers, and system integrations. A keyword scan or one-pass LLM review can identify suspicious code, but Android exploitability depends on context: manifest export state, caller reachability, permissions, route binding, protected broadcasts, and trust boundaries.
+PleOS / AAOS IVI APKs combine Android application surfaces with vehicle-adjacent permissions, exported components, local providers, and system integrations.
+
+A keyword scan or one-pass LLM review can identify suspicious code, but Android exploitability depends on context: manifest export state, caller reachability, permissions, route binding, protected broadcasts, and trust boundaries.
 
 The project therefore evaluates an LLM-assisted APK security-analysis pipeline where the LLM is not a standalone scanner. It is used as a reasoning component between deterministic triage and Android-domain contextual verification.
 
-## 2. Approach
+## 2. Threat Model
+
+The final claims use a conservative Android/IVI threat model.
+
+| Attacker Model | In Scope | Boundary |
+|---|---|---|
+| Same-device normal app | Non-privileged app can send ordinary intents, query exported providers, and interact with exported components. | No signature, system UID, or privileged permission is assumed unless stated. |
+| Local IVI integration abuse | Exported components, local providers, custom actions, and local LLM or account surfaces. | Supports IVI isolation and data-exposure claims, not real-vehicle actuation claims. |
+| Network attacker | Cleartext transport, missing TLS validation, or sensitive network-client configuration. | No remote code execution or remote vehicle control is assumed from static evidence alone. |
+| Emulator / runtime lab actor | Harness APKs, ADB probes, and Frida hooks can record provider reads, broadcasts, Binder calls, state changes, or UI markers. | Runtime traces refine claim level; they do not change the static `n=47` precision/recall metric. |
+
+Out of scope: remote vehicle control, real-vehicle actuation, privilege escalation that depends on undisclosed OEM credentials, and exhaustive proof of every possible Android reachability path.
+
+## 3. Approach
 
 The final pipeline is:
 
@@ -33,7 +50,7 @@ APK
 
 Stage 3 is multi-perspective consensus, not a multi-vendor model ensemble. The Codex 3-model cross-read was a separate reinforcement check and did not outperform the calibrated Stage 3 baseline.
 
-## 3. Dataset And Labels
+## 4. Dataset And Labels
 
 The final labelled corpus contains `n=47` finding-level rows.
 
@@ -44,11 +61,35 @@ The final labelled corpus contains `n=47` finding-level rows.
 | AOSP-derived / framework-like | 4 | 2 | 2 | 50.0% | Framework blocking and false-positive controls |
 | Total | 47 | 38 | 9 | 80.9% | Final combined GT |
 
-Category distribution in the Stage 1 candidate set is `intent` 18, `hardcoded` 11, `network` 9, `crypto` 5, `permission` 3, and `reflection_dynamic` 1. False positives concentrate in `intent`, `network`, and `permission`, which is why Stage 2 contextual verification is central to the final claim.
+### 4.1 Finding Unit
 
-## 4. Results
+A finding row is one security-relevant candidate with a stable `(apk, entrypoint or class, sink/source pattern, category)` identity. The metric is finding-level, not APK-level and not line-level.
 
-### 4.1 Main Metric
+Rows are split when the entrypoint differs, the sink/source pattern differs, the security consequence differs, or the row is needed as a separate TP/FP control for a contextual rule.
+
+Rows are grouped when nearby lines implement the same root cause, repeated constants belong to the same credential exposure, or helper calls are part of one exploitability argument.
+
+This definition keeps `n=47` tied to reportable candidate units rather than raw grep hits or APK counts.
+
+### 4.2 Label Construction Protocol
+
+Labels were constructed from three sources.
+
+| Source | Construction | Bias Boundary |
+|---|---|---|
+| PleOS-customized findings | Self-labelled from decompiled code, manifest context, Stage 2 notes, and redacted public reports. | Main IVI target rows; independent reviewer confirmation remains future work. |
+| External vulnerable corpus | Rows derived from known vulnerable Android benchmark-style apps and MASTG examples. | Used as positive controls for common Android vulnerability patterns. |
+| AOSP-derived / framework-like controls | Rows selected to exercise framework blocking, protected broadcasts, and false-positive behavior. | Used as negative/control evidence, not as a claim about all AOSP components. |
+
+For all rows, `is_real=true` means the final evidence package supports reporting the finding under the stated threat model. It does not imply runtime exploitation unless a runtime claim level above L0 is attached.
+
+Category distribution in the Stage 1 candidate set is `intent` 18, `hardcoded` 11, `network` 9, `crypto` 5, `permission` 3, and `reflection_dynamic` 1.
+
+False positives concentrate in `intent`, `network`, and `permission`, which is why Stage 2 contextual verification is central to the final claim.
+
+## 5. Results
+
+### 5.1 Main Metric
 
 | Variant | Accepted | TP | FP | FN | Precision | Recall | F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -59,7 +100,35 @@ Category distribution in the Stage 1 candidate set is `intent` 18, `hardcoded` 1
 
 The default final reporting threshold is Stage 3 `>=2/3`. It removed the nine measured false positives from Stage 1 while missing one low-severity hardening finding.
 
-### 4.2 Paired Significance
+The headline metric reports Stage 1 vs Stage 3 because Stage 3 is the final reporting gate. Stage 2 is the evidence-packaging and context-filtering layer; this report does not claim Stage 2 alone as an independently automated classifier.
+
+### 5.2 False-Positive Removal Attribution
+
+The nine Stage 1 false positives were demoted below the final `>=2/3` reporting threshold after contextual evidence packaging and consensus review.
+
+| FP ID | Stage 1 Trigger | Stage 2 Blocking Reason | Stage 3 Outcome | Final Reason |
+|---|---|---|---|---|
+| `vc-1` | WebView file/network pattern | no exploitable external producer established | `1/3`, not reported | hardening concern only |
+| `vc-2` | WebView load URL pattern | same caller-chain boundary as `vc-1` | `1/3`, not reported | no reportable trust-boundary crossing |
+| `vc-3` | `grantRuntimePermission` API | navigation/route binding kept package name internal | `1/3`, not reported | not externally reachable |
+| `vc-4` | `revokeRuntimePermission` API | symmetric to `vc-3` caller-route block | `1/3`, not reported | not externally reachable |
+| `usb-2` | USB permission grant path | framework filters and `MANAGE_USB` checks blocked caller control | `1/3`, not reported | no normal-app bypass found |
+| `ss-1` | exported boot receiver | `BOOT_COMPLETED` is a protected broadcast | `0/3`, not reported | normal app cannot trigger path |
+| `am-4` | custom install/uninstall action | action reached UI navigation only; user confirmation preserved | `1/3`, not reported | no auto-install primitive |
+| `amb-4` | cross-package broadcast | explicit component targets PleOS-internal receiver | `0/3`, not reported | not an implicit broadcast leak |
+| `amb-5` | exported voice service action | signature-level voice interaction permission gates binding | `1/3`, not reported | framework permission mitigates path |
+
+This table attributes the evidence path, not an independent Stage 2 score. The measured result remains the paired Stage 1 vs Stage 3 comparison.
+
+### 5.3 Stage 3 False Negative
+
+| Missed ID | True Severity | Category | Why Stage 3 Missed It | Impact on Claim |
+|---|---|---|---|---|
+| `vc-7` | low | intent hardening | API 34 `registerReceiver` hardening pattern received only defender-side support (`1/3`) and did not pass `>=2/3`. | Recall becomes 97.4%; the miss is retained rather than manually corrected. |
+
+The miss is kept in the metric so the Stage 3 threshold result remains reproducible and not post-hoc corrected.
+
+### 5.4 Paired Significance
 
 |  | Stage 3 correct | Stage 3 incorrect |
 |---|---:|---:|
@@ -68,7 +137,7 @@ The default final reporting threshold is Stage 3 `>=2/3`. It removed the nine me
 
 The paired McNemar exact test has `b+c=10` and exact two-tailed `p=0.0215`, so the Stage 1 to Stage 3 improvement is statistically visible on this labelled corpus.
 
-### 4.3 Supporting Tracks
+### 5.5 Supporting Tracks
 
 | Track | Measured Result | Boundary |
 |---|---|---|
@@ -78,7 +147,7 @@ The paired McNemar exact test has `b+c=10` and exact two-tailed `p=0.0215`, so t
 | Dynamic verification scaffolding | deterministic state machine plus Frida hook scripts | Infrastructure exists; runtime evidence is separate from the static `n=47` metric |
 | Codex 3-model cross-read | precision 100.0%, recall 76.3%, F1 0.866 | Did not beat Stage 3 `>=2/3`; prompt calibration and evidence packaging mattered more than model count |
 
-## 5. Case Summary
+## 6. Case Summary
 
 Representative final cases are documented in `03_case_studies.md`.
 
@@ -94,7 +163,7 @@ Representative final cases are documented in `03_case_studies.md`.
 | `usb-2` | `android.car.usb.handler` | FP | Framework permission checks block caller control |
 | `ss-1` | `com.android.statementservice` | FP | Protected broadcast blocks normal-app trigger |
 
-## 6. Limitations
+## 7. Limitations
 
 | Limit | Final State | Remaining Boundary |
 |---|---|---|
@@ -106,16 +175,16 @@ Representative final cases are documented in `03_case_studies.md`.
 | Stage 2 automation | Semi-automated contextual verification works on this corpus | Not a complete Android reachability engine |
 | Public disclosure | Redacted public artifacts exist | Raw APKs, JADX output, logs, videos, and unredacted evidence stay local-only |
 
-## 7. Contributions
+## 8. Contributions
 
 1. A four-stage LLM-assisted APK security-analysis pipeline for PleOS / AAOS IVI.
-2. A final combined GT corpus of 47 labelled finding rows with origin breakdown.
-3. Paired evidence that contextual and multi-perspective verification reduces measured false positives.
+2. A final combined GT corpus of 47 labelled finding rows with origin breakdown and explicit finding-unit rules.
+3. Paired evidence that contextual evidence packaging and multi-perspective verification reduce measured false positives.
 4. AAOS / MASVS / TARA mapping artifacts that translate code-level findings into automotive-security language.
 5. A public/private artifact boundary for redacted reporting without publishing proprietary PleOS evidence.
 6. Completed reinforcement tracks covering statistics, RAG, native static analysis, dynamic scaffolding, and Codex cross-read.
 
-## 8. Artifact Index
+## 9. Artifact Index
 
 | Purpose | Path |
 |---|---|

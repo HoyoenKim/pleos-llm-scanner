@@ -96,6 +96,8 @@ The result is that the first LLM pass is useful for recall-oriented candidate co
 
 The improvement is statistically visible on paired labels: McNemar exact test `p=0.0215`.
 
+Threat model, finding-unit rules, label construction, and final false-positive attribution are documented in `docs/01_final_report.md`.
+
 The headline metric source of truth is `data/reports/aggregate/final_metrics_n47.md`. Some aggregate files are intentionally retained as historical/intermediate `n=28` measurement records; use the final `n=47` files for the final archive claims.
 
 ### Supporting Measurements
