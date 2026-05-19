@@ -59,5 +59,5 @@
     },
     "value_for_baseline_comparison": "These two samples expose the **boundary** of the current pipeline: a Java-only static analyzer cannot recover MASVS-CRYPTO findings hidden in .so files. They serve as honest negative results in the baseline corpus and as reference cases for the limitations section in PPT/report."
   },
-  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level2_20260430.json + r2pay-v1.0_20260430.json"
+  "computed_by": "src/evaluation/eval.py against this file + data/reports/external/UnCrackable-Level2_20260430.json + r2pay-v1.0_20260430.json"
 }

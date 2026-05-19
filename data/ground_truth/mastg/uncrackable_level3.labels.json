@@ -57,5 +57,5 @@
       "note": "1 in-scope finding 모두 TP. Out-of-scope native + anti-tamper 다수 발견됐으나 schema 6 카테고리 enum 밖."
     }
   },
-  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level3_20260430.json"
+  "computed_by": "src/evaluation/eval.py against this file + data/reports/external/UnCrackable-Level3_20260430.json"
 }

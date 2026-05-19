@@ -4,11 +4,11 @@
 Four collections (docs/06 § 4.1 schema):
 - aaos_guidelines:           AAOS § 매핑 (configs/aaos_mapping.yaml)
 - masvs_controls:            OWASP MASTG Document/*.md per-section chunks
-- tara_templates:            TARA artifact (data/reports/tara_artifact_*.{md,json}) + aaos_mapping tara fields
+- tara_templates:            TARA artifact (data/reports/aggregate/tara_artifact*.{md,json}) + aaos_mapping tara fields
 - finding_patterns_historical: combined GT findings + reports rationale (n=47, R1.d.5 포함)
 
 Embedding model: sentence-transformers/all-MiniLM-L6-v2 (22M params, CPU推論, 영어 corpus).
-Persistence: data/rag/chroma/ (deterministic).
+Persistence: data/_local/rag_db/chroma/ (deterministic, local-only).
 
 Environment policy: no external embedding API. Hugging Face download is one-shot
 to local cache (~/.cache/huggingface/), then offline inference.
@@ -37,12 +37,12 @@ except ImportError:
     sys.exit(2)
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-CHROMA_DIR = ROOT / "data" / "rag" / "chroma"
+CHROMA_DIR = ROOT / "data" / "_local" / "rag_db" / "chroma"
 AAOS_YAML = ROOT / "configs" / "aaos_mapping.yaml"
-MASTG_DIR = ROOT / "data" / "apks" / "_mastg" / "owasp-mastg" / "Document"
-TARA_GLOB = str(ROOT / "data" / "reports" / "tara_artifact_*.md")
+MASTG_DIR = ROOT / "data" / "_local" / "apks" / "_mastg" / "owasp-mastg" / "Document"
+TARA_GLOB = str(ROOT / "data" / "reports" / "aggregate" / "tara_artifact*.md")
 LABELS = ROOT / "data" / "ground_truth" / "combined_labels.json"
-REPORTS_GLOB = str(ROOT / "data" / "reports" / "*.json")
+REPORTS_GLOB = str(ROOT / "data" / "reports" / "**" / "*.json")
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -192,7 +192,7 @@ def load_finding_patterns() -> list[dict[str, Any]]:
 
     # index reports by (apk, class, line) for cross-lookup
     finding_idx: dict[tuple[str, str, int], dict[str, Any]] = {}
-    for rp in glob.glob(REPORTS_GLOB):
+    for rp in glob.glob(REPORTS_GLOB, recursive=True):
         try:
             r = json.loads(Path(rp).read_text(encoding="utf-8"))
         except Exception:

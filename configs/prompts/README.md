@@ -36,7 +36,7 @@ The original plan was a multi-model ensemble (Claude + GPT-4) but two environmen
 
 ## Output schema
 
-JSON output of every prompt follows `../result_schema.json`. The Stage 3 merged output lives at `data/reports/stage3_ensemble_<DATE>.json`.
+JSON output of every prompt follows `../result_schema.json`. The Stage 3 merged output lives at `data/reports/local/stage3_ensemble_<DATE>.json`.
 
 ## Naming convention
 

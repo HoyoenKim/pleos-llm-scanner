@@ -39,7 +39,7 @@ Output of `src/deobf/entropy.py` (Shannon entropy + jadx pattern matching) on 7 
 ```bash
 for d in UnCrackable-Level1 UnCrackable-Level2 UnCrackable-Level3 r2pay-v1.0 \
          VehicleControl SyncSyslog LLMModelProvider NewPipe; do
-  python src/deobf/entropy.py "data/decompiled/$d" \
+  python src/deobf/entropy.py "data/_local/decompiled/$d" \
       --out "data/deobf/${d}.json" \
       --md  "data/deobf/${d}.md" \
       --top 15

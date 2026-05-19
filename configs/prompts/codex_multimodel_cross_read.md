@@ -50,7 +50,7 @@ Return JSON only. Do not include Markdown.
   "model_actual": "<actual model id used>",
   "scope": "sample19 or full47",
   "generated_at": "YYYY-MM-DDTHH:MM:SS+09:00",
-  "source_input": "data/reports/codex_multimodel/<scope>_model_inputs.json",
+  "source_input": "data/reports/local/codex_multimodel/<scope>_model_inputs.json",
   "verdicts": [
     {
       "finding_id": "vc-5",

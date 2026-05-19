@@ -5,7 +5,7 @@
 # Stage 1 Analysis — `ai.pleos.llm.model.provider` (PleOS LLM Model Provider)
 
 - **Date**: 2026-04-29
-- **APK path on device**: `/system/app/LLMModelProviderSerivce/LLMModelProviderSerivce.apk` (extracted via bulk pull) — repackaged as `data/apks/ai.pleos.llm.model.provider.apk` (small)
+- **APK path on device**: `/system/app/LLMModelProviderSerivce/LLMModelProviderSerivce.apk` (extracted via bulk pull) — repackaged as `data/_local/apks/ai.pleos.llm.model.provider.apk` (small)
 - **Decompiler**: jadx 1.5.5 (`--deobf --show-bad-code`) — 2,602 entries, 38 jadx warnings
 - **Stage**: 1 (single-pass LLM, Claude Opus 4.7)
 - **Sources scope**: `ai/pleos/*` = 22 java files (very compact — provider + receiver + service + helpers)

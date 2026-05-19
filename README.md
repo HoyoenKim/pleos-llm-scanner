@@ -1,112 +1,108 @@
 # pleos-llm-scanner
 
-LLM-driven static security analysis pipeline for in-vehicle Android (AAOS) APKs, applied to **PleOS Connect** as a case study.
+LLM-assisted static security analysis pipeline for Android Automotive / PleOS IVI APKs.
 
-> **Note**: 이 저장소는 **재현 가능한 분석 파이프라인**을 공개한다. PleOS Connect APK 바이너리, 디컴파일 결과, 사례별 보고서는 IP 보호 정책에 따라 비공개 (`.gitignore`).
+This repository is organized as a research artifact, not as a raw working dump. The
+tracked tree keeps reproducible code, prompts, labels, aggregate reports, public
+external-corpus results, and masked public PleOS reports. APKs, JADX output, raw
+runtime evidence, videos, vector DBs, native extracts, and portable tools live under
+`data/_local/` or ignored report subdirectories.
 
----
+## Current Status
+
+- Semester work and Future Work A-E are complete as of 2026-05-14.
+- The canonical final report is `docs/01_final_report.md`.
+- The first-read summary is `docs/02_final_brief.md`.
+- Remaining deliverable in the parent workspace: final presentation deck.
+
+For a compact state snapshot, read `PROJECT_STATUS.md`.
 
 ## Pipeline
 
-```
-APK ──► jadx --deobf ──► keyword filter (configs/keywords.yaml)
-    ──► stage 1: single-pass LLM detection      (configs/prompts/stage1_detect.md)
-    ──► stage 2: caller analysis                (manifest exported / Hilt graph / regex / AST)
-    ──► stage 3: multi-prompt ensemble          (attacker / defender / domain expert)
-    ──► consensus rule                          (configs/prompts/stage3_consensus.md)
-    ──► reports                                 (data/reports/, gitignored)
-    ──► evaluation                              (src/eval.py against data/ground_truth/)
-    ──► ablation                                (src/ablation.py)
-    ──► AAOS guideline mapping + TARA           (configs/aaos_mapping.yaml)
-```
-
-## Documentation
-
-측정값·분석·통합 문서는 [`docs/`](docs/)에 정리되어 있다. 통합 보고서: [`docs/01_report.md`](docs/01_report.md). 디렉토리 인덱스: [`docs/README.md`](docs/README.md).
-
-## Directory layout
-
-```
-pleos-llm-scanner/
-├── README.md
-├── LICENSE
-├── .gitignore
-├── configs/
-│   ├── keywords.yaml          # 보안 민감 키워드 단일 출처
-│   ├── aaos_mapping.yaml      # AAOS 가이드라인 매핑
-│   ├── result_schema.json     # 보고서 JSON 스키마
-│   └── prompts/
-│       ├── stage1_detect.md
-│       ├── stage0_deobfuscate.md
-│       ├── stage3_attacker.md
-│       ├── stage3_defender.md
-│       ├── stage3_domain_expert.md
-│       └── stage3_consensus.md
-├── scripts/
-│   ├── pull_apks.sh           # `adb shell pm list packages -s` 일괄 추출
-│   └── decompile.sh           # jadx --deobf 래퍼
-├── src/
-│   ├── eval.py                # Precision / Recall / F1 자동 측정
-│   ├── ablation.py            # stage / consensus threshold ablation
-│   ├── aaos_map.py            # AAOS / MASVS / TARA 자동 매핑
-│   ├── tara_generate.py       # ISO/SAE 21434 TARA artifact
-│   ├── deobf/entropy.py       # Shannon entropy + jadx pattern obfuscation detector
-│   └── viz/plot_metrics.py    # 측정값 시각화 (6 차트)
-├── docs/                       # 측정 기록 + 통합 보고서 (docs/README.md 참조)
-└── data/
-    └── ground_truth/           # self labels + MASTG labels
-    # data/apks, data/decompiled, data/reports — local-only (.gitignore)
+```text
+APK
+  -> scripts/apk/pull_apks.sh
+  -> scripts/apk/decompile.sh
+  -> configs/keywords.yaml keyword triage
+  -> Stage 0 optional deobfuscation prompt
+  -> Stage 1 LLM detection prompt
+  -> Stage 2 deterministic contextual verification
+  -> Stage 3 multi-perspective consensus
+  -> evaluation / ablation / AAOS mapping / TARA / charts
 ```
 
-## Quickstart (재현)
+LLM analysis is performed by Codex/Claude Code sessions directly. The repository
+does not contain OpenAI, Anthropic, or other external LLM API calls for PleOS code.
 
-전제: PleOS Connect 또는 AAOS Automotive 에뮬레이터, ADB 연결, jadx 1.5.5+, Python 3.10+.
+## Directory Map
+
+```text
+configs/                  analysis config, schemas, prompt protocols
+src/                      deterministic pipeline code
+  evaluation/             precision, recall, F1, ablation
+  deobf/                  entropy-based obfuscation measurement
+  mapping/                AAOS / MASVS / TARA generation
+  rag/                    local Chroma RAG index and retrieval helpers
+  dynamic/                deterministic LangGraph state machine + Frida hooks
+  native/                 native-library string/pattern scanner
+  viz/                    report chart generation
+scripts/                  operational and research helpers
+  apk/                    APK pull/decompile wrappers
+  research/               RQ measurement and corpus-expansion scripts
+  runtime_poc/            runtime PoC harness and evidence capture helpers
+  presentation/           local presentation/video helper scripts
+  maintenance/            masking and result-maintenance scripts
+docs/                     final report, brief, methodology, case studies
+data/                     labels, public-safe reports, charts, local evidence
+```
+
+## Data Boundary
+
+```text
+data/ground_truth/        tracked labels
+data/reports/aggregate/   tracked GT-derived aggregate reports
+data/reports/external/    tracked public vulnerable-corpus reports
+data/reports/public/      tracked masked PleOS public reports
+data/deobf/               tracked obfuscation measurements and rename outputs
+data/viz/                 tracked chart PNGs
+data/_local/              ignored APKs, JADX output, raw evidence, tools, DBs
+data/reports/*_local/     ignored private/generated report tracks
+```
+
+## Quickstart
 
 ```bash
-# 1) 시스템 APK 일괄 추출 (gitignored data/apks/)
-bash scripts/pull_apks.sh data/apks
+# 1. Pull system APKs from an emulator into the local-only bucket.
+bash scripts/apk/pull_apks.sh
 
-# 2) 단일 APK 디컴파일
-bash scripts/decompile.sh data/apks/<package>.apk
+# 2. Decompile one APK with jadx into the local-only bucket.
+bash scripts/apk/decompile.sh data/_local/apks/<package>.apk
 
-# 3) Claude Code 세션에서 keyword grep + Stage 1 LLM 분석
-#    → data/reports/<apk>_<YYYYMMDD>.{json,md} 저장 (gitignored)
+# 3. Evaluate reports against combined GT.
+python src/evaluation/eval.py \
+  --labels data/ground_truth/combined_labels.json \
+  --reports 'data/reports/**/*.json'
 
-# 4) 자동 평가 (Precision/Recall/F1)
-python src/eval.py \
-    --labels data/ground_truth/combined_labels.json \
-    --reports 'data/reports/*.json'
+# 4. Run stage/threshold ablation.
+python src/evaluation/ablation.py \
+  --labels data/ground_truth/combined_labels.json \
+  --reports 'data/reports/**/*.json' \
+  --stage3 data/reports/local/stage3_ensemble.json
 
-# 5) Ablation: stage 효과 + 합의 임계 sensitivity
-python src/ablation.py \
-    --labels data/ground_truth/combined_labels.json \
-    --reports 'data/reports/*.json' \
-    --stage3  data/reports/stage3_ensemble.json
+# 5. Regenerate AAOS/TARA aggregate outputs.
+python src/mapping/aaos_map.py
+python src/mapping/tara_generate.py
 ```
 
-## Privacy / IP boundary
+## Reading Order
 
-- **Excluded from this repo**: PleOS APK binaries, decompiled sources, per-APK case-study reports, internal working notes.
-- **Included**: pipeline configuration, prompts, scripts, evaluation / ablation / mapping code, ground-truth labels, AAOS-mapping skeleton, integration / generalization docs, reproducibility documentation.
-- Finding evidence quotes (1–3 lines per finding) live inside the gitignored `data/reports/`. Disclosure decision is deferred until the report-finalisation review.
+Start with `docs/00_reading_guide.md`. In short:
 
-## Environment
-
-- Python 3.10+
-- jadx 1.5.5+ (CLI)
-- Android Studio commandline-tools + platform-tools + emulator + `platforms;android-34` + `system-images;android-34;pleos_car_emulator;x86_64`
-- Claude Opus 4.7 (1M context) — analysis engine
+1. `docs/02_final_brief.md` for the project in one pass.
+2. `docs/01_final_report.md` for the full report.
+3. `docs/03_case_studies.md` and `docs/04_methodology_stage2.md` for evidence and method.
+4. `data/reports/README.md` to understand what report files are public, aggregate, or local-only.
 
 ## License
 
-[MIT](LICENSE).
-
-## References
-
-- jadx — https://github.com/skylot/jadx
-- jadx-ai-mcp (related work) — https://github.com/zinja-coder/jadx-ai-mcp
-- android-scanner-ai (baseline candidate) — https://github.com/X-Vector/android-scanner-ai
-- Androidmeda (baseline candidate) — https://github.com/In3tinct/Androidmeda
-- Android Automotive Security — https://source.android.com/docs/automotive/start/secure_aaos
-- OWASP MASVS-MASTG — https://github.com/OWASP/owasp-mastg
-- PleOS Connect SDK — https://document.pleos.ai/
+MIT. See `LICENSE`.

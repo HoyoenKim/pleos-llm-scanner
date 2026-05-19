@@ -11,7 +11,7 @@
     {
       "id": "np-1",
       "original_class": "p004j$.util.C1302f",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/C1302f.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/util/C1302f.java",
       "suggested_class_name": "UnsupportedException",
       "confidence_class": 0.55,
       "role_description": "RuntimeException 서브클래스. 'Unsupported <type>: <value>' 메시지 prefix 로 throw 하는 static helper.",
@@ -26,7 +26,7 @@
     {
       "id": "np-2",
       "original_class": "p004j$.sun.misc.C1112a",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/sun/misc/C1112a.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/sun/misc/C1112a.java",
       "suggested_class_name": "UnsafeAccessor",
       "confidence_class": 0.85,
       "role_description": "sun.misc.Unsafe 의 reflection-based getter. 'theUnsafe' field 를 추출해 singleton 으로 캐싱.",
@@ -52,7 +52,7 @@
     {
       "id": "np-3",
       "original_class": "p004j$.util.concurrent.C1289p",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/concurrent/C1289p.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/util/concurrent/C1289p.java",
       "suggested_class_name": "ConcurrentNodePool",
       "confidence_class": 0.45,
       "role_description": "(추정) ConcurrentMap 의 internal node container. 인접 클래스 C1285l / C1288o 와 함께 lock-free queue / map 구조 가능.",
@@ -81,7 +81,7 @@
     {
       "id": "np-4",
       "original_class": "p004j$.desugar.sun.nio.p006fs.C1017a",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/desugar/sun/nio/p006fs/C1017a.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/desugar/sun/nio/p006fs/C1017a.java",
       "suggested_class_name": "AttributesBuilder",
       "confidence_class": 0.80,
       "role_description": "java.nio.file.attribute view 설정용 builder. 허용된 attribute 이름 set + 값 map + 'all attributes' wildcard 플래그.",
@@ -106,7 +106,7 @@
     {
       "id": "np-5",
       "original_class": "p004j$.time.format.C1188w",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/time/format/C1188w.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/time/format/C1188w.java",
       "suggested_class_name": "DateTimeFormatterBuilder",
       "confidence_class": 0.95,
       "role_description": "java.time.format.DateTimeFormatterBuilder 의 desugar 포팅. Pattern char → temporal field 매핑 + 27 builder method + toFormatter().",
@@ -157,7 +157,7 @@
     {
       "id": "np-6",
       "original_class": "p004j$.util.concurrent.C1290q",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/concurrent/C1290q.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/util/concurrent/C1290q.java",
       "suggested_class_name": "TreeBin",
       "confidence_class": 0.95,
       "role_description": "java.util.concurrent.ConcurrentHashMap.TreeBin 의 desugar 포팅. Red-black tree + reader/writer lockState + Unsafe-based CAS.",

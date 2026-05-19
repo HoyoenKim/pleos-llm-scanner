@@ -28,7 +28,7 @@ State graph (deterministic):
 
 Usage:
     python src/dynamic/state_machine.py --finding vc-5 \
-        --report data/reports/ai.umos.vehiclecontrol_20260429.json
+        --report data/reports/per_apk_local/ai.umos.vehiclecontrol_20260429.json
 
 The CLI prints the deterministic state-trace and (if --frida-script provided)
 launches the hook script via the local frida-tools.
@@ -89,7 +89,7 @@ def stage1_classify(state: FindingState) -> FindingState:
 
 
 # Stage 2 rules — deterministic, mirror Stage 2 logic in scanner pipeline.
-# Key rule set (extracted from per-finding evidence in docs/02_case_studies):
+# Key rule set (extracted from per-finding evidence in docs/03_case_studies):
 #   - implicit broadcast → if intent has setComponent or setPackage in caller, FP
 #   - exported component → if protected by signature permission, FP
 #   - hardcoded credential → if non-test build flavor, TP

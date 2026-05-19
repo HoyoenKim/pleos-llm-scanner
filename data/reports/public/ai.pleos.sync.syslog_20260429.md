@@ -5,7 +5,7 @@
 # Stage 1 Analysis — `ai.pleos.sync.syslog` (SysLogService)
 
 - **Date**: 2026-04-29
-- **APK path on device**: `/system/...` (extracted via bulk pull) — repackaged as `data/apks/ai.pleos.sync.syslog.apk` (8 MB)
+- **APK path on device**: `/system/...` (extracted via bulk pull) — repackaged as `data/_local/apks/ai.pleos.sync.syslog.apk` (8 MB)
 - **Decompiler**: jadx 1.5.5 (`--deobf --show-bad-code`) — 7,575 entries, 35 jadx warnings (ignored)
 - **Stage**: 1 (single-pass LLM, Claude Opus 4.7)
 - **Sources scope**: `ai/pleos/*` (~280 java files; sync only = 72 files)
@@ -196,5 +196,5 @@ The cryptographic primitives themselves are well-chosen:
 1. **ssl-3 third-party lib 확인**: `com.squareup.okhttp3`, `io.grpc.okhttp`, `io.grpc.netty` 패키지 grep으로 `CertificatePinner`/`X509TrustManager` 사용 위치 식별. provisional strong TP를 최종 strong TP 또는 clean으로 확정.
 2. **ssl-6 TLS verdict**: `ManagedChannel`/`OkHttpChannelBuilder.useTransportSecurity` vs `usePlaintext` grep. TLS 적용이면 ssl-3과 같은 pinning 의제로 통합.
 3. **CCGTokenProvider, BootCompletionReceiver, SysLogService 추가 read** (stage 1 batch 2): `Hilt_*` 제외 본 클래스 4~5개. Token 처리 + boot trigger + gRPC channel 빌더의 정확한 구성 확인.
-4. **`network_security_config.xml`** 검사: `data/decompiled/SyncSyslog/resources/xml/` 또는 `res/xml/`에서 `cleartextTrafficPermitted`, `<pin-set>` 선언 확인.
+4. **`network_security_config.xml`** 검사: `data/_local/decompiled/SyncSyslog/resources/xml/` 또는 `res/xml/`에서 `cleartextTrafficPermitted`, `<pin-set>` 선언 확인.
 5. **`HmgUserInfo` log emission grep** (ssl-4): ssl-2와 같은 패턴으로 `Log.|Timber.*hmgUserInfo`. 실측 확인 시 ssl-4 → strong TP 3/3.

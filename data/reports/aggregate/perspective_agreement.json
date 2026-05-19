@@ -1,0 +1,49 @@
+{
+  "measurement_id": "R2.a",
+  "description": "Per-finding flag agreement across attacker / defender / domain_expert perspectives. Measures whether the multi-perspective ensemble produces diverse verdicts or converges trivially.",
+  "measured_at": "2026-05-06",
+  "scope": "n=28 findings from data/reports/local/stage3_ensemble.json",
+  "flag_counts_per_perspective": {
+    "attacker": 21,
+    "defender": 28,
+    "domain_expert": 21
+  },
+  "consensus_count_distribution": {
+    "0": 0,
+    "1": 5,
+    "2": 4,
+    "3": 19
+  },
+  "pairwise": {
+    "attacker-defender": {
+      "agree": 21,
+      "agree_pct": 75.0,
+      "both_flag": 21,
+      "only_attacker": 0,
+      "only_defender": 7,
+      "neither": 0,
+      "cohens_kappa": 0.0
+    },
+    "attacker-domain_expert": {
+      "agree": 24,
+      "agree_pct": 85.7,
+      "both_flag": 19,
+      "only_attacker": 2,
+      "only_domain_expert": 2,
+      "neither": 5,
+      "cohens_kappa": 0.619
+    },
+    "defender-domain_expert": {
+      "agree": 21,
+      "agree_pct": 75.0,
+      "both_flag": 21,
+      "only_defender": 7,
+      "only_domain_expert": 0,
+      "neither": 0,
+      "cohens_kappa": 0.0
+    }
+  },
+  "interpretation": {
+    "kappa_scale": "κ < 0: poor / 0.0–0.20: slight / 0.21–0.40: fair / 0.41–0.60: moderate / 0.61–0.80: substantial / 0.81–1.00: almost perfect (Landis & Koch 1977)"
+  }
+}

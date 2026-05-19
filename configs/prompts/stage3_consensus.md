@@ -48,7 +48,7 @@ For each `(class, line)` location, compare the three perspective verdicts:
 2. **Stage 2**: caller-chain trace + regex / AST verification (already in place; no separate prompt — rule + code analysis).
 3. **Stage 3 entry condition**: candidates left at confidence 0.55~0.75 after Stage 2 are fed into Stage 3.
 4. **Stage 3 run**: apply the three perspective prompts to the same class → three perspective verdicts → apply the consensus rule above.
-5. **Stage 3 output path**: `data/reports/<apk>_<YYYYMMDD>_stage3.json`, stored separately from the Stage 1 / 2 reports.
+5. **Stage 3 output path**: `data/reports/local/<apk>_<YYYYMMDD>_stage3.json`, stored separately from the Stage 1 / 2 reports.
 
 ## Multi-prompt vs multi-model — alternative considered
 

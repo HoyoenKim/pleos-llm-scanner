@@ -29,7 +29,7 @@ Heuristics (calibrated against jadx --deobf output for ProGuard'd APKs)
 Usage
 -----
     python src/deobf/entropy.py <decompiled_root> [--out output.json] [--md output.md]
-    python src/deobf/entropy.py data/decompiled/UnCrackable-Level1 --out data/deobf/ucl1.json --md data/deobf/ucl1.md
+    python src/deobf/entropy.py data/_local/decompiled/UnCrackable-Level1 --out data/deobf/ucl1.json --md data/deobf/ucl1.md
 """
 from __future__ import annotations
 
@@ -274,7 +274,7 @@ def md_table(results: list[ClassMetric], top_k: int = 30) -> str:
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("root", help="Decompiled root (e.g. data/decompiled/UnCrackable-Level1)")
+    p.add_argument("root", help="Decompiled root (e.g. data/_local/decompiled/UnCrackable-Level1)")
     p.add_argument("--out", help="Output JSON path", default=None)
     p.add_argument("--md", help="Output Markdown path", default=None)
     p.add_argument("--top", type=int, default=30, help="Top-k classes to include in markdown table")

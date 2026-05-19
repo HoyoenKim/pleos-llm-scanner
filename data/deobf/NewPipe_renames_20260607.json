@@ -9,7 +9,7 @@
   "renames": [
     {
       "original_class": "p004j$.util.C1302f",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/C1302f.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/util/C1302f.java",
       "suggested_class_name": "UnsupportedException",
       "confidence_class": 0.55,
       "role_description": "RuntimeException 서브클래스. 'Unsupported <type>: <value>' 메시지 prefix 로 throw 하는 static helper.",
@@ -23,7 +23,7 @@
     },
     {
       "original_class": "p004j$.sun.misc.C1112a",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/sun/misc/C1112a.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/sun/misc/C1112a.java",
       "suggested_class_name": "UnsafeAccessor",
       "confidence_class": 0.85,
       "role_description": "sun.misc.Unsafe 의 reflection-based getter. 'theUnsafe' field 를 추출해 singleton 으로 캐싱.",
@@ -48,7 +48,7 @@
     },
     {
       "original_class": "p004j$.util.concurrent.C1289p",
-      "file_path": "data/decompiled/NewPipe/sources/p004j$/util/concurrent/C1289p.java",
+      "file_path": "data/_local/decompiled/NewPipe/sources/p004j$/util/concurrent/C1289p.java",
       "suggested_class_name": "ConcurrentNodePool",
       "confidence_class": 0.45,
       "role_description": "(추정) ConcurrentMap 의 internal node container. 인접 클래스 C1285l / C1288o 와 함께 lock-free queue / map 구조 가능.",

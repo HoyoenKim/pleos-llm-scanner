@@ -14,11 +14,17 @@ Thumbs.db
 .idea/
 .vscode/
 
-# PleOS APK binaries and decompiled sources — contractor IP protection
+# Local-only evidence, binaries, generated DBs, and private inputs.
+#
+# Keep APKs, JADX output, raw PoC evidence, portable tools, native extracts, and
+# vector DBs under one obvious bucket so the repository root stays readable and
+# sensitive contractor/IP material is not accidentally staged.
+data/_local/
+
+# Backward-compatible ignores for pre-cleanup local folders. New scripts write
+# under data/_local/, but these entries prevent old worktrees from leaking data.
 data/apks/
 data/decompiled/
-
-# Binary artifacts — extracted native libs / vector DB / portable tools (not pipeline source)
 data/native/
 data/native_libs/
 data/native_deep_dive/
@@ -31,36 +37,25 @@ data/runtime_poc_llm_boundary_demo/
 data/poc_evidence/
 tools/
 
-# Reports — per-APK private until report-finalisation review
-# (directory itself NOT ignored so meta-analysis tables can opt-in via negation)
+# Reports are split by disclosure boundary.
+# - aggregate/: tracked, GT-derived/public-safe summary tables
+# - external/: tracked, public vulnerable corpus reports
+# - public/: tracked, masked PleOS public copies
+# - local/per_apk/runtime/native/rag: ignored private or generated evidence
 data/reports/*.json
 data/reports/*.md
-# Codex multi-model per-scope detail — local only (summary codex_multimodel_agreement* is committed)
-data/reports/codex_multimodel/
-# RAG end-to-end prompt packages / model judgment outputs — local only
-data/reports/rag_end_to_end/
-# Runtime PoC raw evidence / prompt-leak demo bundles — local only
+!data/reports/README.md
+data/reports/local/
+data/reports/per_apk_local/
+data/reports/runtime_local/
+data/reports/native_local/
+data/reports/rag_local/
 data/reports/_raw/
 data/reports/prompt_leak_attack_poc/
-# Exception: meta-analysis aggregation tables (no PleOS source, GT-derived only)
-!data/reports/aaos_mapping_table*
-!data/reports/tara_artifact*
-# Exception: RQ measurement artifacts (deterministic from GT + stage3_ensemble + APK metadata)
-!data/reports/stage_transitions*
-!data/reports/perspective_agreement*
-!data/reports/native_lib_inventory*
-!data/reports/bootstrap_ci*
-!data/reports/perspective_agreement_calibrated*
-!data/reports/r4_real_world_baseline*
-!data/reports/mcnemar_test*
-!data/reports/random_sample_baseline*
-!data/reports/codex_multimodel_agreement*
-# Exception: external public corpus reports (no PleOS source — intentional vuln corpora)
-!data/reports/InsecureBankv2*
-!data/reports/UnCrackable-Level*
-!data/reports/r2pay-v*
+data/reports/local/codex_multimodel/
+data/reports/rag_local/rag_end_to_end/
 
-# PPT — private until report-finalisation review
+# PPT and source presentation decks are private until report-finalisation review.
 *.pptx
 *.pdf
 pptx/
@@ -69,22 +64,24 @@ pptx/
 *.log
 .tmp/
 
-# Internal working notes (작업 가이드 + 진척 추적, public 비공개)
+# Internal working notes (task guide + progress tracking, not public-facing).
 CLAUDE.md
 progress.md
 next.md
 docs/ppt_revision_guide.md
-
-# Local identity (학번/이름/소속) — scripts 가 import 함
-scripts/_author.json
-scripts/_author.example.json
-
-# Raw measurement notes (시점 스냅샷) — 보고서 인용용 로컬 보관, public 비공개
 docs/archive/
 
-# PPT 빌드 스크립트 — 학기 보고용 산출물, 파이프라인 재현 무관 → 로컬 only
-scripts/build_ppt_*.py
+# Local identity (student/name/email), imported by PPT scripts when present.
+scripts/_author.example.json
+scripts/_author.json
+scripts/presentation/_author.example.json
+scripts/presentation/_author.json
 
-# Auto-regenerated per-APK summary md from entropy.py — JSON is source of truth
+# PPT build helpers are local-only because generated decks are not reproducible
+# without the private source decks and local identity file.
+scripts/build_ppt_*.py
+scripts/presentation/build_ppt_*.py
+
+# Auto-regenerated per-APK summary md from entropy.py. JSON is source of truth.
 data/deobf/*.md
 !data/deobf/README.md

@@ -17,7 +17,7 @@ Two measurements per GT label:
    and report whether the top-1 hit's `masvs_category` covers the relevant
    crypto / network / platform / auth / storage area.
 
-Output: data/reports/rag_ablation.{md,json}
+Output: data/reports/rag_local/rag_ablation.{md,json}
 
 Usage:
     python src/rag/ablation.py [--k 1]
@@ -45,10 +45,10 @@ except ImportError:
     sys.exit(2)
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-CHROMA_DIR = ROOT / "data" / "rag" / "chroma"
+CHROMA_DIR = ROOT / "data" / "_local" / "rag_db" / "chroma"
 LABELS = ROOT / "data" / "ground_truth" / "combined_labels.json"
-REPORTS_GLOB = str(ROOT / "data" / "reports" / "*.json")
-OUT_DIR = ROOT / "data" / "reports"
+REPORTS_GLOB = str(ROOT / "data" / "reports" / "**" / "*.json")
+OUT_DIR = ROOT / "data" / "reports" / "rag_local"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Map AAOS category labels to expected MASVS area (loose semantic alignment).
@@ -77,7 +77,7 @@ def build_query_text(label: dict, report_finding: dict) -> str:
 def load_report_findings() -> dict[tuple[str, str, int], dict]:
     import glob as _glob
     idx = {}
-    for rp in _glob.glob(REPORTS_GLOB):
+    for rp in _glob.glob(REPORTS_GLOB, recursive=True):
         try:
             r = json.loads(Path(rp).read_text(encoding="utf-8"))
         except Exception:
@@ -270,11 +270,11 @@ def main() -> int:
         "- **AAOS alignment** measures the *citation* benefit: high accuracy means RAG can populate the `aaos_section` field of Stage 1 finding deterministically, replacing manual AAOS mapping.",
         "- **Caveat — not a Stage-1-end-to-end measurement**: this is an intrinsic retrieval-quality measurement. A full prompted-LLM ablation (with/without injecting retrieved context into the Claude Code Stage 1 prompt) is a separate study left to v1.3 § 6.",
         "",
-        f"Raw rows: `data/reports/rag_ablation.json` (n={n}).",
+        f"Raw rows: `data/reports/rag_local/rag_ablation.json` (n={n}).",
         "",
     ]
     (OUT_DIR / "rag_ablation.md").write_text("\n".join(md), encoding="utf-8")
-    print(f"wrote: data/reports/rag_ablation.{{md,json}}")
+    print(f"wrote: data/reports/rag_local/rag_ablation.{{md,json}}")
     print(f"NN verdict propagation: {summary['nn_verdict_propagation']['accuracy']*100:.1f}%")
     print(f"AAOS category alignment: {summary['aaos_category_alignment']['accuracy']*100:.1f}%")
     if summary['masvs_area_match']['accuracy'] is not None:

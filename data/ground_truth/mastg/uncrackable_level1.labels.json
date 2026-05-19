@@ -82,5 +82,5 @@
       "note": "All in-scope findings are TP (UnCrackable was designed by OWASP to expose these exact vulnerabilities). Out-of-scope MASVS-RESILIENCE issues are tracked in `out_of_scope_known_issues` and contribute to the recall ceiling once anti-tamper category is added."
     }
   },
-  "computed_by": "src/eval.py against this file + data/reports/UnCrackable-Level1_20260430.json"
+  "computed_by": "src/evaluation/eval.py against this file + data/reports/external/UnCrackable-Level1_20260430.json"
 }

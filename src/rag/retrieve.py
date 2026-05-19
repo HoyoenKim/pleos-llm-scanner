@@ -31,7 +31,7 @@ except ImportError:
     sys.exit(2)
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-CHROMA_DIR = ROOT / "data" / "rag" / "chroma"
+CHROMA_DIR = ROOT / "data" / "_local" / "rag_db" / "chroma"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_COLLECTIONS = (
     "aaos_guidelines",
