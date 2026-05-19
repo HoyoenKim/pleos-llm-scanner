@@ -49,6 +49,32 @@ Because the parent workspace contains submitted PPT/PDF files, APK inputs, and r
 5. After the final presentation, archive parent generated outputs in a local archive folder or zip, but do not delete them before final deck/video QA is complete.
 6. Do a separate provenance check before moving or deleting `tmp_pentest_report.docx`.
 
+## Cleanup Execution
+
+On 2026-05-19, duplicate or generated parent-workspace artifacts were moved to:
+
+`_archive/2026-05-19_workspace_cleanup/`
+
+Archived items:
+
+| Original path | Reason |
+|---|---|
+| `pptx/v3/` | Older PPT revision set |
+| `pptx/v4/` | Older final deck revision |
+| `scripts/` | Parent-level v4 PPT helper scripts |
+| `data/runtime_poc_harness/` | Generated PoC harness APK/dex/keystore/class outputs |
+| `tmp_pentest_report.docx` | Unclassified temporary document, preserved rather than deleted |
+| `pleos-llm-scanner/scripts/update_ppt_v5_poc.py` | Untracked held PPT update script moved out of the repo working tree |
+
+Left in place:
+
+| Path | Reason |
+|---|---|
+| `pptx/v5/` | Current final presentation deck |
+| `pptx/*.pptx`, `pptx/*.pdf` | Submitted or course-facing base materials |
+| `data/apks/_external/` | External benchmark APK inputs |
+| `AGENTS.md`, `CLAUDE.md`, `progress.md`, `next.md` | Active local project records |
+
 ## Push Boundary
 
 Only `pleos-llm-scanner/` can be pushed in the current workspace layout. This document is the public-safe record of the parent workspace cleanup decision.
