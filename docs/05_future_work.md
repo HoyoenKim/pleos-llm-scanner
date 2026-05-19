@@ -1,22 +1,22 @@
 # Future Work — 학기 외부 작업 목록
 
-_작성: 2026-06-07 / 본 보고서 Future Work 섹션과 함께 사용. 2026-05-14 학기 외 A~D 진행 현황 반영._
+_작성: 2026-06-07 / 본 보고서 Future Work 섹션과 함께 사용. 2026-05-14 학기 외 A~E 진행 현황 반영._
 
 본 학기 (2026-1) 안 완료한 RQ 측정값과 정직한 한계를 [`01_report.md`](01_report.md) § 7 / § 8 에 정리했다. 본 문서는 그 한계를 해소하는 **학기 외부 후속 작업 17 종** 을 4 카테고리로 정리한다.
 
-> **학기 외 진행 현황 (2026-05-14)**: 본 17종 중 우선순위 상위 항목이 학기 외 A~D 작업으로 진행 완료되었다. 구현 도달도 + 설계 명세는 [`06_future_work_implementations.md`](06_future_work_implementations.md) 가 canonical.
+> **학기 외 진행 현황 (2026-05-14)**: 본 17종 중 우선순위 상위 항목이 학기 외 A~E 작업으로 진행 완료되었다. 구현 도달도 + 설계 명세는 [`06_future_work_implementations.md`](06_future_work_implementations.md) 가 canonical.
 > - **F1 (n ≥ 50 확장)** → 학기 외 A: **R1.d.5 로 n=47 도달**, McNemar **p_exact=0.0215 통계적 유의** (n ≥ 60 추가 확장만 잔여).
 > - **F3 (radare2 native vuln)** → 학기 외 C: **R3.c.2 native sample n=4 정적 분석 완료** (추가 vuln 0건). Ghidra Go plugin + Frida hook 은 잔여.
 > - **RAG 도메인 지식 주입** (본 17종에 없던 신규 항목) → 학기 외 B: **Chroma 4 collection + intrinsic ablation 완료**.
 > - **동적 분석 연계** (F15 symbolic execution 의 선행 단계) → 학기 외 D: **deterministic state machine + 5 Frida hook script 완료** (AVD runtime capture 만 환경 의존 잔여).
-> - **F2 (multi-vendor ensemble)** → 학기 외 보류 항목 (Multi-model ensemble, 20%).
+> - **F2 (multi-vendor ensemble)** → 학기 외 E: API-free 대체 실험으로 **Codex 3-model cross-read 완료**. true multi-vendor(Anthropic/OpenAI/Google API) 비교는 IP/budget 정책상 별도 장기 후속.
 
 ## 0. 본 학기 안 완료한 RQ 측정 (참고 — 2026-05-14 학기 외 갱신 반영)
 
 | RQ | 측정 현황 | 잔여 한계 |
 |---|---|---|
 | RQ1 | R1.a transition + R1.b bootstrap CI (n=19 → **n=47**) + R1.c paired McNemar (**p_exact=0.0215, α=0.05 유의 도달**) + R1.d.2~d.5 표본 확장 + random baseline (28× bias) | discordant b+c=10 으로 여전히 작음 — n ≥ 60 추가 확장 시 power 강화 |
-| RQ2 | R2.a disagreement matrix + R2.b' defender prompt 효과 (κ 0.0 → 0.9) | 외부 vendor cross-read 미실시 — Multi-model ensemble 학기 외 보류 (20%) |
+| RQ2 | R2.a disagreement matrix + R2.b' defender prompt 효과 (κ 0.0 → 0.9) + **학기 외 E Codex 3-model cross-read 완료** (Codex 2/3 F1 86.6%, Claude baseline F1 98.7%) | true multi-vendor API 비교는 IP/budget 정책상 미실시. 현 결론은 multi-model 자체보다 prompt calibration + evidence packaging 중요 |
 | RQ3 | R3.a 207 APK native lib inventory (10.6%) + boundary 4 sample + **R3.c.2 native sample n=4 정적 분석 (학기 외 C, 추가 vuln 0건)** | dynamic JNI argument flow 미관찰 — Ghidra Go plugin + Frida hook 잔여 |
 | RQ4 | NewPipe entropy + Stage 0 semantic plausibility (n=6, GOOD+ 67%) | Exact accuracy 측정 불가 — commercial closed-source ProGuard mapping 부재 |
 
@@ -37,8 +37,8 @@ _작성: 2026-06-07 / 본 보고서 Future Work 섹션과 함께 사용. 2026-05
 
 **측정 가치**:
 - bootstrap CI 폭 추가 감소 (n=28 ±10%p → n=50+ ±5%p 가능)
-- paired McNemar 의 power 향상 → R1.c 재측정 시 통계적 유의성 도출 가능 (현재 p=0.375)
-- 본 학기의 "Stage 3 향상이 우연이 아닌가" 질문에 대한 통계적 검정 결론
+- paired McNemar 의 power 향상 → R1.c 재측정 결과 n=47에서 통계적 유의성 도달 (p_exact=0.0215). n≥60은 추가 power 강화용
+- 본 학기의 "Stage 3 향상이 우연이 아닌가" 질문에 대한 통계적 검정 결론을 n=47에서 확보
 
 ### F2. R2.b — Multi-vendor LLM ensemble
 

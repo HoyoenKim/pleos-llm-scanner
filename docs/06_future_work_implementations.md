@@ -27,7 +27,7 @@ Claude vs Codex 2/3 consensus agreement는 83.0%, Cohen's kappa는 0.607이다. 
 - `data/reports/codex_multimodel/full47_agreement.{md,json}`
 - `data/reports/codex_multimodel_agreement.{md,json}`
 
-_본 문서는 보고서 v1.3 (`docs/01_report.md`) § 8 Future Work 의 implementation appendix. 본 학기 (2026-1, 9~14 주차) 종료 시점의 partial-implementation 상태, 학기 외 progression 의 구체 설계, 그리고 **학기 외 A~D 작업 (2026-05-14) 의 완료 결과**를 정리._
+_본 문서는 보고서 v1.4 supplement (`docs/01_report.md`) § 8 Future Work 의 implementation appendix. 본 학기 (2026-1, 9~14 주차) 종료 시점의 partial-implementation 상태, 학기 외 progression 의 구체 설계, 그리고 **학기 외 A~E 작업 (2026-05-14) 의 완료 결과**를 정리._
 
 _**2026-05-14 갱신** — § 0 매트릭스를 학기 외 A~E 완료 결과로 갱신 + § 0.2 학기 외 완료 현황 추가. § 1~5 의 설계 명세는 그대로 두되 각 절 머리에 완료 상태 banner 를 추가했다. Multi-model ensemble (E) 도 Codex 3-model cross-read 로 실행 완료 — 상단 "2026-05-14 추가 업데이트" 섹션 참조._
 
@@ -92,7 +92,7 @@ Week 4 ────── 통합 보고서 v1.2 + 18-슬라이드 final PPT
 
 ## 0.2 학기 외 완료 현황 (2026-05-14)
 
-§ 0.1 의 plan 에 따라 A → B → C → D 순으로 진행하고, 보류 항목이던 E (Multi-model ensemble) 도 Codex 3-model cross-read 로 실행 — **Future Work 5종 모두 100% 도달**. A~D 산출은 보고서 v1.3 (`01_report.md`) Update history + § 3.6.8~3.6.10 에, E 는 본 문서 상단 "2026-05-14 추가 업데이트" 섹션에 통합.
+§ 0.1 의 plan 에 따라 A → B → C → D 순으로 진행하고, 보류 항목이던 E (Multi-model ensemble) 도 Codex 3-model cross-read 로 실행 — **Future Work 5종 모두 100% 도달**. A~E 산출은 보고서 v1.4 supplement (`01_report.md`) Update history + § 3.6.8~3.6.10 + § 8.4 에 통합했고, E 의 세부 비교는 본 문서 상단 "2026-05-14 추가 업데이트" 섹션에 별도 정리했다.
 
 ### A. R1.d.5 표본 확장 n=37 → n=47 ✅
 

@@ -32,7 +32,7 @@ Claude consensus와 Codex 2/3 consensus의 agreement는 83.0%, Cohen's kappa는 
 | 작성자 | 김호연 |
 | 학기 | 2026-1 |
 | 연계과제 | 현대자동차 계약학과 육성형 연구과제 — PleOS TARA 및 실차 보안 취약점 점검 |
-| 작성일 | 2026-04-30 초안 → 2026-05-11 v1.0 (13주차) → 2026-05-11 v1.1 (14주차) → 2026-05-14 v1.2 (학기 외 A) → 2026-05-14 v1.3 (학기 외 B) → **2026-05-14 v1.4 보충본 (A+B+C+D + Codex multi-model cross-read 완료)** |
+| 작성일 | 2026-04-30 초안 → 2026-05-11 v1.0 (13주차) → 2026-05-11 v1.1 (14주차) → 2026-05-14 v1.2 (학기 외 A) → 2026-05-14 v1.3 (학기 외 B) → **2026-05-14 v1.4 보충본 (학기 외 A+B+C+D+E 완료)** |
 | 버전 | **v1.4 supplement** (v1.3 통합본 + Codex `gpt-5.5` / `gpt-5.4` / `gpt-5.3-codex` cross-read n=47. Codex 2/3 consensus P 100.0% / R 76.3% / F1 86.6%, Claude Code baseline P 100.0% / R 97.4% / F1 98.7%. 결론: multi-model 자체보다 evidence packaging + prompt calibration 중요) |
 
 ---
@@ -178,7 +178,7 @@ Claude consensus와 Codex 2/3 consensus의 agreement는 83.0%, Cohen's kappa는 
 >   - **Chroma 4 collection 빌드** (`data/rag/chroma/`, 총 158 chunks): `aaos_guidelines` 6 (configs/aaos_mapping.yaml 의 6 category × AAOS § + MASVS + TARA), `masvs_controls` **99** (OWASP MASTG 41 docs H2-sectioned chunks, 영어 ~2000 char/chunk), `tara_templates` 6 (yaml + tara_artifact markdown), `finding_patterns_historical` 47 (combined GT 의 모든 finding × code excerpt + rationale).
 >   - **`src/rag/{build_index,retrieve,ablation}.py` + `configs/prompts/stage1_detect_rag.md`** — RAG-enhanced Stage 1 prompt 는 retrieve.py 가 4 collection 각각 top-k (default 3) 를 가져와 prompt 에 inject + AAOS § / MASVS controls 인용 강제 + historical TP/FP pattern 으로 confidence calibration (TP nearest → +0.1, FP nearest → -0.2). [`src/rag/`](../src/rag/) 모듈 + [`configs/prompts/stage1_detect_rag.md`](../configs/prompts/stage1_detect_rag.md).
 >   - **★ Intrinsic ablation 측정 (n=47, `data/reports/rag_ablation.{md,json}`)**: (1) **NN verdict propagation 40/47 = 85.1%** — historical 가장 가까운 finding (self 제외) 의 GT verdict 가 query GT verdict 와 일치. TP queries 38건 중 **36 match / 2 mismatch**, FP queries 9건 중 **4 match / 5 mismatch**. 임베딩 모델이 TP 계열 anti-pattern은 강하게 묶지만 FP 억제에는 아직 보완이 필요하다는 신호다. (2) **AAOS category alignment 40/47 = 85.1%** — RAG top-1 의 6-category 라벨 (crypto/network/permission/intent/hardcoded/reflection_dynamic) 이 GT stage1_category 와 일치. 카테고리별 정확도: `hardcoded` 9/11, `intent` 15/18, `network` 8/9, `crypto` 5/5, `permission` 2/3, `reflection_dynamic` 1/1. (3) **MASVS area match 11/47 = 23.4%** — MASTG Document chunking 이 너무 거칠어서 (H2 단위 ~2000 char) MASVS_CATEGORY meta 와 query 의 semantic alignment 가 약함. **Sub-task**: chunking 을 H3 + sliding-window 로 fine-grained 화하면 개선 예상.
->   - **End-to-end prompted-LLM ablation 은 v1.3 § 6 후속** — 본 측정은 intrinsic retrieval quality (embedding 모델이 anti-pattern 별로 정렬하는가). with-RAG vs without-RAG Stage 1 prompted-LLM 응답 비교 (FP rate 변화 측정) 는 별도 work-load 로 분리. NN 85.1% 가 calibration 의 ceiling 을 시사하므로 prompted ablation 의 기대 효과는 +5~10%p Precision (현 80.9% → 85~90% range) 으로 보수적 추정.
+>   - **End-to-end prompted-LLM ablation 은 v1.4 supplement 이후 후속** — 본 측정은 intrinsic retrieval quality (embedding 모델이 anti-pattern 별로 정렬하는가). with-RAG vs without-RAG Stage 1 prompted-LLM 응답 비교 (FP rate 변화 측정) 는 별도 work-load 로 분리. NN 85.1% 가 calibration 의 ceiling 을 시사하므로 prompted ablation 의 기대 효과는 +5~10%p Precision (현 80.9% → 85~90% range) 으로 보수적 추정.
 >   - **본 학기 외 B 작업의 RQ1/RQ2/RQ3/RQ4 implication**: RQ1 — RAG calibration 으로 추가 Precision 향상 여지. RQ2 — multi-perspective consensus 의 calibration 보조 가능 (defender / domain_expert prompt 에 retrieved AAOS / MASVS 첨부). RQ3 — `masvs_controls` 의 native binary 관련 chunks (RASP / anti-tamper) 가 native-bound 분석의 도메인 지식 inject 가능. RQ4 — 난독화 corpus 의 `finding_patterns_historical` 이 deobfuscation accuracy 의 calibration 보조.
 > - **★ 2026-05-14 v1.3 — 학기 외 C 작업 100% 완료 (R3.c.2 native sample-level n=4)**:
 >   - **`src/native_analyze.py`** — Python regex strings 분석 (Windows / Git Bash binutils 부재 우회). URL noise filter + sk-prefix + AKIA + PEM + UUID + api_key/bearer + TLS keyword 검색.
@@ -537,7 +537,7 @@ RQ1 의 Stage 1 → Stage 3 향상에 대한 통계 검정. 각 finding 의 pair
 
 **AAOS alignment by category**: crypto 5/5 (100%) / network 8/9 (88.9%) / intent 15/18 (83.3%) / hardcoded 9/11 (81.8%) / permission 2/3 (66.7%) / reflection_dynamic 1/1.
 
-**해석**: NN propagation 85.1% 는 RAG calibration 의 ceiling 을 시사 — historical FP 예시로 confidence 를 calibrate 하면 Stage 1 Precision 향상 여지 (보수적 추정 +5~10%p). 단 본 측정은 **intrinsic retrieval quality** 이며, with-RAG vs without-RAG 의 prompted-LLM end-to-end ablation (FP rate 변화) 은 별도 work-load 로 v1.3 § 6 후속. 산출: [`data/reports/rag_ablation.{md,json}`](../data/reports/rag_ablation.md).
+**해석**: NN propagation 85.1% 는 RAG calibration 의 ceiling 을 시사 — historical FP 예시로 confidence 를 calibrate 하면 Stage 1 Precision 향상 여지 (보수적 추정 +5~10%p). 단 본 측정은 **intrinsic retrieval quality** 이며, with-RAG vs without-RAG 의 prompted-LLM end-to-end ablation (FP rate 변화) 은 v1.4 supplement 이후 별도 work-load 로 남긴다. 산출: [`data/reports/rag_ablation.{md,json}`](../data/reports/rag_ablation.md).
 
 #### 3.6.9 RQ3.c — Native binary sample-level 분석 (학기 외 C 작업, R3.c.2 n=4)
 
@@ -869,7 +869,7 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 - **디컴파일 artifact 의존성**: 본 pipeline은 jadx output을 입력으로 삼는다. jadx가 control/data-flow를 잘못 복원하거나 synthetic wrapper를 생성하면 LLM 판단에도 영향을 줄 수 있다.
 - **Compose Navigation 의존 finding**: `vc-3` / `vc-4` 의 4중 차단 분석은 Android Compose Navigation 특화이다. 다른 UI framework 로 그대로 외삽할 수 없다.
 
-### 7.5 v1.0 → v1.3 보강 계획 (해소 상태)
+### 7.5 v1.0 → v1.4 supplement 보강 계획 (해소 상태)
 
 - ✅ 외부 corpus 확장 — InsecureBankv2 + AOSP-derived + R1.d.5 PleOS-customized 3 APK 누계로 **n=19 → n=47**. McNemar p_exact=0.0215 통계적 유의 도달 (학기 외 A).
 - ⚠️ 일부 APK 에 대한 full-audit 또는 broader scanner 비교로 missed finding 측정 — Future Work (학기 외 작업, [`05_future_work.md`](05_future_work.md) F4 참조).
@@ -984,4 +984,4 @@ AGL 은 PleOS 와 더 가깝다 — 둘 다 Linux kernel + 사용자 공간 앱 
 
 ---
 
-_본 보고서 v1.4 supplement 는 자율주행연구프로젝트1 학기 (Phase A~E) + 학기 외 Future Work A~D + Codex multi-model cross-read 보충 결과를 통합한 버전 (2026-05-14). 지도교수 리뷰 반영 시 차기 버전 갱신._
+_본 보고서 v1.4 supplement 는 자율주행연구프로젝트1 학기 (Phase A~E) + 학기 외 Future Work A~E 결과를 통합한 버전 (2026-05-14). 기존 Claude Code baseline 과 Codex multi-model cross-read 보충 결과의 provenance 를 분리해 기록했다. 지도교수 리뷰 반영 시 차기 버전 갱신._
