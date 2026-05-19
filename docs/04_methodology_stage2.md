@@ -90,7 +90,7 @@ The final reporting threshold is Stage 3 `>=2/3`. Stage 2 removes or demotes obv
 
 The headline metric is Stage 1 vs Stage 3 because Stage 3 is the final reporting decision.
 
-Stage 2 is not reported as a standalone automated classifier unless a separate Stage 2-only evaluation table is provided. The final `n=47` false-positive attribution table is in `docs/01_final_report.md`.
+Stage 2 is not reported as a standalone automated classifier unless a separate Stage 2-only evaluation table is provided. The final `n=47` false-positive attribution is explained in `../FINAL_REPORT.md`, with compact measured-claim tables in `01_final_summary.md`.
 
 ## 8. Automation Boundary
 

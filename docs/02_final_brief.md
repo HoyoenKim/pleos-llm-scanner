@@ -30,7 +30,8 @@ The results are measured on a security-value selected corpus, not a random Andro
 
 | Need | File |
 |---|---|
-| Full measured report | `01_final_report.md` |
+| Final research report | `../FINAL_REPORT.md` |
+| Compact archive summary | `01_final_summary.md` |
 | Representative cases and claim levels | `03_case_studies.md` |
 | Stage 2 method | `04_methodology_stage2.md` |
 | Limitations and cost | `06_limitations_and_costs.md` |

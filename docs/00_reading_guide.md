@@ -6,7 +6,7 @@ Read this directory as the final 15-week archive. Reinforcement experiments A-E 
 
 | Reader | Start Here | Then Read |
 |---|---|---|
-| First-time evaluator | `02_final_brief.md` | `01_final_report.md`, `03_case_studies.md` |
+| First-time evaluator | `../FINAL_REPORT.md` | `02_final_brief.md`, `03_case_studies.md` |
 | Method reviewer | `04_methodology_stage2.md` | `03_case_studies.md`, `06_limitations_and_costs.md` |
 | Reproducer | `../README.md` | `05_charts.md`, `10_project_inventory.md`, `../data/README.md`, `../src/README.md` |
 | Project maintainer | `10_project_inventory.md` | `07_remaining_work.md`, `08_completed_reinforcements.md` |
@@ -15,7 +15,8 @@ Read this directory as the final 15-week archive. Reinforcement experiments A-E 
 
 | File | Role |
 |---|---|
-| `01_final_report.md` | Full final report and measured claims |
+| `../FINAL_REPORT.md` | Reader-facing final research report |
+| `01_final_summary.md` | Compact measured-claim and archive summary |
 | `02_final_brief.md` | Compact evaluator-facing summary |
 | `03_case_studies.md` | Representative TP/FP/runtime-boundary cases |
 | `04_methodology_stage2.md` | Contextual verification method |

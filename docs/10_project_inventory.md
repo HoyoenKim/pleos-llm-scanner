@@ -14,9 +14,10 @@ This document states what belongs in the public repository and what stays local-
 
 | File | Role |
 |---|---|
+| `FINAL_REPORT.md` | reader-facing final research report |
 | `README.md` | repo map and quickstart |
 | `docs/00_reading_guide.md` | reading paths |
-| `docs/01_final_report.md` | measured-claim source of truth |
+| `docs/01_final_summary.md` | compact measured-claim and archive summary |
 | `docs/02_final_brief.md` | one-page evaluator brief |
 | `docs/03_case_studies.md` | representative findings and claim levels |
 | `docs/04_methodology_stage2.md` | contextual verification method |

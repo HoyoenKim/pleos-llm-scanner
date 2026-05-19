@@ -1,6 +1,8 @@
-# LLM-Assisted Security Analysis of PleOS/AAOS IVI APKs
+# Final Archive Summary
 
-This report is the measured-claim source of truth for the final 15-week archive.
+This document is the final archive summary for the completed 15-week PleOS / AAOS IVI APK security-analysis project.
+
+Use `../FINAL_REPORT.md` as the reader-facing research report and primary narrative. This summary preserves the compact measured-claim tables, coverage index, and artifact pointers that were previously carried in the docs-level final report.
 
 Completed reinforcement experiments A-E are integrated into the final result and are summarized only as supporting tracks here; detailed A-E records live in `08_completed_reinforcements.md`.
 

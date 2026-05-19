@@ -96,7 +96,7 @@ The result is that the first LLM pass is useful for recall-oriented candidate co
 
 The improvement is statistically visible on paired labels: McNemar exact test `p=0.0215`.
 
-Threat model, finding-unit rules, label construction, and final false-positive attribution are documented in `docs/01_final_report.md`.
+Threat model, finding-unit rules, label construction, and final false-positive attribution are documented in `FINAL_REPORT.md`. Compact measured-claim tables are preserved in `docs/01_final_summary.md`.
 
 The headline metric source of truth is `data/reports/aggregate/final_metrics_n47.md`. Some aggregate files are intentionally retained as historical/intermediate `n=28` measurement records; use the final `n=47` files for the final archive claims.
 
@@ -176,6 +176,8 @@ This section maps the research pipeline to the source files, configs, and report
 Use this section as a quick navigation map. `configs/`, `src/`, and `scripts/` contain the reusable pipeline pieces; `docs/` and `data/` contain the written results and evidence boundary.
 
 ```text
+FINAL_REPORT.md            reader-facing final research report
+README.md                  repository overview and quickstart
 configs/                  keyword rules, schemas, AAOS mapping, prompt protocols
 src/                      deterministic pipeline code
   evaluation/             metrics, ablation, bootstrap, and McNemar tooling
@@ -190,7 +192,7 @@ scripts/                  orchestration and research helpers
   research/               measurement and packaging scripts
   runtime_poc/            runtime PoC and recording helpers
   maintenance/            masking and result maintenance
-docs/                     final report, reading guide, methodology, cases, limitations
+docs/                     reading guide, compact summary, methodology, cases, limitations
 data/                     labels, aggregate results, public reports, charts, local-only evidence
 ```
 
@@ -263,7 +265,8 @@ Do not publish or force-add local-only APKs, decompiled code, screenshots, video
 |---|---|
 | [Documentation Reading Order](docs/00_reading_guide.md) | Recommended order for reading the report set and understanding which document answers which question. |
 | [Evaluator Brief](docs/02_final_brief.md) | Compact summary of the problem, pipeline, measured results, validation tracks, and disclosure boundary. |
-| [Full Research Report](docs/01_final_report.md) | Main report with research questions, method, evaluation results, automotive-security mapping, and limitations. |
+| [Final Research Report](FINAL_REPORT.md) | Main reader-facing report with research questions, method, evaluation results, automotive-security mapping, limitations, and artifact pointers. |
+| [Final Archive Summary](docs/01_final_summary.md) | Compact measured-claim summary, artifact coverage table, and report-inclusion checklist. |
 | [Finding Case Studies](docs/03_case_studies.md) | Representative true positives, false positives, and runtime-validation targets with public-safe evidence summaries. |
 | [Context Verification Method](docs/04_methodology_stage2.md) | Rules for checking first-pass candidates against manifests, caller chains, permissions, routes, and trust boundaries. |
 | [Chart Inventory](docs/05_charts.md) | List of chart artifacts used in the report, including their source data and regeneration path. |
