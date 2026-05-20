@@ -78,6 +78,23 @@ Do not commit:
 - portable binary tools
 - generated runtime harness outputs unless explicitly redacted and reviewed
 
+## Parent Workspace Submission Snapshot
+
+The parent course workspace is not a git repository and remains the place for
+submission artifacts such as PPTX/PDF files. As of the 2026-05-20 progress-deck
+sync:
+
+- the current progress-report deck is
+  `../pptx/자율주행연구프로젝트1_진행사항보고_2025311610_김호연_synced.pptx`;
+- the older week 2-14 progress PPTX files are archived under
+  `../_archive/progress_pptx_pre_sync_20260520/`;
+- temporary PPTX generation scripts were removed after preview verification;
+- older unused PPT generation scripts remain archived under
+  `../_archive/2026-05-19_workspace_cleanup/`.
+
+These files are local/submission artifacts, not public repo contents. Only this
+inventory note is tracked in `pleos-llm-scanner/` to preserve the boundary.
+
 ## Redaction Rule
 
 Public PleOS reports may keep metadata such as class name, line number, category, severity, rationale, AAOS/MASVS/TARA mapping, and high-level attack chain. They must not include proprietary code excerpts, secret literals, raw runtime logs, videos, or unredacted local evidence.
