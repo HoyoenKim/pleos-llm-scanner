@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-"""Generate final report figures for the PleOS LLM scanner archive.
+"""Generate final report figures for the PleOS LLM-assisted security archive.
 
 The main figure set explains the static-analysis experiment flow:
 
 1. JADX output is checked for Java/Kotlin readability.
 2. LLM-proposed candidate findings are filtered by Android context validation.
 3. Context-aware review changes the headline scan-quality metrics.
-4. Confirmed vulnerability findings are reviewed by APK and severity.
-5. The candidate-acceptance rule is justified.
+4. Final reported candidate findings are reviewed by APK and severity.
+5. The role-threshold adjudication rule is justified.
 
 Appendix figures provide composition, confidence interval, obfuscation,
 mapping, and cross-validation details.
@@ -72,16 +72,16 @@ def chart_category_distribution() -> None:
     width = 0.26
 
     fig, ax = plt.subplots(figsize=(11.2, 5.4))
-    b1 = ax.bar(x - width, confirmed, width, label="Confirmed vulnerabilities", color=BLUE)
+    b1 = ax.bar(x - width, confirmed, width, label="Final reported findings", color=BLUE)
     b2 = ax.bar(x, rejected, width, label="Rejected as false positives", color=ORANGE)
-    b3 = ax.bar(x + width, missed, width, label="Missed true vulnerability", color=GRAY)
+    b3 = ax.bar(x + width, missed, width, label="Missed reference-positive candidate", color=GRAY)
 
     ax.set_ylabel("Number of candidate findings")
     ax.set_title("Final Outcomes For LLM-Proposed Candidate Findings", pad=24)
     ax.text(
         0.5,
         1.03,
-        "47 candidate findings: 37 confirmed, 9 rejected as false positives, and 1 low-severity true vulnerability missed.",
+        "47 candidate findings: 37 final reported, 9 rejected as false positives, and 1 low-severity reference-positive candidate missed.",
         transform=ax.transAxes,
         ha="center",
         va="bottom",
@@ -104,7 +104,7 @@ def chart_category_distribution() -> None:
     _caption(
         fig,
         "Android context validation checks manifest exposure, caller reachability, permissions, route binding,\n"
-        "and framework controls before the final multi-role decision.",
+        "and framework controls before the final role-threshold decision.",
         y=0.105,
         size=8.5,
     )
@@ -121,7 +121,7 @@ def chart_category_distribution() -> None:
 
 # --------------------------------------------------------------------------- 02
 def chart_severity_heatmap() -> None:
-    """Confirmed vulnerabilities by APK and severity."""
+    """Final reported findings by APK and severity."""
     apks = [
         "VehicleControl [PleOS]",
         "SyncSyslog [PleOS]",
@@ -159,11 +159,11 @@ def chart_severity_heatmap() -> None:
     ax.set_xticklabels(sev_levels)
     ax.set_yticks(range(len(apks)))
     ax.set_yticklabels(apks, fontsize=9)
-    ax.set_title("Confirmed Vulnerability Findings By APK And Severity", pad=30)
+    ax.set_title("Final Reported Findings By APK And Severity", pad=30)
     ax.text(
         0.5,
         1.035,
-        "37 findings confirmed by the selected >=2-role rule; PleOS entries are project targets.",
+        "37 final reported candidate findings; PleOS entries are project targets.",
         transform=ax.transAxes,
         ha="center",
         va="bottom",
@@ -190,7 +190,7 @@ def chart_severity_heatmap() -> None:
     _caption(
         fig,
         "Use this as a follow-up priority map, not an ecosystem prevalence estimate.\n"
-        "The one missed low-severity true vulnerability is excluded from confirmed counts.",
+        "The one missed low-severity reference-positive candidate is excluded from final reported counts.",
         y=0.075,
         size=8.2,
     )
@@ -209,16 +209,16 @@ def chart_fp_rate_trend() -> None:
     width = 0.34
 
     fig, ax = plt.subplots(figsize=(8.8, 5.0))
-    b1 = ax.bar(x - width / 2, only_llm, width, label="LLM scan only", color=BLUE)
-    b2 = ax.bar(x + width / 2, verified, width, label="Context validation + multi-role review", color=ORANGE)
+    b1 = ax.bar(x - width / 2, only_llm, width, label="Report-all candidate baseline", color=BLUE)
+    b2 = ax.bar(x + width / 2, verified, width, label="Context validation + role-threshold rule", color=ORANGE)
     ax.set_ylabel("Score (%)")
     ax.set_xticks(x)
     ax.set_xticklabels(metrics)
-    ax.set_title("Context-Aware Review Improves Precision And F1", pad=28)
+    ax.set_title("Context-Aware Filtering Improves Precision And F1", pad=28)
     ax.text(
         0.5,
         1.035,
-        "Candidate-level decisions over 47 LLM-proposed findings.",
+        "Candidate-level adjudication over 47 LLM-proposed findings.",
         transform=ax.transAxes,
         ha="center",
         va="bottom",
@@ -237,7 +237,7 @@ def chart_fp_rate_trend() -> None:
 
     _caption(
         fig,
-        "Context-aware review removes the measured false positives while missing one low-severity issue.\n"
+        "Context-aware filtering removes the measured false positives while missing one low-severity reference-positive candidate.\n"
         "McNemar exact p=0.0215 compares paired report/not-report decisions for the same 47 candidates.",
         y=0.075,
         size=8.4,
@@ -319,11 +319,11 @@ def chart_deobf_accuracy_trend() -> None:
 
 # --------------------------------------------------------------------------- 05
 def chart_ablation_bars() -> None:
-    """Candidate acceptance rule by three-role review."""
+    """Candidate reportability rule by role-threshold adjudication."""
     labels = [
-        ">=1 role\nagrees",
-        ">=2 roles\nagree",
-        "3/3 roles\nagree",
+        ">=1 role lens\nreports",
+        ">=2 role lenses\nreport",
+        "3/3 role lenses\nreport",
     ]
     precision = [84.4, 100.0, 100.0]
     recall = [100.0, 97.4, 86.8]
@@ -340,11 +340,11 @@ def chart_ablation_bars() -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.set_ylim(0, 122)
-    ax.set_title("Multi-Role LLM Review: Precision-Recall Trade-Off By Consensus Threshold", pad=40)
+    ax.set_title("Role-Threshold Review: Precision-Recall Trade-Off", pad=40)
     ax.text(
         0.5,
         1.070,
-        "47 candidate findings reviewed by role-prompted attacker, defender, and in-vehicle infotainment (IVI)-domain reviewers.",
+        "47 candidate findings evaluated with attacker, defender, and IVI-domain role prompts.",
         transform=ax.transAxes,
         ha="center",
         va="bottom",
@@ -364,8 +364,8 @@ def chart_ablation_bars() -> None:
 
     _caption(
         fig,
-        "The >=1 threshold leaves 7 false positives; the 3/3 threshold misses 5 true vulnerabilities.\n"
-        "The selected >=2 threshold confirms 37 findings with 0 false positives and 1 low-severity false negative.",
+        "The >=1 threshold leaves 7 false positives; the 3/3 threshold misses 5 reference-positive candidates.\n"
+        "The selected >=2 threshold removes all observed false-positive candidates while missing 1 low-severity reference-positive candidate.",
         y=0.070,
         size=8.3,
     )
@@ -454,7 +454,7 @@ def appendix_bootstrap_ci() -> None:
     ax.set_yticklabels(metrics, fontsize=9)
     ax.invert_yaxis()
     ax.set_xlim(0, 104)
-    ax.set_title("Bootstrap Uncertainty For The LLM-Only Candidate Scan", pad=22)
+    ax.set_title("Bootstrap Uncertainty For The Report-All Candidate Baseline", pad=22)
     ax.text(
         0.5,
         1.035,
@@ -556,7 +556,7 @@ def appendix_obfuscation_score_distribution() -> None:
 def appendix_mapping_summary() -> None:
     labels = _load_json("data/ground_truth/combined_labels.json")
     assert isinstance(labels, dict)
-    verified = [r for r in labels["labels"] if r.get("is_real")]
+    verified = [r for r in labels["labels"] if r.get("is_real") and r.get("id") != "vc-7"]
     section_by_category = {
         "crypto": "Credential and secret protection",
         "hardcoded": "Credential and secret protection",
@@ -579,12 +579,12 @@ def appendix_mapping_summary() -> None:
     ax.set_yticks(np.arange(len(order)))
     ax.set_yticklabels(order, fontsize=9)
     ax.invert_yaxis()
-    ax.set_xlabel("Reference vulnerability findings")
+    ax.set_xlabel("Final reported candidate findings")
     ax.set_title("AAOS/MASVS-Aligned Control-Area Summary", pad=22)
     ax.text(
         0.5,
         1.035,
-        "38 reference vulnerability findings grouped by primary Android security control area.",
+        "37 final reported findings grouped by primary Android security control area.",
         transform=ax.transAxes,
         ha="center",
         va="bottom",
@@ -599,7 +599,7 @@ def appendix_mapping_summary() -> None:
 
     _caption(
         fig,
-        "This maps the manually verified reference set, not AAOS prevalence; the primary >=2-role rule confirms 37 of these 38.",
+        "This maps the final reported set, not AAOS prevalence; the missed low-severity reference-positive candidate is excluded.",
         y=0.045,
     )
     fig.subplots_adjust(left=0.29, bottom=0.21, top=0.76)
@@ -622,23 +622,23 @@ def appendix_validation_track_comparison() -> None:
     codex_best = codex["metrics"]["codex_models"]["gpt-5.5"]
     rows = [
         [
-            "Primary multi-role\nLLM review",
-            "Candidate finding\nconfirm/reject quality",
+            "Primary role-threshold\nadjudication",
+            "Candidate finding\nreport/reject quality",
             f"TP {main['tp']}, FP {main['fp']}, FN {main['fn']}\nagainst 38-reference set;\nF1 {main['f1'] * 100:.1f}%",
             "Main static\nresult",
         ],
         [
             "Paired\ncomparison",
-            "LLM-only scan vs\ncontext-aware review",
+            "Report-all baseline vs\nfinal filtering rule",
             f"McNemar exact\np={mcnemar:.4f}",
             "Same-row\nimprovement test",
         ],
         [
             "Independent LLM\ncross-review",
             "Model/prompt\nrobustness check",
-            f"2-of-3 consensus F1:\n{codex_2of3['f1'] * 100:.1f}%;\n"
-            f"best single-reviewer F1:\n{codex_best['f1'] * 100:.1f}%",
-            "Did not outperform\ncalibrated review",
+            f"2-of-3 role-threshold F1:\n{codex_2of3['f1'] * 100:.1f}%;\n"
+            f"best single-lens F1:\n{codex_best['f1'] * 100:.1f}%",
+            "Did not outperform\nselected workflow",
         ],
         [
             "Native-code\nboundary scan",
