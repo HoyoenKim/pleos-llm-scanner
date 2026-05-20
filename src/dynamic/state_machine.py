@@ -28,7 +28,7 @@ State graph (deterministic):
 
 Usage:
     python src/dynamic/state_machine.py --finding vc-5 \
-        --report data/reports/per_apk_local/ai.umos.vehiclecontrol_20260429.json
+        --report data/reports/per_apk_local/ai.umos.vehiclecontrol.json
 
 The CLI prints the deterministic state-trace and (if --frida-script provided)
 launches the hook script via the local frida-tools.

@@ -156,7 +156,7 @@ def main() -> None:
     payload = {
         "measurement_id": "random_sample_baseline",
         "description": "Selection-bias baseline — 본 학기 보안 가치 기반 선정 PleOS 3 APK vs 무작위 3 APK 의 priority class count 비교 (selection bias 정량).",
-        "measured_at": "2026-06-07",
+        "measured_at": "2026-05-06",
         "scope": f"random pool size = {len(pool)} APKs (207 total, security-picked 3 excluded). Sample seed=42.",
         "security_picked": secs,
         "random_sample_seed_42": rands,
@@ -179,7 +179,7 @@ def main() -> None:
     md = [
         "# Random-sample selection-bias baseline",
         "",
-        f"_Measured: 2026-06-07 / random pool: {len(pool)} APKs (PleOS 207 minus 3 security-picked) / seed: 42_",
+        f"_Measured: 2026-05-06 / random pool: {len(pool)} APKs (PleOS 207 minus 3 security-picked) / seed: 42_",
         "",
         "## 본 학기 보안 가치 기반 PleOS 3 APK",
         "",

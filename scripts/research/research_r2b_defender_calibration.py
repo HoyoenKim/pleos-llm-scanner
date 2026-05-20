@@ -125,7 +125,7 @@ def main() -> None:
     payload = {
         "measurement_id": "R2.b'",
         "description": "Effect of defender prompt selectivity calibration on multi-perspective ensemble diversity (n=28). attacker / domain_expert verdicts unchanged; defender re-derived applying selectivity rules added 2026-05-06.",
-        "measured_at": "2026-06-07",
+        "measured_at": "2026-05-06",
         "scope": f"n={n} findings (PleOS 15 + MASTG 4 + InsecureBankv2 9)",
         "flag_counts_per_perspective": flag_counts,
         "consensus_count_distribution_calibrated": cdist,
@@ -168,7 +168,7 @@ def main() -> None:
     lines = [
         "# R2.b' -- Defender prompt selectivity calibration 효과 검증 (n=28)",
         "",
-        f"_Measured: 2026-06-07 / scope: n={n} findings_",
+        f"_Measured: 2026-05-06 / scope: n={n} findings_",
         "",
         "## 시각별 flag rate -- 보강 전후 비교",
         "",

@@ -32,11 +32,11 @@ APK ── jadx ──► obf check ──► detection ──► verification �
 
 The original plan was a multi-model ensemble (Claude + GPT-4) but two environment constraints ruled it out: a Claude Code session is bound to a single model, and the project has no external paid-API budget to fan out to other providers. Instead, the same Opus 4.7 model is invoked **three times with three different role prompts** (attacker / defender / domain expert) and their verdicts are merged. Diversity comes from the prompts, not from different models.
 
-**Default consensus threshold = ≥ 2/3** (a finding is accepted as a true positive when at least two of the three perspectives flag it). This threshold gave the best F1 in the Variant B ablation (combined n=19 → F1 0.966).
+**Default consensus threshold = ≥ 2/3** (a finding is accepted as a true positive when at least two of the three perspectives flag it). This threshold gave the best F1 in the initial Variant B ablation (combined n=19 → F1 0.966) and remains the final archive rule (combined n=47 → precision 100.0%, recall 97.4%, F1 0.987).
 
 ## Output schema
 
-JSON output of every prompt follows `../result_schema.json`. The Stage 3 merged output lives at `data/reports/local/stage3_ensemble_<DATE>.json`.
+JSON output of every prompt follows `../result_schema.json`. The final Stage 3 merged output lives at `data/reports/local/stage3_ensemble.json`; per-APK or run-specific local outputs may still use date suffixes.
 
 ## Naming convention
 

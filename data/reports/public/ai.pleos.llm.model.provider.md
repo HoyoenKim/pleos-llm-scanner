@@ -2,7 +2,7 @@
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
 >
-> **Final archive note**: this is a historical 2026-04-29 Stage 1 snapshot. The "next-step" items below record the analysis state on that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
+> **Final archive note**: this is a historical 2026-04-29 Stage 1 snapshot. The "next-step" items below record the analysis state on that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_summary.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.pleos.llm.model.provider` (PleOS LLM Model Provider)
 
@@ -70,8 +70,8 @@
 
 ## Output artefacts
 
-- JSON: `data/reports/ai.pleos.llm.model.provider_20260429.json`
-- Markdown (this file): `data/reports/ai.pleos.llm.model.provider_20260429.md`
+- JSON: `data/reports/public/ai.pleos.llm.model.provider.json`
+- Markdown (this file): `data/reports/public/ai.pleos.llm.model.provider.md`
 
 ## 당시 next-step 기록
 

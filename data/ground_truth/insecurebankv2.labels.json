@@ -114,6 +114,6 @@
     "fp": 0,
     "fn": 0,
     "uncertain": 0,
-    "computed_by": "src/evaluation/eval.py against this file + data/reports/external/InsecureBankv2_20260507.json"
+    "computed_by": "src/evaluation/eval.py against this file + data/reports/external/InsecureBankv2.json"
   }
 }

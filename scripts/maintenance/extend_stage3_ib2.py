@@ -18,7 +18,7 @@ NEW = [
         "consensus_count": 3, "consensus_perspectives": ["attacker", "defender", "domain_expert"],
         "consensus_class": "strong_TP", "severity": "high", "confidence": 0.95,
         "title": "Cleartext HTTP for login POST — 3/3 strong TP",
-        "evidence": "<redacted: external public corpus — see data/reports/external/InsecureBankv2_20260507.json>",
+        "evidence": "<redacted: external public corpus — see data/reports/external/InsecureBankv2.json>",
         "rationale_merged": "All three perspectives confirm. Attacker: trivial MITM credential capture on any non-HTTPS hop. Defender: TLS 1.2+ + network_security_config + certificate pinning required. Domain expert: MASVS-NETWORK-1 canonical violation; in banking context this is direct credential / financial theft.",
         "per_perspective": {
             "attacker": {"severity": "high", "verdict": "MITM capture trivial", "attack_chain": ["intercept HTTP POST /login", "extract username/password"]},

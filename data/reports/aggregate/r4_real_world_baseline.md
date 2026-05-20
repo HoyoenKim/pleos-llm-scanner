@@ -44,7 +44,7 @@ n=3 → n=6 확장 결과 plausibility 분포가 크게 변동. 추가 sample 3�
 | **np-5** | `C1188w` (time format builder) | **0.95** | **EXCELLENT** | Java `DateTimeFormatterBuilder` 와 27 method 중 19 (70%) 1:1 매칭. static HashMap pattern char → ERA/YEAR/... 매핑 |
 | **np-6** | `C1290q` (CHM TreeBin) | **0.95** | **EXCELLENT** | Java `ConcurrentHashMap.TreeBin` 과 9 method 모두 1:1 매칭. `lockState` 필드명까지 jadx 가 복원 |
 
-상세 entry 는 [`data/deobf/NewPipe_renames_20260511.json`](../../deobf/NewPipe_renames_20260511.json) (초기 3 sample 포함).
+상세 entry 는 [`data/deobf/NewPipe_renames.json`](../../deobf/NewPipe_renames.json) (초기 3 sample 포함).
 
 ### Plausibility 분포 (n=3 → n=6)
 
@@ -89,7 +89,7 @@ n=3 → n=6 확장 결과 plausibility 분포가 크게 변동. 추가 sample 3�
 python scripts/_r4_pick_targets.py    # NewPipe 비즈니스 vs desugar HIGH 클래스 분류
 # → top 15 HIGH desugar sample 후보 확인
 # Stage 0 LLM rename = Claude Code 세션에서 직접 적용 (configs/prompts/stage_b_deobfuscate.md)
-# 결과는 data/deobf/NewPipe_renames_20260511.json (n=6 종합)
+# 결과는 data/deobf/NewPipe_renames.json (n=6 종합)
 ```
 
 ## 변경 이력

@@ -4,7 +4,7 @@
   "stage": "stage0_deobfuscate",
   "model": "claude-opus-4-7",
   "analyzed_at": "2026-05-11 (extension; initial 3 sample analyzed 2026-05-06)",
-  "supersedes": "data/deobf/NewPipe_renames_20260607.json (file name had erroneous future date; same content preserved + new samples appended)",
+  "supersedes": "legacy initial 3-sample file with an erroneous future date; same content preserved here with three additional samples appended",
   "scope_note": "R4 보강 — real-world ProGuard 활성 OSS (NewPipe v0.27.6) 의 HIGH composite 클래스에 Stage 0 LLM rename 적용. NewPipe 의 비즈니스 패키지 (org.schabi.newpipe.*) 안 HIGH 클래스는 1/973 = 0.1% 만 존재. 나머지 HIGH 41 개는 모두 p004j$.* (Android Desugar library) 의 jadx-prefix 클래스. 본 sample 은 desugar library 측 sample n=6 (initial 3 + extension 3). Stage 0 rename 의 plausibility 정확도가 sample 당 contextual hint density 에 어떻게 의존하는지 정량.",
   "input_filter": "composite_obf_score >= 0.85 (top-tier HIGH) within p004j$.* package, 다양한 sub-package 분산 (util / sun.misc / util.concurrent / nio / time)",
   "renames": [

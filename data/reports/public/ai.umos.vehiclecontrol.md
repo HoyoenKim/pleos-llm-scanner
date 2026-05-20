@@ -2,7 +2,7 @@
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
 >
-> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
+> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_summary.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.umos.vehiclecontrol` (VehicleControl.apk)
 
@@ -150,8 +150,8 @@ This class is a **privileged primitive**: it can grant or revoke runtime permiss
 
 ## Output artefacts
 
-- JSON (machine-readable, schema = `configs/result_schema.json`): `data/reports/ai.umos.vehiclecontrol_20260429.json`
-- Markdown (this file): `data/reports/ai.umos.vehiclecontrol_20260429.md`
+- JSON (machine-readable, schema = `configs/result_schema.json`): `data/reports/public/ai.umos.vehiclecontrol.json`
+- Markdown (this file): `data/reports/public/ai.umos.vehiclecontrol.md`
 
 ## Stage 2 — Caller analysis (2026-04-29 same session)
 
@@ -197,7 +197,7 @@ This class is a **privileged primitive**: it can grant or revoke runtime permiss
 
 ## Stage 2.b — Deep-link verification (2026-04-30)
 
-상세 audit는 `docs/stage2b_deeplink_verification_20260430.md` 참조.
+상세 audit는 아래 Stage 2.b 표에 통합했다.
 
 ### 검증 결과
 

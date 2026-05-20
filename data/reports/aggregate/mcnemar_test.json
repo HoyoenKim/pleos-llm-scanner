@@ -1,6 +1,6 @@
 {
   "measurement_id": "R1.c",
-  "description": "Paired McNemar test for Stage 1 vs Stage 3 (≥2/3 consensus) classification on final combined GT (n=47).",
+  "description": "Paired McNemar test for Stage 1 vs Stage 3 (≥2/3 consensus) classification on combined GT (n=47).",
   "measured_at": "2026-05-14",
   "scope": "n=47",
   "contingency": {
@@ -12,7 +12,7 @@
   "chi_sq_uncorrected": 6.4,
   "p_value_chi_sq_df1": 0.0114,
   "p_value_exact_binomial_two_tailed": 0.0215,
-  "interpretation": "b=1, c=9 (b+c=10). With small discordant pairs, exact binomial is preferred. p_exact = 0.0215. At α=0.05, the difference between Stage 1 and Stage 3 is statistically significant on the final n=47 corpus. Stage 3 corrected 9 Stage 1 false positives while introducing one low-severity missed report; additional n>=60 expansion would further improve power.",
+  "interpretation": "b=1, c=9 (b+c=10). With small discordant pairs, exact binomial is preferred. p_exact = 0.0215. At α=0.05, the difference between Stage 1 and Stage 3 is statistically significant on this labelled corpus.",
   "rows": [
     {
       "id": "vc-1",

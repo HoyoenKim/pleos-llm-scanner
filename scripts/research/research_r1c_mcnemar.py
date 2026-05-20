@@ -1,4 +1,4 @@
-"""R1.c — Paired McNemar test for Stage 1 vs Stage 3 (n=28).
+"""R1.c — Paired McNemar test for Stage 1 vs Stage 3.
 
 본 학기 처음으로 RQ1 의 Stage 1 → Stage 3 향상이 우연이 아닌가 통계 검정.
 
@@ -94,8 +94,8 @@ def main() -> None:
 
     payload = {
         "measurement_id": "R1.c",
-        "description": "Paired McNemar test for Stage 1 vs Stage 3 (≥2/3 consensus) classification on combined GT (n=28).",
-        "measured_at": "2026-06-07",
+        "description": f"Paired McNemar test for Stage 1 vs Stage 3 (≥2/3 consensus) classification on combined GT (n={n}).",
+        "measured_at": "2026-05-14",
         "scope": f"n={n}",
         "contingency": {
             "a_s1_correct_s3_correct": a,
@@ -111,9 +111,7 @@ def main() -> None:
             f"is preferred. p_exact = {round(p_exact, 4)}. "
             f"At α=0.05, the difference between Stage 1 and Stage 3 is "
             f"{'statistically significant' if p_exact < 0.05 else 'NOT statistically significant'} "
-            "— the corpus n=28 is too small to reject the null of marginal homogeneity. "
-            "Sample expansion to n ≥ 50 (DIVA / additional commercial corpora) is needed for "
-            "a powered test."
+            "on this labelled corpus."
         ),
         "rows": rows,
     }
@@ -123,9 +121,9 @@ def main() -> None:
     )
 
     md = [
-        "# R1.c — Paired McNemar test (Stage 1 vs Stage 3, n=28)",
+        f"# R1.c — Paired McNemar test (Stage 1 vs Stage 3, n={n})",
         "",
-        f"_Measured: 2026-06-07 / scope: n={n}_",
+        f"_Measured: 2026-05-14 / scope: n={n}_",
         "",
         "## 2x2 contingency table",
         "",
@@ -149,15 +147,15 @@ def main() -> None:
     if p_exact < 0.05:
         md.append("p < 0.05 → Stage 1 과 Stage 3 의 paired 분류 일치율 차이는 **통계적으로 유의**. Stage 3 의 향상이 우연이 아니라는 첫 증거.")
     else:
-        md.append(f"p_exact = **{p_exact:.4f}** → α=0.05 기준으로 **통계적 유의성 미달**. n=28, b+c={bc} 의 표본 크기에서는 검정 power 가 부족하다. Stage 1 과 Stage 3 의 paired 차이가 우연이 아니라는 결론을 통계적으로 도출하기에는 표본이 작다.")
+        md.append(f"p_exact = **{p_exact:.4f}** → α=0.05 기준으로 **통계적 유의성 미달**. n={n}, b+c={bc} 의 표본 크기에서는 검정 power 가 부족하다. Stage 1 과 Stage 3 의 paired 차이가 우연이 아니라는 결론을 통계적으로 도출하기에는 표본이 작다.")
+    significance_sentence = "이는 통계적으로 유의하다." if p_exact < 0.05 else "이는 통계적으로 유의하지 않다."
     md += [
         "",
-        "## 한계 + Future Work",
+        "## 한계 + follow-up",
         "",
         "- McNemar's test 는 paired discordant pair 수 (b + c) 가 작으면 power 가 낮다. 본 측정 b+c = "
         f"{bc} 로 매우 작음.",
-        "- n=28 (combined GT) 까지 확장된 corpus 에서도 이 한계가 명확. 다음 단계 R1.d (n ≥ 50) "
-        "확장 후 재측정 필요.",
+        f"- 현재 corpus 는 n={n} 이며, 더 넓은 독립 label set 으로 재측정하면 신뢰구간과 검정 power 를 추가로 안정화할 수 있다.",
         "- 본 측정은 단순 paired 검정. effect size (odds ratio of discordant pairs = b/c) 도 함께 보고:",
         f"  - b/c = {b}/{c} → Stage 3 가 Stage 1 의 오류를 잡은 비율이 더 큼 (c > b 이면 Stage 3 가 더 좋음).",
         "",
@@ -165,8 +163,8 @@ def main() -> None:
         "",
         f"- 본 학기 데이터에서 Stage 3 가 Stage 1 의 오류 {c} 건 ({c}/{n} = {round(100*c/n,1)}%) 을 추가로 정확히 처리.",
         f"- Stage 1 이 정답인데 Stage 3 가 누락한 케이스 b = {b} 건 ({b}/{n} = {round(100*b/n,1)}%).",
-        f"- net 효과: Stage 3 가 정답 케이스를 추가로 +{c-b} 건 더 잡았으나 (n={n}, p_exact={p_exact:.4f}) 이는 통계적으로 유의하지 않다.",
-        f"- 정직한 결론: bootstrap CI 좁힘 (R1.b 결과) 은 측정값의 분포를 좁혔지만, paired test 의 통계적 유의성 (R1.c) 는 본 표본 크기로 검출 불가. 본 학기의 'Stage 3 향상' 주장은 **effect size 는 양수 (Stage 3 의 net 정정 +{c-b}건) 이지만 표본 우연성 배제는 미완**.",
+        f"- net 효과: Stage 3 가 정답 케이스를 추가로 +{c-b} 건 더 잡았다 (n={n}, p_exact={p_exact:.4f}). {significance_sentence}",
+        f"- 정직한 결론: bootstrap CI 좁힘 (R1.b) 과 paired test (R1.c) 를 함께 보고한다. 본 측정에서 Stage 3 의 net 정정은 +{c-b}건이며, p_exact={p_exact:.4f}.",
         "",
     ]
     (OUT / "mcnemar_test.md").write_text("\n".join(md), encoding="utf-8")

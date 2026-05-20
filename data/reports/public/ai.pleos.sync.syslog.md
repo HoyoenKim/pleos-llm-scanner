@@ -2,7 +2,7 @@
 >
 > 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. 분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지.
 >
-> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "Stage-2 follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_report.md` and `../../../docs/03_case_studies.md`.
+> **Final archive note**: this is a historical 2026-04-29 Stage 1/2 snapshot. Inline "Stage-2 follow-up" labels below record what was still open at that date; they are not current remaining work. Final 15-week conclusions are summarized in `../../../docs/01_final_summary.md` and `../../../docs/03_case_studies.md`.
 
 # Stage 1 Analysis — `ai.pleos.sync.syslog` (SysLogService)
 
@@ -190,8 +190,8 @@ The cryptographic primitives themselves are well-chosen:
 
 ## Output artefacts
 
-- JSON (machine-readable, schema = `configs/result_schema.json`): `data/reports/ai.pleos.sync.syslog_20260429.json`
-- Markdown (this file): `data/reports/ai.pleos.sync.syslog_20260429.md`
+- JSON (machine-readable, schema = `configs/result_schema.json`): `data/reports/public/ai.pleos.sync.syslog.json`
+- Markdown (this file): `data/reports/public/ai.pleos.sync.syslog.md`
 
 ## 당시 next-step 기록 (B-3.c 후)
 

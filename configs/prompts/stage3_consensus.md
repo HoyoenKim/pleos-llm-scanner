@@ -63,4 +63,4 @@ A multi-model ensemble (e.g. Opus + Sonnet + Haiku, or Claude + GPT-4) was consi
 
 ## Final archive note
 
-The automated pipeline keeps this multi-prompt rule because it is reproducible in one local analysis session. A later Codex 3-model cross-read was completed as an independent validation track and is summarized in `docs/08_completed_reinforcements.md`; it did not replace this deterministic consensus rule.
+The automated pipeline keeps this multi-prompt rule because it is reproducible in one local analysis session. A later Codex 3-model cross-read was completed as an independent validation track and is summarized in `../../docs/08_completed_reinforcements.md`; it did not replace this deterministic consensus rule.

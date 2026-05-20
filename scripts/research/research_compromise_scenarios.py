@@ -9,8 +9,8 @@ into a defensive scenario matrix:
 3. what a safe local/owner-authorized PoC would need to verify next.
 
 Outputs:
-  data/reports/runtime_local/compromise_scenarios_20260514.json
-  data/reports/runtime_local/compromise_scenarios_20260514.md
+  data/reports/runtime_local/compromise_scenarios.json
+  data/reports/runtime_local/compromise_scenarios.md
 """
 from __future__ import annotations
 
@@ -34,8 +34,8 @@ REPORTS_DIR = ROOT / "data" / "reports"
 GT_PATH = ROOT / "data" / "ground_truth" / "combined_labels.json"
 STAGE3_PATH = REPORTS_DIR / "local" / "stage3_ensemble.json"
 NATIVE_FINDINGS_PATH = REPORTS_DIR / "native_local" / "native_deep_dive_findings.json"
-OUT_JSON = REPORTS_DIR / "runtime_local" / "compromise_scenarios_20260514.json"
-OUT_MD = REPORTS_DIR / "runtime_local" / "compromise_scenarios_20260514.md"
+OUT_JSON = REPORTS_DIR / "runtime_local" / "compromise_scenarios.json"
+OUT_MD = REPORTS_DIR / "runtime_local" / "compromise_scenarios.md"
 
 KST = timezone(timedelta(hours=9))
 

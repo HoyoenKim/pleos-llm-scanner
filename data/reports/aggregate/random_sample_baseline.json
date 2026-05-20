@@ -1,7 +1,7 @@
 {
   "measurement_id": "random_sample_baseline",
   "description": "Selection-bias baseline — 본 학기 보안 가치 기반 선정 PleOS 3 APK vs 무작위 3 APK 의 priority class count 비교 (selection bias 정량).",
-  "measured_at": "2026-06-07",
+  "measured_at": "2026-05-06",
   "scope": "random pool size = 204 APKs (207 total, security-picked 3 excluded). Sample seed=42.",
   "security_picked": [
     {

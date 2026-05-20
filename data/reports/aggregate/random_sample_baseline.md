@@ -1,6 +1,6 @@
 # Random-sample selection-bias baseline
 
-_Measured: 2026-06-07 / random pool: 204 APKs (PleOS 207 minus 3 security-picked) / seed: 42_
+_Measured: 2026-05-06 / random pool: 204 APKs (PleOS 207 minus 3 security-picked) / seed: 42_
 
 ## 본 학기 보안 가치 기반 PleOS 3 APK
 

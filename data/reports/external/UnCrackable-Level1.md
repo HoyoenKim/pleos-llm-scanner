@@ -78,8 +78,8 @@ Log.d("CodeCheck", "AES error:" + e.getMessage());
 
 ## Output artefacts
 
-- JSON: `data/reports/external/UnCrackable-Level1_20260430.json`
-- Markdown (this file): `data/reports/external/UnCrackable-Level1_20260430.md`
+- JSON: `data/reports/external/UnCrackable-Level1.json`
+- Markdown (this file): `data/reports/external/UnCrackable-Level1.md`
 
 ## Next: ground-truth labelling
 

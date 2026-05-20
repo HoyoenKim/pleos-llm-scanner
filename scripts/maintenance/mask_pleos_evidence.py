@@ -33,9 +33,9 @@ STAGE3_SRC = ROOT / "data" / "reports" / "local"
 DST = ROOT / "data" / "reports" / "public"
 
 PLEOS_PER_APK = [
-    "ai.umos.vehiclecontrol_20260429",
-    "ai.pleos.sync.syslog_20260429",
-    "ai.pleos.llm.model.provider_20260429",
+    "ai.umos.vehiclecontrol",
+    "ai.pleos.sync.syslog",
+    "ai.pleos.llm.model.provider",
 ]
 
 REDACT_TEXT = "<redacted: PleOS proprietary code>"
@@ -93,6 +93,14 @@ def mask_md(path: Path, out_path: Path, banner: str) -> None:
     out_path.write_text(banner + "\n\n" + masked, encoding="utf-8")
 
 
+def find_raw_report(stem: str, suffix: str) -> Path | None:
+    exact = SRC / f"{stem}{suffix}"
+    if exact.exists():
+        return exact
+    candidates = sorted(SRC.glob(f"{stem}_*{suffix}"))
+    return candidates[-1] if candidates else None
+
+
 def main() -> None:
     DST.mkdir(parents=True, exist_ok=True)
 
@@ -105,14 +113,14 @@ def main() -> None:
         "> 본 파일은 contractor IP 보호 정책에 따라 코드 인용을 redact 한 공개용 사본이다. "
         "분석 메타데이터 (class, line, category, severity, rationale, AAOS 매핑) 는 그대로 유지."
     )
-    for stem in PLEOS_PER_APK:
-        src_json = SRC / f"{stem}.json"
-        src_md = SRC / f"{stem}.md"
-        if src_json.exists():
-            mask_json_per_apk(src_json, DST / f"{stem}.json")
+    for public_stem in PLEOS_PER_APK:
+        src_json = find_raw_report(public_stem, ".json")
+        src_md = find_raw_report(public_stem, ".md")
+        if src_json:
+            mask_json_per_apk(src_json, DST / f"{public_stem}.json")
             print(f"masked: {src_json.name} -> public/")
-        if src_md.exists():
-            mask_md(src_md, DST / f"{stem}.md", banner_per_apk)
+        if src_md:
+            mask_md(src_md, DST / f"{public_stem}.md", banner_per_apk)
             print(f"masked: {src_md.name} -> public/")
 
     s3_json = STAGE3_SRC / "stage3_ensemble.json"
@@ -147,8 +155,8 @@ def main() -> None:
         "## 파일",
         "",
     ]
-    for stem in PLEOS_PER_APK:
-        idx.append(f"- [`{stem}.md`]({stem}.md) + [`.json`]({stem}.json)")
+    for public_stem in PLEOS_PER_APK:
+        idx.append(f"- [`{public_stem}.md`]({public_stem}.md) + [`.json`]({public_stem}.json)")
     idx.append("- [`stage3_ensemble.md`](stage3_ensemble.md) + [`.json`](stage3_ensemble.json)")
     idx.append("")
     idx.append("## 재현")

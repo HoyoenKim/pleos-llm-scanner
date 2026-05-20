@@ -41,18 +41,13 @@ usb-2 FP 1건 추가로 Precision 85.7% → 83.9% 약간 후퇴. 그러나 PleOS
 ```bash
 python src/evaluation/eval.py \
     --labels data/ground_truth/combined_labels.json \
-    --reports 'data/reports/ai.umos.vehiclecontrol_20260429.json' \
-              'data/reports/ai.pleos.sync.syslog_20260429.json' \
-              'data/reports/ai.pleos.llm.model.provider_20260429.json' \
-              'data/reports/external/UnCrackable-Level1_20260430.json' \
-              'data/reports/external/UnCrackable-Level3_20260430.json' \
-              'data/reports/external/InsecureBankv2_20260507.json' \
-              'data/reports/android.car.usb.handler_20260511.json' \
-              'data/reports/com.android.statementservice_20260511.json' \
-              'data/reports/ai.pleos.playground.account_20260511.json' \
-              'data/reports/ai.umos.appmarket_20260514.json' \
-              'data/reports/ai.umos.ambientai_20260514.json' \
-              'data/reports/ai.umos.maps_20260514.json' \
+    --reports 'data/reports/public/ai.umos.vehiclecontrol.json' \
+              'data/reports/public/ai.pleos.sync.syslog.json' \
+              'data/reports/public/ai.pleos.llm.model.provider.json' \
+              'data/reports/external/UnCrackable-Level1.json' \
+              'data/reports/external/UnCrackable-Level3.json' \
+              'data/reports/external/InsecureBankv2.json' \
+              data/reports/per_apk_local/*.json \
     --by-stage stage1 \
     --bootstrap 1000 \
     --bootstrap-ci 0.95 \

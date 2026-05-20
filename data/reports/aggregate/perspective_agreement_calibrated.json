@@ -1,7 +1,7 @@
 {
   "measurement_id": "R2.b'",
   "description": "Effect of defender prompt selectivity calibration on multi-perspective ensemble diversity (n=28). attacker / domain_expert verdicts unchanged; defender re-derived applying selectivity rules added 2026-05-06.",
-  "measured_at": "2026-06-07",
+  "measured_at": "2026-05-06",
   "scope": "n=28 findings (PleOS 15 + MASTG 4 + InsecureBankv2 9)",
   "flag_counts_per_perspective": {
     "attacker": 21,

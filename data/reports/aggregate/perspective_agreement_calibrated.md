@@ -1,6 +1,6 @@
 # R2.b' -- Defender prompt selectivity calibration 효과 검증 (n=28)
 
-_Measured: 2026-06-07 / scope: n=28 findings_
+_Measured: 2026-05-06 / scope: n=28 findings_
 
 ## 시각별 flag rate -- 보강 전후 비교
 
