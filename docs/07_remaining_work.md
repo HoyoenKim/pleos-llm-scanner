@@ -2,6 +2,19 @@
 
 This file lists only work that remains after the final 15-week evidence base. Completed reinforcement experiments A-E are not unresolved items; see `08_completed_reinforcements.md`.
 
+## 2026-05-20 Paper Review TODO
+
+The 2026-05-20 paper draft is suitable to freeze as a public-safe methodology archive or workshop-ready technical report. The main remaining weakness is not framing, but evaluation independence. Do not convert existing `stage2_gt` or project-derived reference labels into a claimed context-validation-only classifier result; that would reintroduce circularity. The items below are for a strengthened peer-review version.
+
+| Item | Why It Matters | Next Action | Done Criterion |
+|---|---|---|---|
+| Context-validation-only ablation | The paper argues that Android context evidence is the reportability authority, but the current metric table reports only report-all and role-threshold rules | Build a fresh 47-row decision sheet that records context-validation-only report/reject decisions independently from final role votes | TP/FP/FN, precision, recall, F1, and disagreement cases reported without using `stage2_gt` as a shortcut |
+| Trigger-only and manifest-rule baselines | Current baseline design is thoughtful but not measured | Implement deterministic trigger-only and manifest-rule decision sheets over the same candidate units | Baseline rows added with fair comparison unit, metric table, and error analysis |
+| Semi-blind human label review | Project-derived labels remain the largest peer-review attack surface | Have independent analysts label the 47 candidates using public-safe evidence packages without seeing final verdicts | Agreement rate, Cohen's kappa, uncertain policy, disagreement categories, and adjudicated label changes reported |
+| Cross-review missed-case analysis | Independent LLM cross-review rejected 9 reference-positive candidates, which is also a label-robustness warning | Categorize the 9 missed reference-positive cases by source, category, severity, and claim-boundary reason | Short table or paragraph explains whether misses are low-severity hardening, borderline reportability, or likely label noise |
+| Source-stratified metric promotion | Automotive readers care most about the PleOS-customized subset, not pooled external controls | If space allows, move the PleOS-only source-stratified result from appendix into the main evaluation narrative | Main text explicitly states that the PleOS-only subset preserves the same FP-removal pattern |
+| Broader production-like AAOS/IVI sample | The negative set remains small and external controls are positive-heavy | Add redaction-safe production-like AAOS/IVI APK candidates where policy allows | Updated source-stratified metrics show whether FP rejection holds beyond the current 9 reference-negative candidates |
+
 ## Priority 1
 
 | Item | Why It Remains | Next Action | Done Criterion |
